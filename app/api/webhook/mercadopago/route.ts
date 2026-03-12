@@ -62,6 +62,22 @@ export async function POST(req: Request) {
         mp_payment_id: paymentId
       })
       .eq("id", order.id)
+    // crear suscripción interna
+
+const startDate = new Date()
+
+const nextCharge = new Date()
+nextCharge.setMonth(nextCharge.getMonth() + 1)
+
+await supabase
+  .from("subscriptions")
+  .insert({
+    user_id: order.user_id,
+    box: order.box,
+    status: "active",
+    start_date: startDate,
+    next_charge: nextCharge
+  })
 
     return NextResponse.json({ success: true })
 
