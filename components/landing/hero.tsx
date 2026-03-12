@@ -9,7 +9,6 @@ interface HeroProps {
 export function Hero({ onWhatsAppClick }: HeroProps) {
   return (
     <section className="relative min-h-screen flex items-center pt-16">
-      {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
           src="/images/hero-box.jpg"
@@ -21,7 +20,6 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
         <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/60 to-transparent" />
       </div>
 
-      {/* Content */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-2xl">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight text-balance">
