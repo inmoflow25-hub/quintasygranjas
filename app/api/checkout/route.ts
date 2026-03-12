@@ -17,26 +17,36 @@ export async function POST(req: Request) {
 
   const preference = new Preference(mp)
 
-  const result = await preference.create({
-    body: {
-      items: [
-        {
-          id: title,
-          title,
-          quantity: 1,
-          currency_id: "ARS",
-          unit_price: price
-        }
-      ],
-      external_reference: user_id,
-      back_urls: {
-        success: "https://quintasygranjas.com/gracias",
-        failure: "https://quintasygranjas.com/error",
-        pending: "https://quintasygranjas.com/pendiente"
-      },
-      auto_return: "approved"
-    }
-  })
+ const result = await preference.create({
+  body: {
+    items: [
+      {
+        id: title,
+        title,
+        quantity: 1,
+        currency_id: "ARS",
+        unit_price: price
+      }
+    ],
+
+    external_reference: user_id,
+
+    metadata: {
+      user_id,
+      box_type
+    },
+
+    notification_url: "https://quintasygranjas.com/api/webhook/mercadopago",
+
+    back_urls: {
+      success: "https://quintasygranjas.com/success",
+      failure: "https://quintasygranjas.com/error",
+      pending: "https://quintasygranjas.com/pending"
+    },
+
+    auto_return: "approved"
+  }
+})
 
   await supabase
     .from("orders")
