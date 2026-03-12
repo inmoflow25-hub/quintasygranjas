@@ -15,19 +15,13 @@ export async function POST(req: Request) {
     body: {
       items: [
         {
-          id: "caja-semanal",
+          id: title,
           title: title,
           quantity: 1,
           currency_id: "ARS",
-          unit_price: Number(price)
+          unit_price: price
         }
-      ],
-      back_urls: {
-        success: "https://quintasygranjas.com/gracias",
-        failure: "https://quintasygranjas.com/error",
-        pending: "https://quintasygranjas.com/pendiente"
-      },
-      auto_return: "approved"
+      ]
     }
   })
 
