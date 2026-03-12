@@ -13,7 +13,7 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
 
-  const { title, price, user_id } = await req.json()
+ const { title, price, user_id, box_type } = await req.json()
 
   const preference = new Preference(mp)
 
