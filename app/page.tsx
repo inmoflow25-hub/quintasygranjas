@@ -27,7 +27,10 @@ async function loginGoogle() {
   })
 }
 
-async function createCheckout(boxType: "veggie" | "campo" | "granja", userId: string) {
+async function createCheckout(
+  boxType: "veggie" | "campo" | "granja",
+  userId: string
+) {
 
   const boxes = {
     veggie: { title: "Caja Veggie", price: 8000 },
@@ -62,15 +65,12 @@ async function onSelectBox(boxType: "veggie" | "campo" | "granja") {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-
     localStorage.setItem("selected_box", boxType)
-
     await loginGoogle()
-
     return
   }
 
-  localStorage.setItem("selected_box", boxType)
+  await createCheckout(boxType, user.id)
 }
 
 function onWhatsAppClick() {
@@ -96,7 +96,10 @@ export default function Home() {
 
       localStorage.removeItem("selected_box")
 
-      await createCheckout(savedBox as "veggie" | "campo" | "granja", user.id)
+      await createCheckout(
+        savedBox as "veggie" | "campo" | "granja",
+        user.id
+      )
     }
 
     restoreCheckout()
