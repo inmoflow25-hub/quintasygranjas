@@ -1,6 +1,5 @@
 "use client"
 
-
 import { useEffect, useState } from "react"
 import { createClient } from "@supabase/supabase-js"
 import { useRouter } from "next/navigation"
@@ -217,4 +216,3 @@ export default function AdminPage() {
     </main>
   )
 }
-
