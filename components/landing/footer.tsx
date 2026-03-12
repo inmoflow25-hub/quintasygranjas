@@ -20,7 +20,6 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
     <footer className="bg-foreground py-16">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-3 gap-12">
-          {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
               <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
@@ -33,7 +32,6 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
             </p>
           </div>
 
-          {/* Zones */}
           <div>
             <h4 className="text-background font-bold mb-4">Zonas de entrega</h4>
             <ul className="space-y-2">
@@ -43,14 +41,18 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
             </ul>
           </div>
 
-          {/* WhatsApp */}
           <div>
             <h4 className="text-background font-bold mb-4">¿Tenés dudas?</h4>
             <p className="text-background/70 mb-4">
               Escribinos por WhatsApp y te ayudamos a elegir tu caja
             </p>
             <Button 
-              onClick={onWhatsAppClick}
+              onClick={()=>{
+                window.open(
+                  "https://wa.me/5491133614865?text=Hola%20quiero%20información%20sobre%20las%20cajas%20de%20Quintas%20y%20Granjas",
+                  "_blank"
+                )
+              }}
               className="bg-[#25D366] hover:bg-[#25D366]/90 text-white"
             >
               <MessageCircle className="mr-2 h-5 w-5" />
