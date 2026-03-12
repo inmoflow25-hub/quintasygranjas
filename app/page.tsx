@@ -1,5 +1,7 @@
 "use client"
 
+import { useEffect } from "react"
+
 import { Hero } from "@/components/landing/hero"
 import { HowItWorks } from "@/components/landing/how-it-works"
 import { BoxesSection } from "@/components/landing/boxes-section"
@@ -18,18 +20,14 @@ const supabase = createClient(
 
 async function loginGoogle() {
   await supabase.auth.signInWithOAuth({
-    provider: "google"
+    provider: "google",
+    options: {
+      redirectTo: window.location.origin
+    }
   })
 }
 
-async function onSelectBox(boxType: "veggie" | "campo" | "granja") {
-
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    await loginGoogle()
-    return
-  }
+async function createCheckout(boxType: "veggie" | "campo" | "granja", userId: string) {
 
   const boxes = {
     veggie: { title: "Caja Veggie", price: 8000 },
@@ -47,7 +45,8 @@ async function onSelectBox(boxType: "veggie" | "campo" | "granja") {
     body: JSON.stringify({
       title: box.title,
       price: box.price,
-      user_id: user.id
+      user_id: userId,
+      box_type: boxType
     })
   })
 
@@ -58,6 +57,22 @@ async function onSelectBox(boxType: "veggie" | "campo" | "granja") {
   }
 }
 
+async function onSelectBox(boxType: "veggie" | "campo" | "granja") {
+
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+
+    localStorage.setItem("selected_box", boxType)
+
+    await loginGoogle()
+
+    return
+  }
+
+  await createCheckout(boxType, user.id)
+}
+
 function onWhatsAppClick() {
   window.open(
     "https://wa.me/5491133614865?text=Hola%20quiero%20información%20sobre%20las%20cajas",
@@ -66,6 +81,28 @@ function onWhatsAppClick() {
 }
 
 export default function Home() {
+
+  useEffect(() => {
+
+    const restoreCheckout = async () => {
+
+      const savedBox = localStorage.getItem("selected_box")
+
+      if (!savedBox) return
+
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (!user) return
+
+      localStorage.removeItem("selected_box")
+
+      await createCheckout(savedBox as "veggie" | "campo" | "granja", user.id)
+    }
+
+    restoreCheckout()
+
+  }, [])
+
   return (
     <main className="min-h-screen">
       <Header />
