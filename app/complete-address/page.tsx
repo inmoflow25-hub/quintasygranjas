@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { createClient } from "@supabase/supabase-js"
 import { useRouter } from "next/navigation"
 
@@ -14,6 +14,7 @@ export default function CompleteAddressPage() {
   const router = useRouter()
 
   const [loading, setLoading] = useState(false)
+  const [checkingUser, setCheckingUser] = useState(true)
 
   const [form, setForm] = useState({
     name: "",
@@ -23,6 +24,22 @@ export default function CompleteAddressPage() {
     notes: ""
   })
 
+  useEffect(() => {
+    async function checkUser() {
+
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (!user) {
+        router.push("/")
+        return
+      }
+
+      setCheckingUser(false)
+    }
+
+    checkUser()
+  }, [router])
+
   function updateField(field: string, value: string) {
     setForm(prev => ({
       ...prev,
@@ -31,6 +48,7 @@ export default function CompleteAddressPage() {
   }
 
   async function handleSubmit(e: React.FormEvent) {
+
     e.preventDefault()
 
     setLoading(true)
@@ -38,7 +56,7 @@ export default function CompleteAddressPage() {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-      alert("Debes iniciar sesión")
+      router.push("/")
       return
     }
 
@@ -62,13 +80,21 @@ export default function CompleteAddressPage() {
     router.push("/")
   }
 
+  if (checkingUser) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-green-50">
+        <p className="text-gray-500">Cargando...</p>
+      </main>
+    )
+  }
+
   return (
     <main className="min-h-screen bg-green-50 flex items-center justify-center px-6">
 
       <div className="max-w-lg w-full bg-white rounded-2xl shadow-xl p-10">
 
         <h1 className="text-3xl font-bold text-green-700 mb-2">
-          Último paso 🌿
+          Dirección de entrega 🌿
         </h1>
 
         <p className="text-gray-600 mb-8">
