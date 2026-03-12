@@ -18,7 +18,12 @@ export function FinalCTA({ onWhatsAppClick }: FinalCTAProps) {
           </p>
           <Button 
             size="lg"
-            onClick={onWhatsAppClick}
+            onClick={()=>{
+              window.open(
+                "https://wa.me/5491133614865?text=Hola%20quiero%20recibir%20una%20caja%20de%20Quintas%20y%20Granjas",
+                "_blank"
+              )
+            }}
             className="mt-8 bg-[#25D366] hover:bg-[#25D366]/90 text-white text-lg px-10 py-7 rounded-full"
           >
             <MessageCircle className="mr-2 h-6 w-6" />
