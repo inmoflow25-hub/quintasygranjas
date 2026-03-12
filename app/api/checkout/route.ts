@@ -15,10 +15,11 @@ export async function POST(req: Request) {
     body: {
       items: [
         {
-          title,
+          id: "caja-semanal",
+          title: title,
           quantity: 1,
           currency_id: "ARS",
-          unit_price: price
+          unit_price: Number(price)
         }
       ],
       back_urls: {
