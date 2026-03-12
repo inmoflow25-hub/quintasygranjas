@@ -28,6 +28,7 @@ export async function POST(req: Request) {
           unit_price: price
         }
       ],
+      external_reference: user_id,
       back_urls: {
         success: "https://quintasygranjas.com/gracias",
         failure: "https://quintasygranjas.com/error",
