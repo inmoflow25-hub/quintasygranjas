@@ -70,7 +70,7 @@ async function onSelectBox(boxType: "veggie" | "campo" | "granja") {
     return
   }
 
-  await createCheckout(boxType, user.id)
+  localStorage.setItem("selected_box", boxType)
 }
 
 function onWhatsAppClick() {
@@ -116,3 +116,4 @@ export default function Home() {
     </main>
   )
 }
+
