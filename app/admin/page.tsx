@@ -1,12 +1,35 @@
 import { createClient } from "@supabase/supabase-js"
+import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
-
 export default async function AdminPage() {
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  // obtener usuario logueado
+  const {
+    data: { user }
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect("/")
+  }
+
+  // verificar si es admin
+  const { data: admin } = await supabase
+    .from("admins")
+    .select("*")
+    .eq("user_id", user.id)
+    .single()
+
+  if (!admin) {
+    redirect("/")
+  }
+
+  // datos para dashboard
 
   const { data: users } = await supabase
     .from("users")
@@ -38,7 +61,6 @@ export default async function AdminPage() {
 
       <section>
         <h2 className="text-xl font-semibold mb-4">Usuarios</h2>
-
         <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto">
           {JSON.stringify(users, null, 2)}
         </pre>
@@ -46,7 +68,6 @@ export default async function AdminPage() {
 
       <section>
         <h2 className="text-xl font-semibold mb-4">Pedidos</h2>
-
         <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto">
           {JSON.stringify(orders, null, 2)}
         </pre>
@@ -54,7 +75,6 @@ export default async function AdminPage() {
 
       <section>
         <h2 className="text-xl font-semibold mb-4">Suscripciones</h2>
-
         <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto">
           {JSON.stringify(subscriptions, null, 2)}
         </pre>
@@ -62,7 +82,6 @@ export default async function AdminPage() {
 
       <section>
         <h2 className="text-xl font-semibold mb-4">Entregas</h2>
-
         <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto">
           {JSON.stringify(deliveries, null, 2)}
         </pre>
