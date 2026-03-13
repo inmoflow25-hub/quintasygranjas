@@ -14,10 +14,10 @@ const boxes = [
     price: "$8.000",
     image: "/images/caja-veggie.jpg",
     features: [
-      "🥕 8–9kg de frutas y verduras de estación",
-      "🍅 Tomate, papa, cebolla, zanahoria y hojas",
-      "🥬 Productos frescos directo de la quinta",
-      "🚚 Entrega semanal a domicilio"
+      "8–9kg de frutas y verduras de estación",
+      "Tomate, papa, cebolla, zanahoria y hojas",
+      "Productos frescos directo de la quinta",
+      "Entrega semanal a domicilio"
     ],
     popular: false
   },
@@ -27,10 +27,10 @@ const boxes = [
     price: "$14.000",
     image: "/images/caja-campo.jpg",
     features: [
-      "🥕 Todo lo de la Caja Veggie",
-      "🥚 1 maple de huevos de campo (30)",
-      "🐔 1 pollo fresco de granja",
-      "🚚 Entrega semanal a domicilio"
+      "Todo lo de la Caja Veggie",
+      "1 maple de huevos de campo (30)",
+      "1 pollo fresco de granja",
+      "Entrega semanal a domicilio"
     ],
     popular: true
   },
@@ -40,10 +40,10 @@ const boxes = [
     price: "$18.000",
     image: "/images/caja-granja.jpg",
     features: [
-      "🥕 Todo lo de la Caja Campo",
-      "🍞 Pan de campo artesanal",
-      "🍯 Miel natural cruda",
-      "🚚 Entrega semanal a domicilio"
+      "Todo lo de la Caja Campo",
+      "Pan de campo artesanal",
+      "Miel natural cruda",
+      "Entrega semanal a domicilio"
     ],
     popular: false
   }
