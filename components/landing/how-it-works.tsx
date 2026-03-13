@@ -10,7 +10,7 @@ const steps = [
   {
     number: "02",
     title: "Armamos el pedido",
-    description: "Compramos productos frescos directamente de quintas y granjas.",
+    description: "Recoletamos productos frescos para vos directamente de quintas y granjas.",
     image: "/images/step-prepare.jpg"
   },
   {
