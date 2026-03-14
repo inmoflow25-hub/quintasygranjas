@@ -15,7 +15,8 @@ const boxes = [
     image: "/images/caja-veggie.jpg",
     features: [
       "8–9kg de frutas y verduras de estación",
-      "Tomate, papa, cebolla, zanahoria y hojas",
+      "Tomate, papa, cebolla, zanahoria y hojas frescas",
+      "Incluye frutas de estación (manzana, banana y naranja)",
       "Productos frescos directo de la quinta",
       "Entrega semanal a domicilio"
     ],
@@ -29,7 +30,7 @@ const boxes = [
     features: [
       "Todo lo de la Caja Veggie",
       "1 maple de huevos de campo (30)",
-      "1 pollo fresco de granja",
+      "1 pollo entero fresco de granja (~2kg)",
       "Entrega semanal a domicilio"
     ],
     popular: true
@@ -41,8 +42,8 @@ const boxes = [
     image: "/images/caja-granja.jpg",
     features: [
       "Todo lo de la Caja Campo",
-      "Pan de campo artesanal",
-      "Miel natural cruda",
+      "1 pan de campo artesanal",
+      "1 frasco de miel natural cruda (500g)",
       "Entrega semanal a domicilio"
     ],
     popular: false
