@@ -1,4 +1,3 @@
-import { Leaf } from "lucide-react"
 
 export function Header() {
   return (
@@ -8,8 +7,12 @@ export function Header() {
         {/* Logo */}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-            <Leaf className="w-5 h-5 text-primary-foreground" />
-          </div>
+  <img
+    src="/logo-leaf.svg"
+    alt="Quintas y Granjas"
+    className="w-5 h-5"
+  />
+</div>
 
           <span className="text-xl font-bold text-foreground tracking-tight">
             Quintas y Granjas
