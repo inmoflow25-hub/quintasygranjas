@@ -6,11 +6,11 @@ export function Header() {
 
         {/* Logo */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+      <div className="w-10 h-10 flex items-center justify-center">
   <img
-    src="/logo-leaf.svg"
+    src="/logho quintas nuevo.svg"
     alt="Quintas y Granjas"
-    className="w-5 h-5"
+    className="h-8 w-auto"
   />
 </div>
 
