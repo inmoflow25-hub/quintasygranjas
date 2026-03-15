@@ -71,16 +71,17 @@ export default function SuccessPage() {
       <div className="max-w-xl w-full bg-white rounded-2xl shadow-lg p-10 text-center">
 
         <h1 className="text-3xl font-bold text-green-700 mb-4">
-          Pago confirmado 🎉
+          Pedido confirmado 🎉
         </h1>
 
         <p className="text-gray-600 mb-8">
-          Tu suscripción está activa.
+          Recibimos tu pago correctamente.
           <br />
-          Completá tus datos para la entrega.
+          Completá tus datos para coordinar la entrega de tu caja.
         </p>
 
         {!saved && (
+
           <div className="space-y-4 text-left">
 
             <input
@@ -101,7 +102,7 @@ export default function SuccessPage() {
 
             <input
               name="address"
-              placeholder="Dirección"
+              placeholder="Dirección de entrega"
               value={form.address}
               onChange={handleChange}
               className="w-full border rounded-xl px-4 py-3"
@@ -117,7 +118,7 @@ export default function SuccessPage() {
 
             <textarea
               name="notes"
-              placeholder="Indicaciones para la entrega (opcional)"
+              placeholder="Indicaciones para la entrega (portón, timbre, etc)"
               value={form.notes}
               onChange={handleChange}
               className="w-full border rounded-xl px-4 py-3"
@@ -132,13 +133,21 @@ export default function SuccessPage() {
             </button>
 
           </div>
+
         )}
 
         {saved && (
+
           <div className="space-y-6">
 
             <p className="text-green-700 font-semibold">
               ✅ Datos guardados correctamente
+            </p>
+
+            <p className="text-gray-600 text-sm">
+              Tu caja comenzará a enviarse en la próxima entrega semanal.
+              <br />
+              Si necesitás modificar algo podés escribirnos por WhatsApp.
             </p>
 
             <a
@@ -150,13 +159,25 @@ export default function SuccessPage() {
             </a>
 
             <Link
+              href="/cuenta"
+              className="block w-full bg-gray-900 text-white py-3 rounded-xl font-semibold hover:bg-black transition"
+            >
+              Ir a mi cuenta
+            </Link>
+
+            <Link
               href="/"
               className="block w-full border border-gray-300 py-3 rounded-xl font-semibold hover:bg-gray-100 transition"
             >
               Volver al inicio
             </Link>
 
+            <p className="text-xs text-gray-500 pt-4">
+              Desde tu cuenta podrás ver tus entregas, pedidos y gestionar tu suscripción.
+            </p>
+
           </div>
+
         )}
 
       </div>
