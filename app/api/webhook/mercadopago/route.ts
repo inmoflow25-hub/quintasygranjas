@@ -13,20 +13,26 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
 
-    if (body.type !== "payment") {
+    // 🔧 FIX IMPORTANTE: MercadoPago no siempre manda JSON
+    const rawBody = await req.text()
+
+    let body: any
+
+    try {
+      body = JSON.parse(rawBody)
+    } catch {
+      body = Object.fromEntries(new URLSearchParams(rawBody))
+    }
+
+    console.log("MP webhook received:", body)
+
+    // si no hay payment id, ignorar
+    if (!body.data?.id) {
       return NextResponse.json({ ok: true })
     }
 
-    const paymentId = body.data?.id
-
-    if (!paymentId) {
-      return NextResponse.json(
-        { error: "missing payment id" },
-        { status: 400 }
-      )
-    }
+    const paymentId = body.data.id
 
     const payment = new Payment(mp)
     const paymentInfo = await payment.get({ id: paymentId })
@@ -142,7 +148,9 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true })
+
   } catch (error) {
+
     console.error("Webhook error:", error)
 
     return NextResponse.json(
@@ -151,3 +159,4 @@ export async function POST(req: Request) {
     )
   }
 }
+
