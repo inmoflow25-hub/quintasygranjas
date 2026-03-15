@@ -61,11 +61,20 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-background/10 text-center">
-          <p className="text-background/50 text-sm">
-            © {new Date().getFullYear()} Quintas y Granjas. Todos los derechos reservados.
-          </p>
-        </div>
+       <div className="mt-12 pt-8 border-t border-background/10 text-center">
+  <p className="text-background/50 text-sm">
+    © {new Date().getFullYear()} Quintas y Granjas. Todos los derechos reservados. Desarrollado por{" "}
+    <a
+      href="https://jmfullstack.com"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="underline hover:opacity-80"
+    >
+      jmfullstack.com
+    </a>
+  </p>
+</div>
+
       </div>
     </footer>
   )
