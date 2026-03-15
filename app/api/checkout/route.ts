@@ -61,16 +61,16 @@ export async function POST(req: Request) {
 
     console.log("MP PREFERENCE CREATED", result.id)
 
-   const { error } = await supabase
+
+const { error } = await supabase
   .from("orders")
   .insert({
     user_id: user_id,
+    box_id: box_type,
     price: Number(price),
     mp_preference_id: result.id,
     status: "pending"
   })
-
-
     if (error) {
       console.error("SUPABASE ORDER ERROR", error)
     }
