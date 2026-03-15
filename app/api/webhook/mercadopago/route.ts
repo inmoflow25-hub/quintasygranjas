@@ -99,7 +99,8 @@ export async function POST(req: Request) {
     const nextCharge = new Date()
     nextCharge.setMonth(nextCharge.getMonth() + 1)
 
-    const planValue = order.box || order.box_type || "Caja"
+    const planValue = order.box_type || "Caja"
+
 
     const { data: subscription, error: subscriptionError } = await supabase
       .from("subscriptions")
