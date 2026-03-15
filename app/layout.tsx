@@ -1,18 +1,13 @@
 import type { Metadata } from 'next'
-import { DM_Sans, Merriweather } from 'next/font/google'
+import { Irish_Grover } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const dmSans = DM_Sans({ 
+const irishGrover = Irish_Grover({
   subsets: ["latin"],
-  variable: "--font-dm-sans"
-});
-
-const merriweather = Merriweather({ 
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-merriweather"
-});
+  weight: "400",
+  variable: "--font-irish-grover"
+})
 
 export const metadata: Metadata = {
   title: 'Quintas y Granjas | Cajas semanales de frutas, verduras y productos de granja',
@@ -43,8 +38,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" className={`${dmSans.variable} ${merriweather.variable}`}>
-      <body className="font-sans antialiased">
+    <html lang="es" className={irishGrover.variable}>
+      <body
+        className="antialiased"
+        style={{ fontFamily: 'var(--font-irish-grover)' }}
+      >
         {children}
         <Analytics />
       </body>
