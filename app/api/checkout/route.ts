@@ -13,52 +13,79 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
 
- const { title, price, user_id, box_type } = await req.json()
+  try {
 
-  const preference = new Preference(mp)
+    const { title, price, user_id, box_type } = await req.json()
 
- const result = await preference.create({
-  body: {
-    items: [
-      {
-        id: title,
-        title,
-        quantity: 1,
-        currency_id: "ARS",
-        unit_price: price
-      }
-    ],
-
-    external_reference: user_id,
-
-    metadata: {
+    console.log("CHECKOUT DATA", {
+      title,
+      price,
       user_id,
       box_type
-    },
-
-    notification_url: "https://quintasygranjas.com/api/webhook/mercadopago",
-
-    back_urls: {
-      success: "https://quintasygranjas.com/success",
-      failure: "https://quintasygranjas.com/error",
-      pending: "https://quintasygranjas.com/pending"
-    },
-
-    auto_return: "approved"
-  }
-})
-
-  await supabase
-    .from("orders")
-    .insert({
-      user_id,
-      box: title,
-      price,
-      mp_preference: result.id,
-      status: "pending"
     })
 
-  return NextResponse.json({
-    url: result.init_point
-  })
+    const preference = new Preference(mp)
+
+    const result = await preference.create({
+      body: {
+
+        items: [
+          {
+            id: String(title),
+            title: String(title),
+            quantity: 1,
+            currency_id: "ARS",
+            unit_price: Number(price)
+          }
+        ],
+
+        external_reference: String(user_id),
+
+        metadata: {
+          user_id: String(user_id),
+          box_type: String(box_type)
+        },
+
+        notification_url:
+          "https://quintasygranjas.com/api/webhook/mercadopago",
+
+        back_urls: {
+          success: "https://quintasygranjas.com/success",
+          failure: "https://quintasygranjas.com/error",
+          pending: "https://quintasygranjas.com/pending"
+        },
+
+        auto_return: "approved"
+      }
+    })
+
+    console.log("MP PREFERENCE CREATED", result.id)
+
+    const { error } = await supabase
+      .from("orders")
+      .insert({
+        user_id,
+        box: title,
+        price: Number(price),
+        mp_preference: result.id,
+        status: "pending"
+      })
+
+    if (error) {
+      console.error("SUPABASE ORDER ERROR", error)
+    }
+
+    return NextResponse.json({
+      url: result.init_point
+    })
+
+  } catch (error) {
+
+    console.error("CHECKOUT ERROR", error)
+
+    return NextResponse.json(
+      { error: "checkout error" },
+      { status: 500 }
+    )
+  }
 }
