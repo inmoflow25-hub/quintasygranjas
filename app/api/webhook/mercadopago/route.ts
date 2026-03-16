@@ -12,9 +12,9 @@ const supabase = createClient(
 )
 
 export async function POST(req: Request) {
+
   try {
 
-    // 🔧 FIX IMPORTANTE: MercadoPago no siempre manda JSON
     const rawBody = await req.text()
 
     let body: any
@@ -25,9 +25,8 @@ export async function POST(req: Request) {
       body = Object.fromEntries(new URLSearchParams(rawBody))
     }
 
-    console.log("MP webhook received:", body)
+    console.log("MP WEBHOOK RECEIVED", body)
 
-    // si no hay payment id, ignorar
     if (!body.data?.id) {
       return NextResponse.json({ ok: true })
     }
@@ -35,6 +34,7 @@ export async function POST(req: Request) {
     const paymentId = body.data.id
 
     const payment = new Payment(mp)
+
     const paymentInfo = await payment.get({ id: paymentId })
 
     if (!paymentInfo) {
@@ -50,37 +50,22 @@ export async function POST(req: Request) {
 
     const userId = paymentInfo.external_reference
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "missing external_reference" },
-        { status: 400 }
-      )
-    }
+    const boxType = paymentInfo.metadata?.box_type
 
-    const { data: order, error: orderError } = await supabase
+    const { data: order } = await supabase
       .from("orders")
       .select("*")
       .eq("user_id", userId)
       .eq("status", "pending")
-      .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle()
 
-    if (orderError) {
-      return NextResponse.json(
-        { error: "order lookup failed" },
-        { status: 500 }
-      )
-    }
-
     if (!order) {
-      return NextResponse.json(
-        { error: "order not found" },
-        { status: 404 }
-      )
+      console.log("ORDER NOT FOUND")
+      return NextResponse.json({ ok: true })
     }
 
-    const { error: updateOrderError } = await supabase
+    await supabase
       .from("orders")
       .update({
         status: "paid",
@@ -88,45 +73,29 @@ export async function POST(req: Request) {
       })
       .eq("id", order.id)
 
-    if (updateOrderError) {
-      return NextResponse.json(
-        { error: "failed to update order" },
-        { status: 500 }
-      )
-    }
-
     const startDate = new Date()
     const nextCharge = new Date()
     nextCharge.setMonth(nextCharge.getMonth() + 1)
 
-    const planValue = "Caja"
-
-
-    const { data: subscription, error: subscriptionError } = await supabase
+    const { data: subscription } = await supabase
       .from("subscriptions")
       .insert({
         user_id: order.user_id,
-        plan: planValue,
-        box: planValue,
+        plan: boxType,
+        box: boxType,
         active: true,
         start_date: startDate.toISOString(),
-        next_charge: nextCharge.toISOString(),
-        mp_subscription_id: null
+        next_charge: nextCharge.toISOString()
       })
       .select()
       .single()
 
-    if (subscriptionError || !subscription) {
-      return NextResponse.json(
-        { error: "failed to create subscription" },
-        { status: 500 }
-      )
-    }
-
     const deliveries = []
 
     for (let i = 0; i < 4; i++) {
+
       const deliveryDate = new Date(startDate)
+
       deliveryDate.setDate(deliveryDate.getDate() + i * 7)
 
       deliveries.push({
@@ -137,22 +106,15 @@ export async function POST(req: Request) {
       })
     }
 
-    const { error: deliveriesError } = await supabase
+    await supabase
       .from("deliveries")
       .insert(deliveries)
-
-    if (deliveriesError) {
-      return NextResponse.json(
-        { error: "failed to create deliveries" },
-        { status: 500 }
-      )
-    }
 
     return NextResponse.json({ success: true })
 
   } catch (error) {
 
-    console.error("Webhook error:", error)
+    console.error("WEBHOOK ERROR", error)
 
     return NextResponse.json(
       { error: "webhook error" },
@@ -160,4 +122,3 @@ export async function POST(req: Request) {
     )
   }
 }
-
