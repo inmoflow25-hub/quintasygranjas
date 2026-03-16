@@ -46,16 +46,17 @@ export default function SuccessPage() {
 
     const { error } = await supabase
       .from("profiles")
-      .update({
+      .upsert({
+        id: user.id,
         full_name: form.name,
         phone: form.phone,
         address: form.address,
         city: form.city,
         notes: form.notes
       })
-      .eq("id", user.id)
 
     if (error) {
+      console.error(error)
       alert("Error guardando datos")
       setLoading(false)
       return
