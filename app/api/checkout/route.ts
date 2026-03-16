@@ -12,17 +12,34 @@ const supabase = createClient(
 )
 
 export async function POST(req: Request) {
-
   try {
 
     const { title, price, user_id, box_type } = await req.json()
 
-    console.log("CHECKOUT DATA", {
-      title,
-      price,
-      user_id,
-      box_type
-    })
+    console.log("CHECKOUT DATA", { title, price, user_id, box_type })
+
+    if (!user_id) {
+      return NextResponse.json(
+        { error: "missing user id" },
+        { status: 400 }
+      )
+    }
+
+    // 🔎 buscar box_id real en la tabla boxes
+    const { data: box, error: boxError } = await supabase
+      .from("boxes")
+      .select("id")
+      .eq("name", title)
+      .maybeSingle()
+
+    if (boxError || !box) {
+      console.error("BOX LOOKUP ERROR", boxError)
+
+      return NextResponse.json(
+        { error: "box not found" },
+        { status: 500 }
+      )
+    }
 
     const preference = new Preference(mp)
 
@@ -31,7 +48,7 @@ export async function POST(req: Request) {
 
         items: [
           {
-            id: String(title),
+            id: String(box.id),
             title: String(title),
             quantity: 1,
             currency_id: "ARS",
@@ -43,7 +60,8 @@ export async function POST(req: Request) {
 
         metadata: {
           user_id: String(user_id),
-          box_type: String(box_type)
+          box_type: String(box_type),
+          box_id: String(box.id)
         },
 
         notification_url:
@@ -61,18 +79,24 @@ export async function POST(req: Request) {
 
     console.log("MP PREFERENCE CREATED", result.id)
 
+    // 🔐 ahora sí crear order con box_id válido
+    const { error } = await supabase
+      .from("orders")
+      .insert({
+        user_id: user_id,
+        box_id: box.id,
+        price: Number(price),
+        mp_preference_id: result.id,
+        status: "pending"
+      })
 
-const { error } = await supabase
-  .from("orders")
-  .insert({
-    user_id: user_id,
-    box_id: box_type,
-    price: Number(price),
-    mp_preference_id: result.id,
-    status: "pending"
-  })
     if (error) {
       console.error("SUPABASE ORDER ERROR", error)
+
+      return NextResponse.json(
+        { error: "failed to create order" },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json({
