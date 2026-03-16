@@ -15,6 +15,7 @@ export async function GET() {
 
   const today = new Date().toISOString()
 
+  // buscar suscripciones activas que deben cobrarse
   const { data: subs } = await supabase
     .from("subscriptions")
     .select("*")
@@ -27,20 +28,34 @@ export async function GET() {
 
   for (const sub of subs) {
 
+    // buscar la caja asociada a la suscripción
+    const { data: box } = await supabase
+      .from("boxes")
+      .select("*")
+      .eq("id", sub.box_id)
+      .single()
+
+    if (!box) {
+      console.error("Box not found for subscription", sub.id)
+      continue
+    }
+
+    const price = Number(box.price_subscription)
+
     const preference = new Preference(mp)
 
     const result = await preference.create({
       body: {
 
-      items: [
-  {
-    id: "subscription-box",
-    title: "Suscripción caja mensual",
-    quantity: 1,
-    currency_id: "ARS",
-    unit_price: 12000
-  }
-],
+        items: [
+          {
+            id: String(box.id),
+            title: `Suscripción ${box.name}`,
+            quantity: 1,
+            currency_id: "ARS",
+            unit_price: price
+          }
+        ],
 
         external_reference: String(sub.user_id),
 
@@ -49,16 +64,19 @@ export async function GET() {
       }
     })
 
+    // crear nueva orden
     await supabase
       .from("orders")
       .insert({
         user_id: sub.user_id,
-        price: 12000,
+        box_id: box.id,
+        price: price,
         mp_preference_id: result.id,
         status: "pending"
       })
 
-    const nextCharge = new Date()
+    // mover próxima fecha de cobro
+    const nextCharge = new Date(sub.next_charge)
     nextCharge.setMonth(nextCharge.getMonth() + 1)
 
     await supabase
