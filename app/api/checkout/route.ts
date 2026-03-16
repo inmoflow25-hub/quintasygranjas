@@ -12,11 +12,10 @@ const supabase = createClient(
 )
 
 export async function POST(req: Request) {
+
   try {
 
-    const { title, price, user_id, box_type } = await req.json()
-
-    console.log("CHECKOUT DATA", { title, price, user_id, box_type })
+    const { title, price, user_id } = await req.json()
 
     if (!user_id) {
       return NextResponse.json(
@@ -25,14 +24,15 @@ export async function POST(req: Request) {
       )
     }
 
-    // 🔎 buscar box_id real en la tabla boxes
+    // buscar box real
     const { data: box, error: boxError } = await supabase
       .from("boxes")
-      .select("id")
+      .select("*")
       .eq("name", title)
       .maybeSingle()
 
-    if (boxError || !box) {
+    if (!box || boxError) {
+
       console.error("BOX LOOKUP ERROR", boxError)
 
       return NextResponse.json(
@@ -48,8 +48,8 @@ export async function POST(req: Request) {
 
         items: [
           {
-            id: String(box.id),
-            title: String(title),
+            id: box.id,
+            title: title,
             quantity: 1,
             currency_id: "ARS",
             unit_price: Number(price)
@@ -59,9 +59,9 @@ export async function POST(req: Request) {
         external_reference: String(user_id),
 
         metadata: {
-          user_id: String(user_id),
-          box_type: String(box_type),
-          box_id: String(box.id)
+          user_id: user_id,
+          box_id: box.id,
+          box_name: box.name
         },
 
         notification_url:
@@ -77,9 +77,6 @@ export async function POST(req: Request) {
       }
     })
 
-    console.log("MP PREFERENCE CREATED", result.id)
-
-    // 🔐 ahora sí crear order con box_id válido
     const { error } = await supabase
       .from("orders")
       .insert({
@@ -91,7 +88,8 @@ export async function POST(req: Request) {
       })
 
     if (error) {
-      console.error("SUPABASE ORDER ERROR", error)
+
+      console.error("ORDER INSERT ERROR", error)
 
       return NextResponse.json(
         { error: "failed to create order" },
