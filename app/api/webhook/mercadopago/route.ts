@@ -68,16 +68,15 @@ export async function POST(req: Request) {
     const nextCharge = new Date()
     nextCharge.setMonth(nextCharge.getMonth() + 1)
 
-    const { data: subscription } = await supabase
-      .from("subscriptions")
-      .insert({
-        user_id: order.user_id,
-        plan: "monthly",
-        box: "active",
-        active: true,
-        start_date: startDate.toISOString(),
-        next_charge: nextCharge.toISOString()
-      })
+   const { data: subscription } = await supabase
+  .from("subscriptions")
+  .insert({
+    user_id: order.user_id,
+    box_id: order.box_id,
+    active: true,
+    start_date: startDate.toISOString(),
+    next_charge: nextCharge.toISOString()
+  })
       .select()
       .single()
 
