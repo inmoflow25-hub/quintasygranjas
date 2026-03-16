@@ -25,8 +25,6 @@ export async function POST(req: Request) {
       body = Object.fromEntries(new URLSearchParams(rawBody))
     }
 
-    console.log("MP WEBHOOK RECEIVED", body)
-
     if (!body.data?.id) {
       return NextResponse.json({ ok: true })
     }
@@ -37,31 +35,23 @@ export async function POST(req: Request) {
 
     const paymentInfo = await payment.get({ id: paymentId })
 
-    if (!paymentInfo) {
-      return NextResponse.json(
-        { error: "payment not found" },
-        { status: 404 }
-      )
-    }
-
     if (paymentInfo.status !== "approved") {
       return NextResponse.json({ ok: true })
     }
 
     const userId = paymentInfo.external_reference
 
-    const boxType = paymentInfo.metadata?.box_type
-
     const { data: order } = await supabase
       .from("orders")
       .select("*")
       .eq("user_id", userId)
       .eq("status", "pending")
-      .limit(1)
       .maybeSingle()
 
     if (!order) {
+
       console.log("ORDER NOT FOUND")
+
       return NextResponse.json({ ok: true })
     }
 
@@ -74,6 +64,7 @@ export async function POST(req: Request) {
       .eq("id", order.id)
 
     const startDate = new Date()
+
     const nextCharge = new Date()
     nextCharge.setMonth(nextCharge.getMonth() + 1)
 
@@ -81,8 +72,8 @@ export async function POST(req: Request) {
       .from("subscriptions")
       .insert({
         user_id: order.user_id,
-        plan: boxType,
-        box: boxType,
+        plan: "monthly",
+        box: "active",
         active: true,
         start_date: startDate.toISOString(),
         next_charge: nextCharge.toISOString()
@@ -94,14 +85,13 @@ export async function POST(req: Request) {
 
     for (let i = 0; i < 4; i++) {
 
-      const deliveryDate = new Date(startDate)
-
-      deliveryDate.setDate(deliveryDate.getDate() + i * 7)
+      const d = new Date(startDate)
+      d.setDate(d.getDate() + i * 7)
 
       deliveries.push({
         subscription_id: subscription.id,
         user_id: order.user_id,
-        delivery_date: deliveryDate.toISOString().split("T")[0],
+        delivery_date: d.toISOString().split("T")[0],
         status: "pending"
       })
     }
@@ -110,7 +100,7 @@ export async function POST(req: Request) {
       .from("deliveries")
       .insert(deliveries)
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ ok: true })
 
   } catch (error) {
 
