@@ -32,14 +32,15 @@ export async function GET() {
     const result = await preference.create({
       body: {
 
-        items: [
-          {
-            title: "Suscripción caja mensual",
-            quantity: 1,
-            currency_id: "ARS",
-            unit_price: 12000
-          }
-        ],
+      items: [
+  {
+    id: "subscription-box",
+    title: "Suscripción caja mensual",
+    quantity: 1,
+    currency_id: "ARS",
+    unit_price: 12000
+  }
+],
 
         external_reference: String(sub.user_id),
 
