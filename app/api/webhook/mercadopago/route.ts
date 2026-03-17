@@ -120,7 +120,7 @@ const subResult = await preapproval.create({
 
     status: "authorized"
   }
-})
+
 
 // 🔥 VALIDAR RESPUESTA MP
 if (!subResult?.id) {
