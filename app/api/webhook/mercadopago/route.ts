@@ -85,7 +85,7 @@ export async function POST(req: Request) {
   paymentInfo.payer?.email ||
   paymentInfo.additional_info?.payer?.email ||
   `${userId}@noemail.com`
-  }
+  
 
     // 🔥 PRECIO
     const price = Number(box.price_subscription)
