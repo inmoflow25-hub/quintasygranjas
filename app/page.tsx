@@ -62,22 +62,51 @@ async function createCheckout(
 
 async function onSelectBox(boxType: "veggie" | "campo" | "granja") {
 
-  const { data: { session } } = await supabase.auth.getSession()
+  console.log("CLICK", boxType)
 
-  if (!session?.user) {
+  const sessionRes = await supabase.auth.getSession()
+
+  const session = sessionRes.data.session
+
+  if (!session || !session.user) {
+
+    console.log("NO SESSION → LOGIN")
+
     localStorage.setItem("selected_box", boxType)
-    await loginGoogle()
+
+    window.location.href = "/login-google"
+
     return
   }
 
-  await createCheckout(boxType, session.user.id)
-}
+  console.log("SESSION OK", session.user.id)
 
-function onWhatsAppClick() {
-  window.open(
-    "https://wa.me/5491133614865?text=Hola%20quiero%20información%20sobre%20las%20cajas",
-    "_blank"
-  )
+  const res = await fetch("/api/checkout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      title: boxType === "veggie"
+        ? "Caja Veggie"
+        : boxType === "campo"
+        ? "Caja Campo"
+        : "Caja Granja",
+      price: 0,
+      user_id: session.user.id,
+      box_type: boxType
+    })
+  })
+
+  const data = await res.json()
+
+  console.log("CHECKOUT RESPONSE", data)
+
+  if (data.url) {
+    window.location.href = data.url
+  } else {
+    console.error("NO URL", data)
+  }
 }
 
 export default function Home() {
