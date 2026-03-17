@@ -18,6 +18,14 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
+type BoxType = "veggie" | "campo" | "granja"
+
+const BOX_DB_IDS: Record<BoxType, string> = {
+  veggie: "dff394c8-6a17-45e8-ba3f-960c27f8d76c",
+  campo: "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1c",
+  granja: "d5b70577-a2b7-47d7-9ccd-e2f336e25af7"
+}
+
 async function loginGoogle() {
   await supabase.auth.signInWithOAuth({
     provider: "google",
@@ -27,18 +35,8 @@ async function loginGoogle() {
   })
 }
 
-async function createCheckout(
-  boxType: "veggie" | "campo" | "granja",
-  userId: string
-) {
-
-  const boxes = {
-    veggie: { title: "Caja Veggie", price: 8000 },
-    campo: { title: "Caja Campo", price: 14000 },
-    granja: { title: "Caja Granja", price: 18000 }
-  }
-
-  const box = boxes[boxType]
+async function createCheckout(boxType: BoxType, userId: string) {
+  const boxId = BOX_DB_IDS[boxType]
 
   const res = await fetch("/api/checkout", {
     method: "POST",
@@ -46,55 +44,8 @@ async function createCheckout(
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      title: box.title,
-      price: box.price,
-      user_id: userId,
-      box_type: boxType
-    })
-  })
-
-  const data = await res.json()
-
-  if (data.url) {
-    window.location.href = data.url
-  }
-}
-
-async function onSelectBox(boxType: "veggie" | "campo" | "granja") {
-
-  console.log("CLICK", boxType)
-
-  const sessionRes = await supabase.auth.getSession()
-
-  const session = sessionRes.data.session
-
-  if (!session || !session.user) {
-
-    console.log("NO SESSION → LOGIN")
-
-    localStorage.setItem("selected_box", boxType)
-
-    window.location.href = "/login-google"
-
-    return
-  }
-
-  console.log("SESSION OK", session.user.id)
-
-  const res = await fetch("/api/checkout", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      title: boxType === "veggie"
-        ? "Caja Veggie"
-        : boxType === "campo"
-        ? "Caja Campo"
-        : "Caja Granja",
-      price: 0,
-      user_id: session.user.id,
-      box_type: boxType
+      box_id: boxId,
+      user_id: userId
     })
   })
 
@@ -104,38 +55,28 @@ async function onSelectBox(boxType: "veggie" | "campo" | "granja") {
 
   if (data.url) {
     window.location.href = data.url
-  } else {
-    console.error("NO URL", data)
+    return
   }
+
+  console.error("CHECKOUT ERROR", data)
+  alert(data.error || "No se pudo iniciar el checkout")
 }
 
-export default function Home() {
-
- useEffect(() => {
+async function onSelectBox(boxType: BoxType) {
+  console.log("CLICK", boxType)
 
   const {
-    data: { subscription }
-  } = supabase.auth.onAuthStateChange(async (event, session) => {
+    data: { session }
+  } = await supabase.auth.getSession()
 
-    if (event === "SIGNED_IN" && session?.user) {
+  if (!session?.user) {
+    localStorage.setItem("selected_box", boxType)
+    await loginGoogle()
+    return
+  }
 
-      const savedBox = localStorage.getItem("selected_box")
-
-      if (!savedBox) return
-
-      localStorage.removeItem("selected_box")
-
-      await createCheckout(
-        savedBox as "veggie" | "campo" | "granja",
-        session.user.id
-      )
-    }
-
-  })
-
-  return () => subscription.unsubscribe()
-
-}, [])
+  await createCheckout(boxType, session.user.id)
+}
 
 function onWhatsAppClick() {
   window.open(
@@ -143,7 +84,40 @@ function onWhatsAppClick() {
     "_blank"
   )
 }
-  
+
+export default function Home() {
+  useEffect(() => {
+    const restoreCheckout = async () => {
+      const savedBox = localStorage.getItem("selected_box") as BoxType | null
+      if (!savedBox) return
+
+      const {
+        data: { session }
+      } = await supabase.auth.getSession()
+
+      if (!session?.user) return
+
+      localStorage.removeItem("selected_box")
+      await createCheckout(savedBox, session.user.id)
+    }
+
+    restoreCheckout()
+
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN" && session?.user) {
+        const savedBox = localStorage.getItem("selected_box") as BoxType | null
+        if (!savedBox) return
+
+        localStorage.removeItem("selected_box")
+        await createCheckout(savedBox, session.user.id)
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
   return (
     <main className="min-h-screen">
       <Header />
@@ -157,4 +131,3 @@ function onWhatsAppClick() {
     </main>
   )
 }
-
