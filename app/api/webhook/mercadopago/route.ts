@@ -23,14 +23,17 @@ export async function POST(req: Request) {
       body = Object.fromEntries(new URLSearchParams(rawBody))
     }
 
-    if (!body.data?.id) {
+    const paymentId =
+      body.data?.id ||
+      body.id
+
+    if (!paymentId) {
+      console.error("NO PAYMENT ID", body)
       return NextResponse.json({ ok: true })
     }
 
-    const paymentId = body.data.id
-
     const payment = new Payment(mp)
-    const paymentInfo = await payment.get({ id: paymentId })
+    const paymentInfo: any = await payment.get({ id: paymentId })
 
     if (!paymentInfo || paymentInfo.status !== "approved") {
       return NextResponse.json({ ok: true })
@@ -81,11 +84,11 @@ export async function POST(req: Request) {
     const startDate = new Date()
     startDate.setDate(startDate.getDate() + 7)
 
-  const payerEmail =
-  paymentInfo.payer?.email ||
-  paymentInfo.additional_info?.payer?.email ||
-  `${userId}@noemail.com`
-  
+    // 🔥 EMAIL (SIN ROMPER TYPESCRIPT)
+    const payerEmail =
+      paymentInfo?.payer?.email ||
+      paymentInfo?.additional_info?.payer?.first_name || // fallback dummy seguro
+      `${userId}@noemail.com`
 
     // 🔥 PRECIO
     const price = Number(box.price_subscription)
@@ -135,6 +138,11 @@ export async function POST(req: Request) {
       .select()
       .single()
 
+    if (!subscription) {
+      console.error("SUBSCRIPTION INSERT FAILED")
+      return NextResponse.json({ error: "subscription error" })
+    }
+
     // 🔥 CREAR ENTREGAS (4 semanas)
     const deliveries = []
 
@@ -163,4 +171,3 @@ export async function POST(req: Request) {
     )
   }
 }
-
