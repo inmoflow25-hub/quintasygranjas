@@ -12,10 +12,8 @@ const supabase = createClient(
 )
 
 export async function POST(req: Request) {
-
   try {
-
-    const { title, price, user_id } = await req.json()
+    const { box_id, user_id } = await req.json()
 
     if (!user_id) {
       return NextResponse.json(
@@ -24,15 +22,20 @@ export async function POST(req: Request) {
       )
     }
 
-    // buscar box real
+    if (!box_id) {
+      return NextResponse.json(
+        { error: "missing box id" },
+        { status: 400 }
+      )
+    }
+
     const { data: box, error: boxError } = await supabase
       .from("boxes")
       .select("*")
-      .eq("name", title)
+      .eq("id", box_id)
       .maybeSingle()
 
     if (!box || boxError) {
-
       console.error("BOX LOOKUP ERROR", boxError)
 
       return NextResponse.json(
@@ -41,27 +44,35 @@ export async function POST(req: Request) {
       )
     }
 
+    const priceFirst = Number(box.price_first)
+
+    if (!priceFirst || Number.isNaN(priceFirst)) {
+      return NextResponse.json(
+        { error: "invalid box price" },
+        { status: 500 }
+      )
+    }
+
     const preference = new Preference(mp)
 
     const result = await preference.create({
       body: {
-
         items: [
           {
-            id: box.id,
-            title: title,
+            id: String(box.id),
+            title: String(box.name),
             quantity: 1,
             currency_id: "ARS",
-            unit_price: Number(price)
+            unit_price: priceFirst
           }
         ],
 
         external_reference: String(user_id),
 
         metadata: {
-          user_id: user_id,
-          box_id: box.id,
-          box_name: box.name
+          user_id: String(user_id),
+          box_id: String(box.id),
+          box_name: String(box.name)
         },
 
         notification_url:
@@ -77,19 +88,18 @@ export async function POST(req: Request) {
       }
     })
 
-    const { error } = await supabase
+    const { error: orderError } = await supabase
       .from("orders")
       .insert({
         user_id: user_id,
         box_id: box.id,
-        price: Number(price),
+        price: priceFirst,
         mp_preference_id: result.id,
         status: "pending"
       })
 
-    if (error) {
-
-      console.error("ORDER INSERT ERROR", error)
+    if (orderError) {
+      console.error("ORDER INSERT ERROR", orderError)
 
       return NextResponse.json(
         { error: "failed to create order" },
@@ -100,9 +110,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       url: result.init_point
     })
-
   } catch (error) {
-
     console.error("CHECKOUT ERROR", error)
 
     return NextResponse.json(
