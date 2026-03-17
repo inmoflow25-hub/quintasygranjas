@@ -62,15 +62,15 @@ async function createCheckout(
 
 async function onSelectBox(boxType: "veggie" | "campo" | "granja") {
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
 
-  if (!user) {
+  if (!session?.user) {
     localStorage.setItem("selected_box", boxType)
     await loginGoogle()
     return
   }
 
-  await createCheckout(boxType, user.id)
+  await createCheckout(boxType, session.user.id)
 }
 
 function onWhatsAppClick() {
@@ -82,29 +82,31 @@ function onWhatsAppClick() {
 
 export default function Home() {
 
-  useEffect(() => {
+ useEffect(() => {
 
-    const restoreCheckout = async () => {
+  const {
+    data: { subscription }
+  } = supabase.auth.onAuthStateChange(async (event, session) => {
+
+    if (event === "SIGNED_IN" && session?.user) {
 
       const savedBox = localStorage.getItem("selected_box")
 
       if (!savedBox) return
 
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (!user) return
-
       localStorage.removeItem("selected_box")
 
       await createCheckout(
         savedBox as "veggie" | "campo" | "granja",
-        user.id
+        session.user.id
       )
     }
 
-    restoreCheckout()
+  })
 
-  }, [])
+  return () => subscription.unsubscribe()
+
+}, [])
 
   return (
     <main className="min-h-screen">
