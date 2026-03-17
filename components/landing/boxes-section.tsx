@@ -106,7 +106,7 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
                       ? "bg-primary hover:bg-primary/90 text-primary-foreground" 
                       : "bg-secondary hover:bg-secondary/80 text-secondary-foreground"
                   }`}
-                  onClick={() => onSelectBox(box.id)}
+                  onClick={() => onSelectBox(box.name.toLowerCase())}
                 >
                   Elegir caja
                 </Button>
