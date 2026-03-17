@@ -77,57 +77,51 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "box not found" }, { status: 500 })
     }
 
-// 🔥 FECHA INICIO = +7 días
-const startDate = new Date()
-startDate.setDate(startDate.getDate() + 7)
+    // 🔥 FECHA INICIO = +7 días
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() + 7)
 
-// 🔥 VALIDAR EMAIL (CRÍTICO)
-const payerEmail = paymentInfo.payer?.email
+    // 🔥 VALIDAR EMAIL
+    const payerEmail = paymentInfo.payer?.email
 
-if (!payerEmail) {
-  console.error("❌ NO PAYER EMAIL", paymentInfo)
-  return NextResponse.json({ error: "missing payer email" })
-}
+    if (!payerEmail) {
+      console.error("NO PAYER EMAIL", paymentInfo)
+      return NextResponse.json({ error: "missing payer email" })
+    }
 
-// 🔥 PRECIO VALIDADO
-const price = Number(box.price_subscription)
+    // 🔥 PRECIO
+    const price = Number(box.price_subscription)
 
-if (!price || Number.isNaN(price)) {
-  console.error("❌ INVALID PRICE", box)
-  return NextResponse.json({ error: "invalid price" })
-}
+    if (!price || Number.isNaN(price)) {
+      console.error("INVALID PRICE", box)
+      return NextResponse.json({ error: "invalid price" })
+    }
 
-// 🔥 CREAR SUSCRIPCIÓN EN MP
-const preapproval = new PreApproval(mp)
+    // 🔥 CREAR SUSCRIPCIÓN EN MP
+    const preapproval = new PreApproval(mp)
 
-const subResult = await preapproval.create({
-  body: {
-    reason: `Suscripción ${box.name}`,
-
-    external_reference: String(userId),
-
-    payer_email: payerEmail,
-
-    auto_recurring: {
-      frequency: 1,
-      frequency_type: "months", // mensual después de los 7 días
-      transaction_amount: price,
-      currency_id: "ARS",
-      start_date: startDate.toISOString()
-    },
-
-    back_url: "https://quintasygranjas.com/success",
-
-    status: "authorized"
-  }
-
-
-// 🔥 VALIDAR RESPUESTA MP
-if (!subResult?.id) {
-  console.error("❌ PREAPPROVAL ERROR", subResult)
-  return NextResponse.json({ error: "failed to create subscription" })
-}
+    const subResult = await preapproval.create({
+      body: {
+        reason: `Suscripción ${box.name}`,
+        external_reference: String(userId),
+        payer_email: payerEmail,
+        auto_recurring: {
+          frequency: 1,
+          frequency_type: "months",
+          transaction_amount: price,
+          currency_id: "ARS",
+          start_date: startDate.toISOString()
+        },
+        back_url: "https://quintasygranjas.com/success",
+        status: "authorized"
+      }
     })
+
+    // 🔥 VALIDAR RESPUESTA MP
+    if (!subResult?.id) {
+      console.error("PREAPPROVAL ERROR", subResult)
+      return NextResponse.json({ error: "failed to create subscription" })
+    }
 
     // 🔥 GUARDAR SUBSCRIPTION EN TU DB
     const { data: subscription } = await supabase
@@ -171,3 +165,4 @@ if (!subResult?.id) {
     )
   }
 }
+
