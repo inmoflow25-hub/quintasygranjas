@@ -65,8 +65,8 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
 
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {boxes.map((box) => (
-            <Card 
-              key={box.id} 
+            <Card
+              key={box.id}
               className={`relative overflow-hidden transition-all duration-300 hover:shadow-xl ${
                 box.popular ? "border-primary border-2 scale-105" : "border-border"
               }`}
@@ -76,6 +76,7 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
                   Más elegida
                 </div>
               )}
+
               <div className="relative aspect-[4/3]">
                 <Image
                   src={box.image}
@@ -84,11 +85,13 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
                   className="object-cover"
                 />
               </div>
+
               <CardHeader className="pb-2">
                 <h3 className="text-xl font-bold text-foreground">{box.name}</h3>
                 <p className="text-3xl font-bold text-primary">{box.price}</p>
                 <span className="text-sm text-muted-foreground">por semana</span>
               </CardHeader>
+
               <CardContent className="pb-4">
                 <ul className="space-y-3">
                   {box.features.map((feature, index) => (
@@ -99,14 +102,15 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
                   ))}
                 </ul>
               </CardContent>
+
               <CardFooter>
-                <Button 
+                <Button
                   className={`w-full py-6 text-lg ${
-                    box.popular 
-                      ? "bg-primary hover:bg-primary/90 text-primary-foreground" 
+                    box.popular
+                      ? "bg-primary hover:bg-primary/90 text-primary-foreground"
                       : "bg-secondary hover:bg-secondary/80 text-secondary-foreground"
                   }`}
-                  onClick={() => onSelectBox(box.name.toLowerCase())}
+                  onClick={() => onSelectBox(box.id)}
                 >
                   Elegir caja
                 </Button>
@@ -118,4 +122,3 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
     </section>
   )
 }
-
