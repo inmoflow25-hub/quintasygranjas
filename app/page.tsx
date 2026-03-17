@@ -137,6 +137,13 @@ export default function Home() {
 
 }, [])
 
+function onWhatsAppClick() {
+  window.open(
+    "https://wa.me/5491133614865?text=Hola%20quiero%20información%20sobre%20las%20cajas",
+    "_blank"
+  )
+}
+  
   return (
     <main className="min-h-screen">
       <Header />
