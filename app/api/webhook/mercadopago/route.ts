@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     const startDate = new Date()
 
     const nextCharge = new Date()
-    nextCharge.setMonth(nextCharge.getMonth() + 1)
+   nextCharge.setDate(nextCharge.getDate() + 7)
 
    const { data: subscription } = await supabase
   .from("subscriptions")
