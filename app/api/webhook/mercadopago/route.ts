@@ -81,13 +81,11 @@ export async function POST(req: Request) {
     const startDate = new Date()
     startDate.setDate(startDate.getDate() + 7)
 
-    // 🔥 VALIDAR EMAIL
-    const payerEmail = paymentInfo.payer?.email
-
-    if (!payerEmail) {
-      console.error("NO PAYER EMAIL", paymentInfo)
-      return NextResponse.json({ error: "missing payer email" })
-    }
+  const payerEmail =
+  paymentInfo.payer?.email ||
+  paymentInfo.additional_info?.payer?.email ||
+  `${userId}@noemail.com`
+  }
 
     // 🔥 PRECIO
     const price = Number(box.price_subscription)
