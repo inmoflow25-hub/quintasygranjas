@@ -23,9 +23,7 @@ export async function POST(req: Request) {
       body = Object.fromEntries(new URLSearchParams(rawBody))
     }
 
-    const paymentId =
-      body.data?.id ||
-      body.id
+    const paymentId = body.data?.id || body.id
 
     if (!paymentId) {
       console.error("NO PAYMENT ID", body)
@@ -39,29 +37,38 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true })
     }
 
-    const userId = paymentInfo.external_reference
-    const boxId = paymentInfo.metadata?.box_id
+    const userId = String(paymentInfo.external_reference || "")
+    const boxId = String(paymentInfo.metadata?.box_id || "")
 
     if (!userId || !boxId) {
       return NextResponse.json({ error: "missing data" }, { status: 400 })
     }
 
-    // buscar orden
+    const { data: alreadyPaidOrder } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("mp_payment_id", String(paymentId))
+      .maybeSingle()
+
+    if (alreadyPaidOrder) {
+      return NextResponse.json({ success: true, duplicated: true })
+    }
+
     const { data: order } = await supabase
       .from("orders")
       .select("*")
       .eq("user_id", userId)
+      .eq("box_id", boxId)
       .eq("status", "pending")
       .order("created_at", { ascending: false })
       .limit(1)
-      .single()
+      .maybeSingle()
 
     if (!order) {
       return NextResponse.json({ error: "order not found" }, { status: 404 })
     }
 
-    // marcar como paga
-    await supabase
+    const { error: orderUpdateError } = await supabase
       .from("orders")
       .update({
         status: "paid",
@@ -69,7 +76,23 @@ export async function POST(req: Request) {
       })
       .eq("id", order.id)
 
-    // 🔥 BUSCAR CAJA
+    if (orderUpdateError) {
+      console.error("ORDER UPDATE ERROR", orderUpdateError)
+      return NextResponse.json({ error: "order update failed" }, { status: 500 })
+    }
+
+    const { data: existingSubscription } = await supabase
+      .from("subscriptions")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("box_id", boxId)
+      .eq("active", true)
+      .maybeSingle()
+
+    if (existingSubscription) {
+      return NextResponse.json({ success: true, subscription_exists: true })
+    }
+
     const { data: box } = await supabase
       .from("boxes")
       .select("*")
@@ -80,25 +103,40 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "box not found" }, { status: 500 })
     }
 
-    // 🔥 FECHA INICIO = +7 días
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .maybeSingle()
+
+    const { data: address } = await supabase
+      .from("addresses")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
     const startDate = new Date()
     startDate.setDate(startDate.getDate() + 7)
 
-    // 🔥 EMAIL (SIN ROMPER TYPESCRIPT)
     const payerEmail =
       paymentInfo?.payer?.email ||
-      paymentInfo?.additional_info?.payer?.first_name || // fallback dummy seguro
-      `${userId}@noemail.com`
+      paymentInfo?.additional_info?.payer?.email ||
+      null
 
-    // 🔥 PRECIO
+    if (!payerEmail) {
+      console.error("MISSING PAYER EMAIL", paymentInfo)
+      return NextResponse.json({ error: "missing payer email" }, { status: 500 })
+    }
+
     const price = Number(box.price_subscription)
 
     if (!price || Number.isNaN(price)) {
       console.error("INVALID PRICE", box)
-      return NextResponse.json({ error: "invalid price" })
+      return NextResponse.json({ error: "invalid price" }, { status: 500 })
     }
 
-    // 🔥 CREAR SUSCRIPCIÓN EN MP
     const preapproval = new PreApproval(mp)
 
     const subResult = await preapproval.create({
@@ -118,19 +156,20 @@ export async function POST(req: Request) {
       }
     })
 
-    // 🔥 VALIDAR RESPUESTA MP
     if (!subResult?.id) {
       console.error("PREAPPROVAL ERROR", subResult)
-      return NextResponse.json({ error: "failed to create subscription" })
+      return NextResponse.json({ error: "failed to create subscription" }, { status: 500 })
     }
 
-    // 🔥 GUARDAR SUBSCRIPTION EN TU DB
-    const { data: subscription } = await supabase
+    const { data: subscription, error: subscriptionError } = await supabase
       .from("subscriptions")
       .insert({
         user_id: userId,
         box_id: box.id,
+        box: box.name,
+        plan: box.name,
         active: true,
+        address_id: address?.id ?? null,
         start_date: startDate.toISOString(),
         next_charge: startDate.toISOString(),
         mp_subscription_id: subResult.id
@@ -138,12 +177,11 @@ export async function POST(req: Request) {
       .select()
       .single()
 
-    if (!subscription) {
-      console.error("SUBSCRIPTION INSERT FAILED")
-      return NextResponse.json({ error: "subscription error" })
+    if (subscriptionError || !subscription) {
+      console.error("SUBSCRIPTION INSERT FAILED", subscriptionError)
+      return NextResponse.json({ error: "subscription error" }, { status: 500 })
     }
 
-    // 🔥 CREAR ENTREGAS (4 semanas)
     const deliveries = []
 
     for (let i = 0; i < 4; i++) {
@@ -158,10 +196,16 @@ export async function POST(req: Request) {
       })
     }
 
-    await supabase.from("deliveries").insert(deliveries)
+    const { error: deliveryError } = await supabase
+      .from("deliveries")
+      .insert(deliveries)
+
+    if (deliveryError) {
+      console.error("DELIVERY INSERT ERROR", deliveryError)
+      return NextResponse.json({ error: "delivery error" }, { status: 500 })
+    }
 
     return NextResponse.json({ success: true })
-
   } catch (error) {
     console.error("WEBHOOK ERROR", error)
 
