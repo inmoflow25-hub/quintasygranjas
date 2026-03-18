@@ -10,7 +10,6 @@ const supabase = createClient(
 )
 
 export default function SuccessPage() {
-
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
 
@@ -25,7 +24,7 @@ export default function SuccessPage() {
   const whatsappLink =
     "https://wa.me/5491133614865?text=Hola%20acabo%20de%20hacer%20un%20pedido%20en%20Quintas%20y%20Granjas"
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value
@@ -33,10 +32,11 @@ export default function SuccessPage() {
   }
 
   const saveData = async () => {
-
     setLoading(true)
 
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user }
+    } = await supabase.auth.getUser()
 
     if (!user) {
       alert("No se encontró usuario")
@@ -44,20 +44,56 @@ export default function SuccessPage() {
       return
     }
 
-    const { error } = await supabase
+    const { error: profileError } = await supabase
       .from("profiles")
       .upsert({
         id: user.id,
         full_name: form.name,
         phone: form.phone,
         address: form.address,
-        city: form.city,
-        notes: form.notes
+        city: form.city
       })
 
-    if (error) {
-      console.error(error)
-      alert("Error guardando datos")
+    if (profileError) {
+      console.error("PROFILE ERROR", profileError)
+      alert("Error guardando perfil")
+      setLoading(false)
+      return
+    }
+
+    const { data: address, error: addressError } = await supabase
+      .from("addresses")
+      .upsert({
+        user_id: user.id,
+        phone: form.phone,
+        address: form.address,
+        city: form.city,
+        notes: form.notes
+      }, {
+        onConflict: "user_id"
+      })
+      .select()
+      .single()
+
+    if (addressError || !address) {
+      console.error("ADDRESS ERROR", addressError)
+      alert("Error guardando dirección")
+      setLoading(false)
+      return
+    }
+
+    const { error: subscriptionError } = await supabase
+      .from("subscriptions")
+      .update({
+        address_id: address.id
+      })
+      .eq("user_id", user.id)
+      .eq("active", true)
+      .is("address_id", null)
+
+    if (subscriptionError) {
+      console.error("SUBSCRIPTION ADDRESS ERROR", subscriptionError)
+      alert("Se guardaron los datos, pero no se pudo vincular la dirección")
       setLoading(false)
       return
     }
@@ -68,9 +104,7 @@ export default function SuccessPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-green-50 px-6">
-
       <div className="max-w-xl w-full bg-white rounded-2xl shadow-lg p-10 text-center">
-
         <h1 className="text-3xl font-bold text-green-700 mb-4">
           Pedido confirmado 🎉
         </h1>
@@ -82,9 +116,7 @@ export default function SuccessPage() {
         </p>
 
         {!saved && (
-
           <div className="space-y-4 text-left">
-
             <input
               name="name"
               placeholder="Nombre completo"
@@ -119,7 +151,7 @@ export default function SuccessPage() {
 
             <textarea
               name="notes"
-              placeholder="Indicaciones para la entrega (portón, timbre, etc)"
+              placeholder="Indicaciones para la entrega"
               value={form.notes}
               onChange={handleChange}
               className="w-full border rounded-xl px-4 py-3"
@@ -132,15 +164,11 @@ export default function SuccessPage() {
             >
               {loading ? "Guardando..." : "Guardar datos de entrega"}
             </button>
-
           </div>
-
         )}
 
         {saved && (
-
           <div className="space-y-6">
-
             <p className="text-green-700 font-semibold">
               ✅ Datos guardados correctamente
             </p>
@@ -172,17 +200,9 @@ export default function SuccessPage() {
             >
               Volver al inicio
             </Link>
-
-            <p className="text-xs text-gray-500 pt-4">
-              Desde tu cuenta podrás ver tus entregas, pedidos y gestionar tu suscripción.
-            </p>
-
           </div>
-
         )}
-
       </div>
-
     </main>
   )
 }
