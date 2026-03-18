@@ -120,15 +120,27 @@ export async function POST(req: Request) {
     const startDate = new Date()
     startDate.setDate(startDate.getDate() + 7)
 
-    const payerEmail =
-      paymentInfo?.payer?.email ||
-      paymentInfo?.additional_info?.payer?.email ||
-      null
+const payerEmail =
+  paymentInfo?.payer?.email ||
+  paymentInfo?.additional_info?.payer?.email ||
+  null
 
-    if (!payerEmail) {
-      console.error("MISSING PAYER EMAIL", paymentInfo)
-      return NextResponse.json({ error: "missing payer email" }, { status: 500 })
-    }
+if (!payerEmail) {
+  console.error("MISSING PAYER EMAIL", paymentInfo)
+  return NextResponse.json({ error: "missing payer email" }, { status: 500 })
+}
+
+// 🔥 GUARDAR EMAIL EN PROFILE
+const { error: emailError } = await supabase
+  .from("profiles")
+  .upsert({
+    id: userId,
+    email: payerEmail
+  })
+
+if (emailError) {
+  console.error("PROFILE EMAIL UPSERT ERROR", emailError)
+}
 
     const price = Number(box.price_subscription)
 
