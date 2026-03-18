@@ -36,13 +36,21 @@ export async function POST(req: Request) {
     if (!paymentInfo || paymentInfo.status !== "approved") {
       return NextResponse.json({ ok: true })
     }
+const userId = String(paymentInfo.external_reference || "")
 
-    const userId = String(paymentInfo.external_reference || "")
-    const boxId = String(paymentInfo.metadata?.box_id || "")
+const boxId =
+  paymentInfo.metadata?.box_id ||
+  paymentInfo.additional_info?.items?.[0]?.id ||
+  null
 
-    if (!userId || !boxId) {
-      return NextResponse.json({ error: "missing data" }, { status: 400 })
-    }
+if (!userId) {
+  return NextResponse.json({ error: "missing user" }, { status: 400 })
+}
+
+if (!boxId) {
+  console.error("BOX ID MISSING", paymentInfo)
+  return NextResponse.json({ ok: true }) // 🔥 NO cortar
+}
 
     const { data: alreadyPaidOrder } = await supabase
       .from("orders")
