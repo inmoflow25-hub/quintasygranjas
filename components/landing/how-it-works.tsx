@@ -57,13 +57,7 @@ export function HowItWorks() {
           ))}
         </div>
 
-        <div className="mt-12 max-w-3xl mx-auto rounded-2xl border border-border bg-background p-6 text-center">
-          <p className="text-sm md:text-base text-foreground leading-relaxed">
-            <span className="font-semibold">Importante:</span> hoy pagás solo la primera caja promocional.
-            Luego, a los 7 días, comienza el débito mensual automático correspondiente a{" "}
-            <span className="font-semibold">4 entregas semanales</span> de la caja que elegiste, al{" "}
-            <span className="font-semibold">precio regular</span>.
-          </p>
+       
         </div>
       </div>
     </section>
