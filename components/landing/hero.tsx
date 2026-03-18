@@ -30,20 +30,7 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
             Frutas, verduras y productos de granja entregados en tu casa todas las semanas. Sin supermercado. Sin filas. Sin perder tiempo.
           </p>
 
-          <div className="mt-6 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 p-4 md:p-5 max-w-xl">
-            <p className="text-sm md:text-base text-white leading-relaxed">
-              <span className="font-semibold">Comprás hoy tu primera caja a precio promocional.</span>{" "}
-              A los <span className="font-semibold">7 días</span> activamos tu{" "}
-              <span className="font-semibold">suscripción mensual automática</span> para que recibas{" "}
-              <span className="font-semibold">una caja por semana</span>, al{" "}
-              <span className="font-semibold">precio regular</span> de la caja elegida.
-            </p>
-          </div>
-
-          <div className="mt-4">
-            <p className="text-sm text-white/80 max-w-xl">
-              Transparencia total: hoy pagás solo la primera caja. Luego recibís 4 entregas semanales y se debita una vez por mes.
-            </p>
+    
           </div>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
