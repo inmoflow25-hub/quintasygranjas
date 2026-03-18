@@ -25,12 +25,30 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight text-balance">
             Caja semanal directo de la quinta
           </h1>
+
           <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
             Frutas, verduras y productos de granja entregados en tu casa todas las semanas. Sin supermercado. Sin filas. Sin perder tiempo.
           </p>
+
+          <div className="mt-6 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 p-4 md:p-5 max-w-xl">
+            <p className="text-sm md:text-base text-white leading-relaxed">
+              <span className="font-semibold">Comprás hoy tu primera caja a precio promocional.</span>{" "}
+              A los <span className="font-semibold">7 días</span> activamos tu{" "}
+              <span className="font-semibold">suscripción mensual automática</span> para que recibas{" "}
+              <span className="font-semibold">una caja por semana</span>, al{" "}
+              <span className="font-semibold">precio regular</span> de la caja elegida.
+            </p>
+          </div>
+
+          <div className="mt-4">
+            <p className="text-sm text-white/80 max-w-xl">
+              Transparencia total: hoy pagás solo la primera caja. Luego recibís 4 entregas semanales y se debita una vez por mes.
+            </p>
+          </div>
+
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6"
               onClick={() => {
                 document.getElementById("cajas")?.scrollIntoView({ behavior: "smooth" })
@@ -39,16 +57,16 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
               Elegir caja
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button 
-  size="lg"
-  className="bg-primary text-white hover:bg-primary/90 text-lg px-8 py-6"
-  onClick={() => {
-    document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })
-  }}
->
-  Cómo funciona
-</Button>
 
+            <Button
+              size="lg"
+              className="bg-primary text-white hover:bg-primary/90 text-lg px-8 py-6"
+              onClick={() => {
+                document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })
+              }}
+            >
+              Cómo funciona
+            </Button>
           </div>
         </div>
       </div>
