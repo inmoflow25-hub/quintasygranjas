@@ -30,8 +30,6 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
             Frutas, verduras y productos de granja entregados en tu casa todas las semanas. Sin supermercado. Sin filas. Sin perder tiempo.
           </p>
 
-    
-          </div>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
             <Button
