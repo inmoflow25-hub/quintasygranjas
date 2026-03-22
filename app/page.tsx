@@ -51,8 +51,6 @@ async function createCheckout(boxType: BoxType, userId: string) {
 
   const data = await res.json()
 
-  console.log("CHECKOUT RESPONSE", data)
-
   if (data.url) {
     window.location.href = data.url
     return
@@ -63,8 +61,6 @@ async function createCheckout(boxType: BoxType, userId: string) {
 }
 
 async function onSelectBox(boxType: BoxType) {
-  console.log("CLICK", boxType)
-
   const {
     data: { session }
   } = await supabase.auth.getSession()
@@ -131,4 +127,3 @@ export default function Home() {
     </main>
   )
 }
-
