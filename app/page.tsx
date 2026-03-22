@@ -37,7 +37,7 @@ async function loginGoogle() {
 }
 
 export default function Home() {
-  const [preferenceId, setPreferenceId] = useState<string | null>(null)
+  const [preferenceId, setPreferenceId] = useState(null)
 
   async function createCheckout(boxType: BoxType, userId: string) {
     const boxId = BOX_DB_IDS[boxType]
