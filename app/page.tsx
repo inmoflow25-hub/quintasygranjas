@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import CheckoutBrick from "@/components/checkout/checkout-brick"
 
 import { Hero } from "@/components/landing/hero"
 import { HowItWorks } from "@/components/landing/how-it-works"
@@ -35,57 +36,57 @@ async function loginGoogle() {
   })
 }
 
-const [preferenceId, setPreferenceId] = useState<string | null>(null)
-
-async function createCheckout(boxType: BoxType, userId: string) {
-  const boxId = BOX_DB_IDS[boxType]
-
-  const res = await fetch("/api/checkout", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      box_id: boxId,
-      user_id: userId
-    })
-  })
-
-  const data = await res.json()
-
-  console.log("CHECKOUT RESPONSE", data)
-
-  if (data.preference_id) {
-    setPreferenceId(data.preference_id)
-    return
-  }
-
-  console.error("CHECKOUT ERROR", data)
-  alert(data.error || "No se pudo iniciar el checkout")
-}
-
-async function onSelectBox(boxType: BoxType) {
-  const {
-    data: { session }
-  } = await supabase.auth.getSession()
-
-  if (!session?.user) {
-    localStorage.setItem("selected_box", boxType)
-    await loginGoogle()
-    return
-  }
-
-  await createCheckout(boxType, session.user.id)
-}
-
-function onWhatsAppClick() {
-  window.open(
-    "https://wa.me/5491133614865?text=Hola%20quiero%20información%20sobre%20las%20cajas",
-    "_blank"
-  )
-}
-
 export default function Home() {
+  const [preferenceId, setPreferenceId] = useState<string | null>(null)
+
+  async function createCheckout(boxType: BoxType, userId: string) {
+    const boxId = BOX_DB_IDS[boxType]
+
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        box_id: boxId,
+        user_id: userId
+      })
+    })
+
+    const data = await res.json()
+
+    console.log("CHECKOUT RESPONSE", data)
+
+    if (data.preference_id) {
+      setPreferenceId(data.preference_id)
+      return
+    }
+
+    console.error("CHECKOUT ERROR", data)
+    alert(data.error || "No se pudo iniciar el checkout")
+  }
+
+  async function onSelectBox(boxType: BoxType) {
+    const {
+      data: { session }
+    } = await supabase.auth.getSession()
+
+    if (!session?.user) {
+      localStorage.setItem("selected_box", boxType)
+      await loginGoogle()
+      return
+    }
+
+    await createCheckout(boxType, session.user.id)
+  }
+
+  function onWhatsAppClick() {
+    window.open(
+      "https://wa.me/5491133614865?text=Hola%20quiero%20información%20sobre%20las%20cajas",
+      "_blank"
+    )
+  }
+
   useEffect(() => {
     const restoreCheckout = async () => {
       const savedBox = localStorage.getItem("selected_box") as BoxType | null
@@ -128,6 +129,22 @@ export default function Home() {
       <DeliveryZones />
       <FinalCTA onWhatsAppClick={onWhatsAppClick} />
       <Footer onWhatsAppClick={onWhatsAppClick} />
+
+      {/* 🔥 CHECKOUT EMBEBIDO */}
+      {preferenceId && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-xl w-full max-w-lg">
+            <CheckoutBrick preferenceId={preferenceId} />
+
+            <button
+              onClick={() => setPreferenceId(null)}
+              className="mt-4 w-full bg-gray-900 text-white py-2 rounded-lg"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
