@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Playfair_Display } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import Script from "next/script"
 import './globals.css'
 
 const playfair = Playfair_Display({
@@ -25,14 +26,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className={playfair.variable}>
-      <head>
-        <script src="https://sdk.mercadopago.com/js/v2"></script>
-      </head>
-
       <body
         className="antialiased"
         style={{ fontFamily: "var(--font-playfair)" }}
       >
+
+        {/* 🔥 MERCADOPAGO SDK */}
+        <Script
+          src="https://sdk.mercadopago.com/js/v2"
+          strategy="beforeInteractive"
+        />
+
         {children}
         <Analytics />
       </body>
