@@ -25,6 +25,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className={playfair.variable}>
+      <head>
+        <script src="https://sdk.mercadopago.com/js/v2"></script>
+      </head>
+
       <body
         className="antialiased"
         style={{ fontFamily: "var(--font-playfair)" }}
@@ -35,4 +39,3 @@ export default function RootLayout({
     </html>
   )
 }
-
