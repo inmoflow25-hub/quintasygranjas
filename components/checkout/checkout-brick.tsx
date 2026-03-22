@@ -13,14 +13,11 @@ export default function CheckoutBrick({ preferenceId }: { preferenceId: string }
 
   useEffect(() => {
     if (!window.MercadoPago) {
-      console.error("MP SDK no cargó")
+      console.error("MP SDK not loaded")
       return
     }
 
-    if (!preferenceId) {
-      console.error("No preferenceId")
-      return
-    }
+    if (!preferenceId) return
 
     const mp = new window.MercadoPago(
       process.env.NEXT_PUBLIC_MP_PUBLIC_KEY!,
@@ -31,19 +28,21 @@ export default function CheckoutBrick({ preferenceId }: { preferenceId: string }
 
     const bricksBuilder = mp.bricks()
 
-    // 🔥 IMPORTANTE: destruir brick anterior si existe
+    // 🔥 destruir brick anterior si existe
     if (brickRef.current) {
       brickRef.current.unmount()
     }
 
     bricksBuilder
-      .create("wallet", "paymentBrick_container", {
+      .create("payment", "paymentBrick_container", {
         initialization: {
           preferenceId: preferenceId
         },
         customization: {
-          texts: {
-            valueProp: "smart_option"
+          visual: {
+            style: {
+              theme: "default"
+            }
           }
         }
       })
