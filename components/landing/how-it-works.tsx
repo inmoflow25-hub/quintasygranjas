@@ -3,23 +3,23 @@ import Image from "next/image"
 const steps = [
   {
     number: "01",
-    title: "Elegís tu caja y pagás la primera entrega",
+    title: "Elegís tu caja",
     description:
-      "Elegís una de las 3 cajas y pagás solo la primera entrega a precio promocional.",
+      "Seleccionás la caja que querés según lo que necesites para tu semana.",
     image: "/images/step-choose.jpg"
   },
   {
     number: "02",
-    title: "Recibís tu caja y completás tus datos",
+    title: "Pagás de forma segura",
     description:
-      "Después del pago, completás tu dirección y datos de entrega para organizar correctamente tus envíos semanales.",
+      "Realizás el pago online con Mercado Pago de forma rápida y segura.",
     image: "/images/step-prepare.jpg"
   },
   {
     number: "03",
-    title: "A los 7 días comienza tu suscripción",
+    title: "Recibís tu pedido en tu casa",
     description:
-      "Desde el séptimo día se activa el débito mensual automático al precio regular de tu caja, y recibís una entrega por semana.",
+      "Te llevamos la caja directamente a tu domicilio, lista para disfrutar.",
     image: "/images/step-delivery.jpg"
   }
 ]
@@ -33,7 +33,7 @@ export function HowItWorks() {
             Cómo funciona
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-            Empezás con una primera caja promocional y, 7 días después, se activa tu suscripción automática para seguir recibiendo una caja por semana.
+            Elegís tu caja, pagás online y la recibís en tu casa sin complicaciones.
           </p>
         </div>
 
@@ -48,11 +48,19 @@ export function HowItWorks() {
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute top-4 left-4 w-12 h-12 rounded-full bg-primary flex items-center justify-center">
-                  <span className="text-sm font-bold text-primary-foreground">{step.number}</span>
+                  <span className="text-sm font-bold text-primary-foreground">
+                    {step.number}
+                  </span>
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-foreground mb-2">{step.title}</h3>
-              <p className="text-muted-foreground leading-relaxed">{step.description}</p>
+
+              <h3 className="text-xl font-bold text-foreground mb-2">
+                {step.title}
+              </h3>
+
+              <p className="text-muted-foreground leading-relaxed">
+                {step.description}
+              </p>
             </div>
           ))}
         </div>
