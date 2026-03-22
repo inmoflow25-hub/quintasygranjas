@@ -1,16 +1,51 @@
-import { createClient } from "@supabase/supabase-js"
+"use client"
 
-export async function GET() {
-  const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+import { useEffect, useState } from "react"
+
+export default function AdminPage() {
+  const [orders, setOrders] = useState<any[]>([])
+
+  useEffect(() => {
+    fetch("/api/admin/orders")
+      .then(res => res.json())
+      .then(setOrders)
+  }, [])
+
+  return (
+    <div className="p-10">
+      <h1 className="text-2xl font-bold mb-6">
+        Pedidos
+      </h1>
+
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b">
+            <th>Email</th>
+            <th>Caja</th>
+            <th>Zona</th>
+            <th>Dirección</th>
+            <th>Día</th>
+            <th>Tel</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {orders.map(o => (
+            <tr key={o.order_id} className="border-b">
+              <td>{o.email}</td>
+              <td>{o.caja}</td>
+              <td>{o.zona}</td>
+              <td>{o.direccion}</td>
+              <td>{o.dia_entrega}</td>
+              <td>{o.telefono}</td>
+              <td>{o.estado}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
-
-  const { data, error } = await supabase.rpc("dashboard_orders_view")
-
-  if (error) {
-    return Response.json({ error: error.message }, { status: 500 })
-  }
-
-  return Response.json(data)
 }
+
+
