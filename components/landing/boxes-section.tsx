@@ -11,43 +11,40 @@ const boxes = [
   {
     id: "veggie" as const,
     name: "Caja Veggie",
-    price: "$8.000",
-    monthly: "$44.000",
+    price: "$19.900",
     image: "/images/caja-veggie.jpg",
     features: [
       "8–9kg de frutas y verduras de estación",
       "Tomate, papa, cebolla, zanahoria y hojas frescas",
       "Incluye frutas de estación (manzana, banana y naranja)",
       "Productos frescos directo de la quinta",
-      "Entrega semanal a domicilio"
+      "Entrega a domicilio"
     ],
     popular: false
   },
   {
     id: "campo" as const,
     name: "Caja Campo",
-    price: "$14.000",
-    monthly: "$56.000",
+    price: "$33.900",
     image: "/images/caja-campo.jpg",
     features: [
       "Todo lo de la Caja Veggie",
       "1 maple de huevos de campo (30)",
       "1 pollo entero fresco de granja (~2kg)",
-      "Entrega semanal a domicilio"
+      "Entrega a domicilio"
     ],
     popular: true
   },
   {
     id: "granja" as const,
     name: "Caja Granja",
-    price: "$18.000",
-    monthly: "$68.000",
+    price: "$40.575",
     image: "/images/caja-granja.jpg",
     features: [
       "Todo lo de la Caja Campo",
       "1 pan de campo artesanal",
       "1 frasco de miel natural cruda (500g)",
-      "Entrega semanal a domicilio"
+      "Entrega a domicilio"
     ],
     popular: false
   }
@@ -60,11 +57,11 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
 
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-            Elegí tu caja semanal
+            Elegí tu caja
           </h2>
 
           <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-            Comprás hoy tu primera caja a precio promocional. A los 7 días se activa la suscripción mensual automática con entrega semanal.
+            Comprás tu caja online y la recibís en tu casa. Sin suscripciones ni cargos automáticos.
           </p>
         </div>
 
@@ -94,20 +91,7 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
               <CardHeader className="pb-2">
                 <h3 className="text-xl font-bold text-foreground">{box.name}</h3>
 
-                {/* PRECIO PROMO */}
                 <p className="text-3xl font-bold text-primary">{box.price}</p>
-                <span className="text-sm text-muted-foreground">
-                  primera caja promocional
-                </span>
-
-                {/* PRECIO REAL */}
-                <div className="mt-3 rounded-xl bg-muted px-3 py-3">
-                  <p className="text-sm text-foreground leading-relaxed">
-                    Luego, a los 7 días, comienza la suscripción mensual automática de{" "}
-                    <span className="font-semibold">{box.monthly}</span> por mes,
-                    con entrega semanal (4 cajas por mes).
-                  </p>
-                </div>
               </CardHeader>
 
               <CardContent className="pb-4">
@@ -122,10 +106,6 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
               </CardContent>
 
               <CardFooter className="flex flex-col gap-3">
-                <p className="text-xs text-muted-foreground text-center leading-relaxed">
-                  Iniciás con una caja promocional. Luego recibís 4 entregas por mes y el cobro pasa a ser mensual automáticamente.
-                </p>
-
                 <Button
                   className={`w-full py-6 text-lg ${
                     box.popular
@@ -134,7 +114,7 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
                   }`}
                   onClick={() => onSelectBox(box.id)}
                 >
-                  Elegir caja
+                  Comprar caja
                 </Button>
               </CardFooter>
             </Card>
