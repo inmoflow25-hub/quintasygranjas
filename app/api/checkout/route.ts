@@ -44,9 +44,9 @@ export async function POST(req: Request) {
       )
     }
 
-    const priceFirst = Number(box.price_first)
+    const price = Number(box.price)
 
-    if (!priceFirst || Number.isNaN(priceFirst)) {
+    if (!price || Number.isNaN(price)) {
       return NextResponse.json(
         { error: "invalid box price" },
         { status: 500 }
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
             title: String(box.name),
             quantity: 1,
             currency_id: "ARS",
-            unit_price: priceFirst
+            unit_price: price
           }
         ],
 
@@ -93,7 +93,7 @@ export async function POST(req: Request) {
       .insert({
         user_id: user_id,
         box_id: box.id,
-        price: priceFirst,
+        price: price,
         mp_preference_id: result.id,
         status: "pending"
       })
