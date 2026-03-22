@@ -181,7 +181,7 @@ export default function SuccessPage() {
             </p>
 
             <p className="text-gray-600 text-sm">
-              Te vamos a contactar para coordinar la entrega de tu caja.
+              Contactanos ante cuqlquier duda sobre la entrega de tu caja.
             </p>
 
             <a
