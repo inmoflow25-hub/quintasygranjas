@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { createClient } from "@supabase/supabase-js"
 
@@ -12,6 +12,7 @@ const supabase = createClient(
 export default function SuccessPage() {
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [email, setEmail] = useState<string | null>(null)
 
   const [form, setForm] = useState({
     name: "",
@@ -23,6 +24,20 @@ export default function SuccessPage() {
 
   const whatsappLink =
     "https://wa.me/5491133614865?text=Hola%20acabo%20de%20hacer%20un%20pedido%20en%20Quintas%20y%20Granjas"
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const {
+        data: { user }
+      } = await supabase.auth.getUser()
+
+      if (user?.email) {
+        setEmail(user.email)
+      }
+    }
+
+    loadUser()
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({
@@ -44,6 +59,7 @@ export default function SuccessPage() {
       return
     }
 
+    // 🔥 PERFIL (incluye email para marketing)
     const { error: profileError } = await supabase
       .from("profiles")
       .upsert({
@@ -51,7 +67,8 @@ export default function SuccessPage() {
         full_name: form.name,
         phone: form.phone,
         address: form.address,
-        city: form.city
+        city: form.city,
+        email: email
       })
 
     if (profileError) {
@@ -61,39 +78,25 @@ export default function SuccessPage() {
       return
     }
 
-    const { data: address, error: addressError } = await supabase
+    // 🔥 DIRECCIÓN
+    const { error: addressError } = await supabase
       .from("addresses")
-      .upsert({
-        user_id: user.id,
-        phone: form.phone,
-        address: form.address,
-        city: form.city,
-        notes: form.notes
-      }, {
-        onConflict: "user_id"
-      })
-      .select()
-      .single()
+      .upsert(
+        {
+          user_id: user.id,
+          phone: form.phone,
+          address: form.address,
+          city: form.city,
+          notes: form.notes
+        },
+        {
+          onConflict: "user_id"
+        }
+      )
 
-    if (addressError || !address) {
+    if (addressError) {
       console.error("ADDRESS ERROR", addressError)
       alert("Error guardando dirección")
-      setLoading(false)
-      return
-    }
-
-    const { error: subscriptionError } = await supabase
-      .from("subscriptions")
-      .update({
-        address_id: address.id
-      })
-      .eq("user_id", user.id)
-      .eq("active", true)
-      .is("address_id", null)
-
-    if (subscriptionError) {
-      console.error("SUBSCRIPTION ADDRESS ERROR", subscriptionError)
-      alert("Se guardaron los datos, pero no se pudo vincular la dirección")
       setLoading(false)
       return
     }
@@ -109,11 +112,15 @@ export default function SuccessPage() {
           Pedido confirmado 🎉
         </h1>
 
-        <p className="text-gray-600 mb-8">
+        <p className="text-gray-600 mb-6">
           Recibimos tu pago correctamente.
-          <br />
-          Completá tus datos para coordinar la entrega de tu caja.
         </p>
+
+        {email && (
+          <p className="text-sm text-gray-500 mb-6">
+            Confirmación enviada a: <span className="font-medium">{email}</span>
+          </p>
+        )}
 
         {!saved && (
           <div className="space-y-4 text-left">
@@ -174,9 +181,7 @@ export default function SuccessPage() {
             </p>
 
             <p className="text-gray-600 text-sm">
-              Tu caja comenzará a enviarse en la próxima entrega semanal.
-              <br />
-              Si necesitás modificar algo podés escribirnos por WhatsApp.
+              Te vamos a contactar para coordinar la entrega de tu caja.
             </p>
 
             <a
@@ -186,13 +191,6 @@ export default function SuccessPage() {
             >
               Contactar por WhatsApp
             </a>
-
-            <Link
-              href="/cuenta"
-              className="block w-full bg-gray-900 text-white py-3 rounded-xl font-semibold hover:bg-black transition"
-            >
-              Ir a mi cuenta
-            </Link>
 
             <Link
               href="/"
