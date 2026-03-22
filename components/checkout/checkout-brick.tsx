@@ -19,7 +19,7 @@ export default function CheckoutBrick({ preferenceId }: { preferenceId: string }
           { locale: "es-AR" }
         )
 
-        mp.bricks().create("payment", "paymentBrick_container", {
+        mp.bricks().create("wallet", "paymentBrick_container", {
           initialization: {
             preferenceId
           }
