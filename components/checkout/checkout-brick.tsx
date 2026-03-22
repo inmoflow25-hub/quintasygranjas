@@ -10,50 +10,25 @@ declare global {
 
 export default function CheckoutBrick({ preferenceId }: { preferenceId: string }) {
   useEffect(() => {
-    const initBrick = () => {
-      if (!window.MercadoPago) {
-        console.error("MP SDK NO CARGADO")
-        return
-      }
+    const interval = setInterval(() => {
+      if (window.MercadoPago) {
+        clearInterval(interval)
 
-      if (!process.env.NEXT_PUBLIC_MP_PUBLIC_KEY) {
-        console.error("FALTA PUBLIC KEY")
-        return
-      }
+        const mp = new window.MercadoPago(
+          process.env.NEXT_PUBLIC_MP_PUBLIC_KEY,
+          { locale: "es-AR" }
+        )
 
-      const mp = new window.MercadoPago(
-        process.env.NEXT_PUBLIC_MP_PUBLIC_KEY,
-        { locale: "es-AR" }
-      )
-
-      const bricksBuilder = mp.bricks()
-
-      bricksBuilder.create("payment", "paymentBrick_container", {
-        initialization: {
-          preferenceId: preferenceId
-        },
-        customization: {
-          visual: {
-            style: {
-              theme: "default"
-            }
+        mp.bricks().create("payment", "paymentBrick_container", {
+          initialization: {
+            preferenceId
           }
-        }
-      })
-    }
+        })
+      }
+    }, 300)
 
-    // 🔥 esperar a que cargue el script SI o SI
-    if (window.MercadoPago) {
-      initBrick()
-    } else {
-      const interval = setInterval(() => {
-        if (window.MercadoPago) {
-          clearInterval(interval)
-          initBrick()
-        }
-      }, 300)
-    }
+    return () => clearInterval(interval)
   }, [preferenceId])
 
-  return <div id="paymentBrick_container" />
+  return <div id="paymentBrick_container"></div>
 }
