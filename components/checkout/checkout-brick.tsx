@@ -1,0 +1,27 @@
+"use client"
+
+import { useEffect } from "react"
+
+declare global {
+  interface Window {
+    MercadoPago: any
+  }
+}
+
+export default function CheckoutBrick({ preferenceId }: { preferenceId: string }) {
+  useEffect(() => {
+    if (!window.MercadoPago) return
+
+    const mp = new window.MercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY, {
+      locale: "es-AR"
+    })
+
+    mp.bricks().create("payment", "paymentBrick_container", {
+      initialization: {
+        preferenceId
+      }
+    })
+  }, [preferenceId])
+
+  return <div id="paymentBrick_container"></div>
+}
