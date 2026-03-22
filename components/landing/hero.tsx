@@ -11,7 +11,7 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
     <section className="relative min-h-screen flex items-center pt-16">
       <div className="absolute inset-0 z-0">
         <Image
-          src="/images/hero-box.jpg"
+          src="https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/WhatsApp%20Image%202026-03-14%20at%2011.13.19.jpeg"
           alt="Caja de verduras frescas"
           fill
           className="object-cover"
@@ -27,9 +27,8 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
           </h1>
 
           <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
-            Frutas, verduras y productos de granja entregados en tu casa todas las semanas. Sin supermercado. Sin filas. Sin perder tiempo.
+            Frutas, verduras y productos de granja entregados en tu casa. Sin supermercado. Sin filas. Sin perder tiempo.
           </p>
-
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
             <Button
