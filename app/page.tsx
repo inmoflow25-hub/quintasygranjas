@@ -35,6 +35,8 @@ async function loginGoogle() {
   })
 }
 
+const [preferenceId, setPreferenceId] = useState<string | null>(null)
+
 async function createCheckout(boxType: BoxType, userId: string) {
   const boxId = BOX_DB_IDS[boxType]
 
@@ -51,8 +53,10 @@ async function createCheckout(boxType: BoxType, userId: string) {
 
   const data = await res.json()
 
-  if (data.url) {
-    window.location.href = data.url
+  console.log("CHECKOUT RESPONSE", data)
+
+  if (data.preference_id) {
+    setPreferenceId(data.preference_id)
     return
   }
 
