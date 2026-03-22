@@ -30,23 +30,15 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
     <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
       
       {/* SLIDER */}
-      <div className="absolute inset-0 z-0">
-        {images.map((img, i) => (
-          <Image
-            key={i}
-            src={img}
-            alt="Caja de verduras"
-            fill
-            priority={i === 0}
-            className={`object-cover transition-opacity duration-1000 ${
-              i === index ? "opacity-100" : "opacity-0"
-            }`}
-          />
-        ))}
+    <div className="absolute inset-0 z-0">
+  <img
+    src={images[index]}
+    alt="Caja de verduras"
+    className="w-full h-full object-cover transition-opacity duration-1000"
+  />
 
-        {/* overlay oscuro */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
-      </div>
+  <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+</div>
 
       {/* CONTENIDO */}
       <div className="container mx-auto px-4 relative z-10">
