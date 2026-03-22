@@ -29,8 +29,13 @@ const BOX_DB_IDS: Record<BoxType, string> = {
 
 export default function Home() {
   const [preferenceId, setPreferenceId] = useState<string | null>(null)
+  const [showLogin, setShowLogin] = useState(false)
+  const [email, setEmail] = useState("")
+  const [selectedBox, setSelectedBox] = useState<BoxType | null>(null)
 
-  async function loginWithEmail(email: string) {
+  async function loginWithEmail() {
+    if (!email) return
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
@@ -40,11 +45,12 @@ export default function Home() {
 
     if (error) {
       alert("Error enviando el link")
-      return false
+      console.error(error)
+      return
     }
 
-    alert("Te enviamos un link para ingresar 🚀")
-    return true
+    alert("Revisá tu email para ingresar 🚀")
+    setShowLogin(false)
   }
 
   async function createCheckout(boxType: BoxType, userId: string) {
@@ -80,12 +86,8 @@ export default function Home() {
     } = await supabase.auth.getSession()
 
     if (!session?.user) {
-      const email = prompt("Ingresá tu email para continuar")
-
-      if (!email) return
-
-      localStorage.setItem("selected_box", boxType)
-      await loginWithEmail(email)
+      setSelectedBox(boxType)
+      setShowLogin(true)
       return
     }
 
@@ -120,16 +122,13 @@ export default function Home() {
       data: { subscription }
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
-        const savedBox = localStorage.getItem("selected_box") as BoxType | null
-        if (!savedBox) return
-
-        localStorage.removeItem("selected_box")
-        await createCheckout(savedBox, session.user.id)
+        if (!selectedBox) return
+        await createCheckout(selectedBox, session.user.id)
       }
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [selectedBox])
 
   return (
     <main className="min-h-screen">
@@ -142,6 +141,40 @@ export default function Home() {
       <FinalCTA onWhatsAppClick={onWhatsAppClick} />
       <Footer onWhatsAppClick={onWhatsAppClick} />
 
+      {/* LOGIN MODAL */}
+      {showLogin && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-xl w-full max-w-md">
+            <h2 className="text-lg font-semibold mb-4">
+              Ingresá tu email para continuar
+            </h2>
+
+            <input
+              type="email"
+              placeholder="tu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4"
+            />
+
+            <button
+              onClick={loginWithEmail}
+              className="w-full bg-green-700 text-white py-2 rounded-lg"
+            >
+              Enviar link
+            </button>
+
+            <button
+              onClick={() => setShowLogin(false)}
+              className="mt-3 w-full text-gray-500"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* CHECKOUT */}
       {preferenceId && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-xl w-full max-w-lg">
