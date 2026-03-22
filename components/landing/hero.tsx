@@ -1,28 +1,57 @@
+"use client"
+
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
+import { useEffect, useState } from "react"
 
 interface HeroProps {
   onWhatsAppClick: () => void
 }
 
+const images = [
+  "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/CAJA%20CAMPO.png",
+  "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/FOTO%20CAJAVEGGIE.png",
+  "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/WhatsApp%20Image%202026-03-14%20at%2011.13.19.jpeg"
+]
+
 export function Hero({ onWhatsAppClick }: HeroProps) {
+  const [index, setIndex] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % images.length)
+    }, 4000) // 🔥 velocidad (más alto = más lento)
+
+    return () => clearInterval(interval)
+  }, [])
+
   return (
-    <section className="relative min-h-screen flex items-center pt-16">
+    <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
+      
+      {/* SLIDER */}
       <div className="absolute inset-0 z-0">
-        <Image
-          src="https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/WhatsApp%20Image%202026-03-14%20at%2011.13.19.jpeg"
-          alt="Caja de verduras frescas"
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/60 to-transparent" />
+        {images.map((img, i) => (
+          <Image
+            key={i}
+            src={img}
+            alt="Caja de verduras"
+            fill
+            priority={i === 0}
+            className={`object-cover transition-opacity duration-1000 ${
+              i === index ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        ))}
+
+        {/* overlay oscuro */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
       </div>
 
+      {/* CONTENIDO */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-2xl">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight text-balance">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
             Caja semanal directo de la quinta
           </h1>
 
