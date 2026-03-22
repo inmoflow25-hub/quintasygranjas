@@ -107,9 +107,9 @@ export async function POST(req: Request) {
       )
     }
 
-    return NextResponse.json({
-      url: result.init_point
-    })
+ return NextResponse.json({
+  preference_id: result.id
+})
   } catch (error) {
     console.error("CHECKOUT ERROR", error)
 
