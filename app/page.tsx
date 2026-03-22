@@ -27,17 +27,25 @@ const BOX_DB_IDS: Record<BoxType, string> = {
   granja: "d5b70577-a2b7-47d7-9ccd-e2f336e25af7"
 }
 
-async function loginGoogle() {
-  await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: window.location.origin
-    }
-  })
-}
-
 export default function Home() {
-  const [preferenceId, setPreferenceId] = useState(null)
+  const [preferenceId, setPreferenceId] = useState<string | null>(null)
+
+  async function loginWithEmail(email: string) {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: window.location.origin
+      }
+    })
+
+    if (error) {
+      alert("Error enviando el link")
+      return false
+    }
+
+    alert("Te enviamos un link para ingresar 🚀")
+    return true
+  }
 
   async function createCheckout(boxType: BoxType, userId: string) {
     const boxId = BOX_DB_IDS[boxType]
@@ -72,8 +80,12 @@ export default function Home() {
     } = await supabase.auth.getSession()
 
     if (!session?.user) {
+      const email = prompt("Ingresá tu email para continuar")
+
+      if (!email) return
+
       localStorage.setItem("selected_box", boxType)
-      await loginGoogle()
+      await loginWithEmail(email)
       return
     }
 
@@ -130,7 +142,6 @@ export default function Home() {
       <FinalCTA onWhatsAppClick={onWhatsAppClick} />
       <Footer onWhatsAppClick={onWhatsAppClick} />
 
-      {/* 🔥 CHECKOUT EMBEBIDO */}
       {preferenceId && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-xl w-full max-w-lg">
