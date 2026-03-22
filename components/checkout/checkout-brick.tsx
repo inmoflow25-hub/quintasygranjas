@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 
 declare global {
   interface Window {
@@ -9,32 +9,26 @@ declare global {
 }
 
 export default function CheckoutBrick({ preferenceId }: { preferenceId: string }) {
-  const brickRef = useRef<any>(null)
-
   useEffect(() => {
-    if (!window.MercadoPago) {
-      console.error("MP SDK not loaded")
-      return
-    }
-
-    if (!preferenceId) return
-
-    const mp = new window.MercadoPago(
-      process.env.NEXT_PUBLIC_MP_PUBLIC_KEY!,
-      {
-        locale: "es-AR"
+    const initBrick = () => {
+      if (!window.MercadoPago) {
+        console.error("MP SDK NO CARGADO")
+        return
       }
-    )
 
-    const bricksBuilder = mp.bricks()
+      if (!process.env.NEXT_PUBLIC_MP_PUBLIC_KEY) {
+        console.error("FALTA PUBLIC KEY")
+        return
+      }
 
-    // 🔥 destruir brick anterior si existe
-    if (brickRef.current) {
-      brickRef.current.unmount()
-    }
+      const mp = new window.MercadoPago(
+        process.env.NEXT_PUBLIC_MP_PUBLIC_KEY,
+        { locale: "es-AR" }
+      )
 
-    bricksBuilder
-      .create("payment", "paymentBrick_container", {
+      const bricksBuilder = mp.bricks()
+
+      bricksBuilder.create("payment", "paymentBrick_container", {
         initialization: {
           preferenceId: preferenceId
         },
@@ -46,13 +40,20 @@ export default function CheckoutBrick({ preferenceId }: { preferenceId: string }
           }
         }
       })
-      .then((controller: any) => {
-        brickRef.current = controller
-      })
-      .catch((error: any) => {
-        console.error("BRICK ERROR", error)
-      })
+    }
+
+    // 🔥 esperar a que cargue el script SI o SI
+    if (window.MercadoPago) {
+      initBrick()
+    } else {
+      const interval = setInterval(() => {
+        if (window.MercadoPago) {
+          clearInterval(interval)
+          initBrick()
+        }
+      }, 300)
+    }
   }, [preferenceId])
 
-  return <div id="paymentBrick_container"></div>
+  return <div id="paymentBrick_container" />
 }
