@@ -50,9 +50,19 @@ export default function AdminPage() {
 
       const today = new Date().toISOString().split("T")[0]
 
+      // 🔥 PEDIDOS CON RELACIONES REALES
       const { data: ordersData } = await supabase
         .from("orders")
-        .select("*")
+        .select(`
+          id,
+          created_at,
+          status,
+          price,
+          user_id,
+          box_id,
+          boxes ( name ),
+          addresses ( address, city, phone, notes )
+        `)
         .order("created_at", { ascending: false })
         .limit(20)
 
@@ -70,10 +80,10 @@ export default function AdminPage() {
         .from("addresses")
         .select("*")
 
-      // cajas más vendidas
+      // 🔥 cajas más vendidas (CORREGIDO)
       const boxCount: any = {}
       ordersData?.forEach((o:any) => {
-        const box = o.box || "Caja"
+        const box = o.boxes?.name || "Caja"
         boxCount[box] = (boxCount[box] || 0) + 1
       })
 
@@ -82,7 +92,7 @@ export default function AdminPage() {
         count
       }))
 
-      // zonas
+      // 🔥 zonas (igual pero ok)
       const zoneCount:any = {}
       addresses?.forEach((a:any) => {
         const city = a.city || "Sin ciudad"
@@ -188,7 +198,7 @@ export default function AdminPage() {
 
       </section>
 
-      {/* pedidos recientes */}
+      {/* pedidos reales con info útil */}
 
       <section className="bg-white rounded-xl shadow p-6">
 
@@ -198,16 +208,30 @@ export default function AdminPage() {
 
         <div className="space-y-2">
 
-          {orders.map((o:any) => (
-            <div
-              key={o.id}
-              className="flex justify-between border-b py-2 text-sm"
-            >
-              <span>{o.box}</span>
-              <span>{o.price}</span>
-              <span>{o.status}</span>
-            </div>
-          ))}
+          {orders.map((o:any) => {
+
+            const city = o.addresses?.city || ""
+            const dia =
+              city.toLowerCase().includes("palermo") ||
+              city.toLowerCase().includes("belgrano") ||
+              city.toLowerCase().includes("recoleta")
+                ? "Viernes"
+                : "Miércoles"
+
+            return (
+              <div
+                key={o.id}
+                className="grid grid-cols-6 gap-2 border-b py-2 text-sm"
+              >
+                <span>{o.boxes?.name}</span>
+                <span>{o.price}</span>
+                <span>{o.status}</span>
+                <span>{city}</span>
+                <span>{dia}</span>
+                <span>{o.addresses?.address}</span>
+              </div>
+            )
+          })}
 
         </div>
 
