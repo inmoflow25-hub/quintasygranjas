@@ -9,6 +9,12 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
+declare global {
+  interface Window {
+    fbq: any
+  }
+}
+
 export default function SuccessPage() {
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -39,6 +45,16 @@ export default function SuccessPage() {
     loadUser()
   }, [])
 
+  // 🔥 EVENTO PURCHASE
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.fbq) {
+      window.fbq("track", "Purchase", {
+        value: 18000,
+        currency: "ARS"
+      })
+    }
+  }, [])
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({
       ...form,
@@ -59,7 +75,6 @@ export default function SuccessPage() {
       return
     }
 
-    // 🔥 PERFIL (incluye email para marketing)
     const { error: profileError } = await supabase
       .from("profiles")
       .upsert({
@@ -78,7 +93,6 @@ export default function SuccessPage() {
       return
     }
 
-    // 🔥 DIRECCIÓN
     const { error: addressError } = await supabase
       .from("addresses")
       .upsert(
@@ -204,3 +218,4 @@ export default function SuccessPage() {
     </main>
   )
 }
+
