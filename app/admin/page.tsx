@@ -12,23 +12,12 @@ const supabase = createClient(
 export default function AdminPage() {
 
   const router = useRouter()
-
   const [loading, setLoading] = useState(true)
-
-  const [stats, setStats] = useState({
-    orders: 0,
-    deliveries: 0,
-    subs: 0,
-    addresses: 0
-  })
-
   const [orders, setOrders] = useState<any[]>([])
-  const [topBoxes, setTopBoxes] = useState<any[]>([])
-  const [zones, setZones] = useState<any[]>([])
 
   useEffect(() => {
 
-    async function loadDashboard() {
+    async function loadData() {
 
       const { data: { user } } = await supabase.auth.getUser()
 
@@ -41,201 +30,108 @@ export default function AdminPage() {
         .from("admins")
         .select("*")
         .eq("user_id", user.id)
-        .single()
+        .maybeSingle()
 
       if (!admin) {
         router.push("/")
         return
       }
 
-      const today = new Date().toISOString().split("T")[0]
+      // 🔥 QUERY REAL
+      const { data, error } = await supabase.rpc("get_admin_orders")
 
-      // 🔥 PEDIDOS CON RELACIONES REALES
-      const { data: ordersData } = await supabase
-        .from("orders")
-        .select(`
-          id,
-          created_at,
-          status,
-          price,
-          user_id,
-          box_id,
-          boxes ( name ),
-          addresses ( address, city, phone, notes )
-        `)
-        .order("created_at", { ascending: false })
-        .limit(20)
+      if (error) {
+        console.error(error)
+        return
+      }
 
-      const { data: deliveries } = await supabase
-        .from("deliveries")
-        .select("*")
-        .eq("delivery_date", today)
-
-      const { data: subs } = await supabase
-        .from("subscriptions")
-        .select("*")
-        .eq("active", true)
-
-      const { data: addresses } = await supabase
-        .from("addresses")
-        .select("*")
-
-      // 🔥 cajas más vendidas (CORREGIDO)
-      const boxCount: any = {}
-      ordersData?.forEach((o:any) => {
-        const box = o.boxes?.name || "Caja"
-        boxCount[box] = (boxCount[box] || 0) + 1
-      })
-
-      const topBoxesArr = Object.entries(boxCount).map(([box, count]) => ({
-        box,
-        count
-      }))
-
-      // 🔥 zonas (igual pero ok)
-      const zoneCount:any = {}
-      addresses?.forEach((a:any) => {
-        const city = a.city || "Sin ciudad"
-        zoneCount[city] = (zoneCount[city] || 0) + 1
-      })
-
-      const zonesArr = Object.entries(zoneCount).map(([city, count]) => ({
-        city,
-        count
-      }))
-
-      setStats({
-        orders: ordersData?.length || 0,
-        deliveries: deliveries?.length || 0,
-        subs: subs?.length || 0,
-        addresses: addresses?.length || 0
-      })
-
-      setOrders(ordersData || [])
-      setTopBoxes(topBoxesArr)
-      setZones(zonesArr)
-
+      setOrders(data || [])
       setLoading(false)
-
     }
 
-    loadDashboard()
+    loadData()
 
   }, [])
 
   if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center">
-        Cargando dashboard...
+        Cargando pedidos...
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-green-50 p-10">
+    <main className="min-h-screen bg-gray-50 p-10">
 
-      <h1 className="text-3xl font-bold text-green-800 mb-10">
-        Dashboard Quintas & Granjas
+      <h1 className="text-3xl font-bold mb-8">
+        📦 Pedidos / Entregas
       </h1>
 
-      {/* métricas */}
+      <div className="overflow-x-auto bg-white rounded-xl shadow">
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+        <table className="w-full text-sm">
 
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h2 className="text-gray-500">📦 Pedidos</h2>
-          <p className="text-3xl font-bold">{stats.orders}</p>
-        </div>
+          <thead className="bg-gray-100 text-left">
+            <tr>
+              <th className="p-3">Fecha</th>
+              <th className="p-3">Cliente</th>
+              <th className="p-3">Caja</th>
+              <th className="p-3">Dirección</th>
+              <th className="p-3">Zona</th>
+              <th className="p-3">Teléfono</th>
+              <th className="p-3">Entrega</th>
+              <th className="p-3">Estado</th>
+            </tr>
+          </thead>
 
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h2 className="text-gray-500">🚚 Entregas hoy</h2>
-          <p className="text-3xl font-bold">{stats.deliveries}</p>
-        </div>
+          <tbody>
 
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h2 className="text-gray-500">👥 Suscripciones</h2>
-          <p className="text-3xl font-bold">{stats.subs}</p>
-        </div>
+            {orders.map((o:any) => (
+              <tr key={o.order_id} className="border-b">
 
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h2 className="text-gray-500">📍 Clientes</h2>
-          <p className="text-3xl font-bold">{stats.addresses}</p>
-        </div>
+                <td className="p-3">
+                  {new Date(o.fecha_compra).toLocaleDateString()}
+                </td>
+
+                <td className="p-3">
+                  {o.email}
+                </td>
+
+                <td className="p-3 font-medium">
+                  {o.caja}
+                </td>
+
+                <td className="p-3">
+                  {o.direccion || "-"}
+                </td>
+
+                <td className="p-3">
+                  {o.zona || "-"}
+                </td>
+
+                <td className="p-3">
+                  {o.telefono || "-"}
+                </td>
+
+                <td className="p-3">
+                  {o.fecha_entrega
+                    ? new Date(o.fecha_entrega).toLocaleDateString()
+                    : "Sin asignar"}
+                </td>
+
+                <td className="p-3">
+                  {o.status}
+                </td>
+
+              </tr>
+            ))}
+
+          </tbody>
+
+        </table>
 
       </div>
-
-      {/* cajas más vendidas */}
-
-      <section className="bg-white rounded-xl shadow p-6 mb-10">
-
-        <h2 className="text-xl font-semibold mb-4">
-          Cajas más vendidas
-        </h2>
-
-        {topBoxes.map((b:any) => (
-          <div key={b.box} className="flex justify-between border-b py-2">
-            <span>{b.box}</span>
-            <span>{b.count}</span>
-          </div>
-        ))}
-
-      </section>
-
-      {/* zonas */}
-
-      <section className="bg-white rounded-xl shadow p-6 mb-10">
-
-        <h2 className="text-xl font-semibold mb-4">
-          Clientes por zona
-        </h2>
-
-        {zones.map((z:any) => (
-          <div key={z.city} className="flex justify-between border-b py-2">
-            <span>{z.city}</span>
-            <span>{z.count}</span>
-          </div>
-        ))}
-
-      </section>
-
-      {/* pedidos reales con info útil */}
-
-      <section className="bg-white rounded-xl shadow p-6">
-
-        <h2 className="text-xl font-semibold mb-4">
-          Últimos pedidos
-        </h2>
-
-        <div className="space-y-2">
-
-          {orders.map((o:any) => {
-
-            const city = o.addresses?.city || ""
-            const dia =
-              city.toLowerCase().includes("palermo") ||
-              city.toLowerCase().includes("belgrano") ||
-              city.toLowerCase().includes("recoleta")
-                ? "Viernes"
-                : "Miércoles"
-
-            return (
-              <div
-                key={o.id}
-                className="grid grid-cols-6 gap-2 border-b py-2 text-sm"
-              >
-                <span>{o.boxes?.name}</span>
-                <span>{o.price}</span>
-                <span>{o.status}</span>
-                <span>{city}</span>
-                <span>{dia}</span>
-                <span>{o.addresses?.address}</span>
-              </div>
-            )
-          })}
-
-        </div>
-
-      </section>
 
     </main>
   )
