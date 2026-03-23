@@ -26,16 +26,15 @@ export default function AdminPage() {
         return
       }
 
-      const { data: admin } = await supabase
-        .from("admins")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle()
+    const ADMIN_IDS = [
+  "95aae067-c075-4a04-95b2-8e4aa5cfb25f",
+  "92b5059a-69b1-4cbb-ac1f-a5f6c17a87d6"
+]
 
-      if (!admin) {
-        router.push("/")
-        return
-      }
+if (!ADMIN_IDS.includes(user.id)) {
+  router.push("/")
+  return
+}
 
       // 🔥 QUERY REAL
       const { data, error } = await supabase.rpc("get_admin_orders")
