@@ -26,27 +26,26 @@ export default function AdminPage() {
         return
       }
 
-    const ADMIN_IDS = [
-  "95aae067-c075-4a04-95b2-8e4aa5cfb25f",
-  "92b5059a-69b1-4cbb-ac1f-a5f6c17a87d6"
-]
+      const ADMIN_IDS = [
+        "95aae067-c075-4a04-95b2-8e4aa5cfb25f",
+        "92b5059a-69b1-4cbb-ac1f-a5f6c17a87d6"
+      ]
 
-if (!ADMIN_IDS.includes(user.id)) {
-  router.push("/")
-  return
-}
+      if (!ADMIN_IDS.includes(user.id)) {
+        router.push("/")
+        return
+      }
 
-      // 🔥 QUERY REAL
-const { data, error } = await supabase.rpc("get_admin_orders")
+      const { data, error } = await supabase.rpc("get_admin_orders")
 
-if (error) {
-  console.error("ADMIN ERROR:", error)
-  setLoading(false)
-  return
-}
+      if (error) {
+        console.error("ADMIN ERROR:", error)
+        setLoading(false)
+        return
+      }
 
-setOrders(data || [])
-setLoading(false)
+      setOrders(data || [])
+      setLoading(false)
     }
 
     loadData()
@@ -75,11 +74,13 @@ setLoading(false)
           <thead className="bg-gray-100 text-left">
             <tr>
               <th className="p-3">Fecha</th>
-              <th className="p-3">Cliente</th>
+              <th className="p-3">Nombre</th>
+              <th className="p-3">Email</th>
               <th className="p-3">Caja</th>
               <th className="p-3">Dirección</th>
               <th className="p-3">Zona</th>
               <th className="p-3">Teléfono</th>
+              <th className="p-3">Día</th>
               <th className="p-3">Entrega</th>
               <th className="p-3">Estado</th>
             </tr>
@@ -92,6 +93,10 @@ setLoading(false)
 
                 <td className="p-3">
                   {new Date(o.fecha_compra).toLocaleDateString()}
+                </td>
+
+                <td className="p-3 font-medium">
+                  {o.nombre || "-"}
                 </td>
 
                 <td className="p-3">
@@ -115,13 +120,17 @@ setLoading(false)
                 </td>
 
                 <td className="p-3">
-                  {o.fecha_entrega
-                    ? new Date(o.fecha_entrega).toLocaleDateString()
+                  {o.dia_entrega || "-"}
+                </td>
+
+                <td className="p-3">
+                  {o.delivery_date
+                    ? new Date(o.delivery_date).toLocaleDateString()
                     : "Sin asignar"}
                 </td>
 
                 <td className="p-3">
-                  {o.status}
+                  {o.estado || "-"}
                 </td>
 
               </tr>
