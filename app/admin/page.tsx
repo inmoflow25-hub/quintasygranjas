@@ -37,7 +37,8 @@ if (!ADMIN_IDS.includes(user.id)) {
 }
 
       // 🔥 QUERY REAL
-      const { data, error } = await supabase.rpc("get_admin_orders")
+      const res = await fetch("/api/admin/orders")
+const data = await res.json()
 
      if (error) {
   console.error("ADMIN ERROR:", error)
