@@ -39,7 +39,7 @@ export default function Home() {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: window.location.origin
+        emailRedirectTo: `${window.location.origin}?checkout=true`
       }
     })
 
@@ -102,21 +102,27 @@ export default function Home() {
   }
 
   useEffect(() => {
-    const restoreCheckout = async () => {
-      const savedBox = localStorage.getItem("selected_box") as BoxType | null
-      if (!savedBox) return
+  const restoreCheckout = async () => {
+  const urlParams = new URLSearchParams(window.location.search)
+  const shouldCheckout = urlParams.get("checkout")
 
-      const {
-        data: { session }
-      } = await supabase.auth.getSession()
+  if (!shouldCheckout) return
 
-      if (!session?.user) return
+  const savedBox = localStorage.getItem("selected_box") as BoxType | null
+  if (!savedBox) return
 
-      localStorage.removeItem("selected_box")
-      await createCheckout(savedBox, session.user.id)
-    }
+  const {
+    data: { session }
+  } = await supabase.auth.getSession()
 
-    restoreCheckout()
+  if (!session?.user) return
+
+  localStorage.removeItem("selected_box")
+
+  await createCheckout(savedBox, session.user.id)
+}
+
+restoreCheckout()
 
     const {
       data: { subscription }
