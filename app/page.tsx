@@ -80,19 +80,26 @@ export default function Home() {
     alert(data.error || "No se pudo iniciar el checkout")
   }
 
-  async function onSelectBox(boxType: BoxType) {
-    const {
-      data: { session }
-    } = await supabase.auth.getSession()
+async function onSelectBox(boxType: BoxType) {
+  console.log("CLICK", boxType)
 
-    if (!session?.user) {
-      setSelectedBox(boxType)
-      setShowLogin(true)
-      return
-    }
+  const {
+    data: { session }
+  } = await supabase.auth.getSession()
 
-    await createCheckout(boxType, session.user.id)
+  if (!session?.user) {
+    // 🔥 CLAVE: guardar la caja elegida para después del login
+    localStorage.setItem("selected_box", boxType)
+
+    // esto lo mantenés para tu UI
+    setSelectedBox(boxType)
+    setShowLogin(true)
+
+    return
   }
+
+  await createCheckout(boxType, session.user.id)
+}
 
   function onWhatsAppClick() {
     window.open(
