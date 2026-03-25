@@ -66,9 +66,6 @@ export default function SuccessPage() {
 
       setLoading(true)
 
-      console.log("SAVE START", form)
-
-      // 🔥 BUSCAR USER
       const { data: existingUser, error: findError } = await supabase
         .from("users")
         .select("*")
@@ -76,7 +73,7 @@ export default function SuccessPage() {
         .maybeSingle()
 
       if (findError) {
-        console.error("USER FIND ERROR", findError)
+        console.error(findError)
         alert("Error buscando usuario")
         setLoading(false)
         return
@@ -84,7 +81,6 @@ export default function SuccessPage() {
 
       let user = existingUser
 
-      // 🔥 CREAR USER SI NO EXISTE
       if (!user) {
         const { data: newUser, error: insertError } = await supabase
           .from("users")
@@ -95,7 +91,7 @@ export default function SuccessPage() {
           .single()
 
         if (insertError || !newUser) {
-          console.error("USER INSERT ERROR", insertError)
+          console.error(insertError)
           alert("Error creando usuario")
           setLoading(false)
           return
@@ -105,14 +101,11 @@ export default function SuccessPage() {
       }
 
       if (!user?.id) {
-        alert("Error: usuario inválido")
+        alert("Error de usuario")
         setLoading(false)
         return
       }
 
-      console.log("USER OK", user)
-
-      // 🔥 PROFILE
       const { error: profileError } = await supabase
         .from("profiles")
         .upsert({
@@ -122,13 +115,12 @@ export default function SuccessPage() {
         })
 
       if (profileError) {
-        console.error("PROFILE ERROR", profileError)
+        console.error(profileError)
         alert("Error guardando perfil")
         setLoading(false)
         return
       }
 
-      // 🔥 ADDRESS
       const { error: addressError } = await supabase
         .from("addresses")
         .upsert(
@@ -145,19 +137,16 @@ export default function SuccessPage() {
         )
 
       if (addressError) {
-        console.error("ADDRESS ERROR", addressError)
+        console.error(addressError)
         alert("Error guardando dirección")
         setLoading(false)
         return
       }
 
-      console.log("SAVE DONE")
-
       setSaved(true)
       setLoading(false)
-
     } catch (err) {
-      console.error("SAVE CRASH", err)
+      console.error(err)
       alert("Error inesperado")
       setLoading(false)
     }
@@ -166,61 +155,79 @@ export default function SuccessPage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-green-50 px-6">
       <div className="max-w-xl w-full bg-white rounded-2xl shadow-lg p-10 text-center">
+
         <h1 className="text-3xl font-bold text-green-700 mb-4">
           Pedido confirmado 🎉
         </h1>
 
-        <div className="mb-6 space-y-2">
-          <p className="text-gray-600">
-            Recibimos tu pago correctamente.
-          </p>
-
-          <p className="text-red-600 font-medium text-sm">
-            ⚠️ Completá tus datos para poder enviarte la caja.
-            Sin esta información no podremos realizar la entrega.
-          </p>
-        </div>
-
         {!saved && (
-          <div className="space-y-4 text-left">
-            <input name="name" placeholder="Nombre completo *" value={form.name} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
-            <input name="email" placeholder="Email *" value={form.email} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
-            <input name="phone" placeholder="Teléfono / WhatsApp *" value={form.phone} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
-            <input name="address" placeholder="Dirección completa *" value={form.address} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
-            <input name="city" placeholder="Barrio / Ciudad *" value={form.city} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
-            <textarea name="notes" placeholder="Indicaciones" value={form.notes} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
+          <>
+            <div className="mb-6 space-y-2">
+              <p className="text-gray-600">
+                Recibimos tu pago correctamente.
+              </p>
 
-            <button
-              onClick={saveData}
-              disabled={loading}
-              className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition"
-            >
-              {loading ? "Guardando..." : "Guardar datos de entrega"}
-            </button>
-          </div>
+              <p className="text-red-600 font-medium text-sm">
+                ⚠️ Completá tus datos para poder enviarte la caja.
+                Sin esta información no podremos realizar la entrega.
+              </p>
+            </div>
+
+            <div className="space-y-4 text-left">
+              <input name="name" placeholder="Nombre completo *" value={form.name} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
+              <input name="email" placeholder="Email *" value={form.email} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
+              <input name="phone" placeholder="Teléfono / WhatsApp *" value={form.phone} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
+              <input name="address" placeholder="Dirección completa *" value={form.address} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
+              <input name="city" placeholder="Barrio / Ciudad *" value={form.city} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
+              <textarea name="notes" placeholder="Indicaciones" value={form.notes} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
+
+              <button
+                onClick={saveData}
+                disabled={loading}
+                className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition"
+              >
+                {loading ? "Guardando..." : "Guardar datos de entrega"}
+              </button>
+            </div>
+          </>
         )}
 
         {saved && (
           <div className="space-y-6">
-            <p className="text-green-700 font-semibold">
-              ✅ Datos guardados correctamente
+
+            <p className="text-green-700 font-semibold text-lg">
+              ✅ Pedido confirmado y datos recibidos
+            </p>
+
+            <p className="text-gray-700">
+              Tu compra fue registrada correctamente.
             </p>
 
             <p className="text-gray-600 text-sm">
               Te vamos a contactar para coordinar la entrega.
             </p>
 
-            <a href={whatsappLink} target="_blank" className="block w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition">
-              Contactar por WhatsApp
+            <a
+              href={whatsappLink}
+              target="_blank"
+              className="block w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition"
+            >
+              Hablar por WhatsApp
             </a>
 
-            <Link href="/" className="block w-full border border-gray-300 py-3 rounded-xl font-semibold hover:bg-gray-100 transition">
+            <Link
+              href="/"
+              className="block w-full border border-gray-300 py-3 rounded-xl font-semibold hover:bg-gray-100 transition"
+            >
               Volver al inicio
             </Link>
+
           </div>
         )}
+
       </div>
     </main>
   )
 }
+
 
