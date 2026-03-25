@@ -13,14 +13,7 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   try {
-    const { box_id, user_id } = await req.json()
-
-    if (!user_id) {
-      return NextResponse.json(
-        { error: "missing user id" },
-        { status: 400 }
-      )
-    }
+    const { box_id } = await req.json()
 
     if (!box_id) {
       return NextResponse.json(
@@ -67,10 +60,10 @@ export async function POST(req: Request) {
           }
         ],
 
-        external_reference: String(user_id),
+        // 🔥 SIN USER
+        external_reference: String(box.id),
 
         metadata: {
-          user_id: String(user_id),
           box_id: String(box.id),
           box_name: String(box.name)
         },
@@ -88,28 +81,9 @@ export async function POST(req: Request) {
       }
     })
 
-    const { error: orderError } = await supabase
-      .from("orders")
-      .insert({
-        user_id: user_id,
-        box_id: box.id,
-        price: price,
-        mp_preference_id: result.id,
-        status: "pending"
-      })
-
-    if (orderError) {
-      console.error("ORDER INSERT ERROR", orderError)
-
-      return NextResponse.json(
-        { error: "failed to create order" },
-        { status: 500 }
-      )
-    }
-
- return NextResponse.json({
-  preference_id: result.id
-})
+    return NextResponse.json({
+      preference_id: result.id
+    })
   } catch (error) {
     console.error("CHECKOUT ERROR", error)
 
@@ -119,3 +93,4 @@ export async function POST(req: Request) {
     )
   }
 }
+
