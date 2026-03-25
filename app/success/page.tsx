@@ -135,9 +135,16 @@ export default function SuccessPage() {
           Pedido confirmado 🎉
         </h1>
 
-        <p className="text-gray-600 mb-6">
-          Recibimos tu pago correctamente.
-        </p>
+       <div className="mb-6 space-y-2">
+  <p className="text-gray-600">
+    Recibimos tu pago correctamente.
+  </p>
+
+  <p className="text-red-600 font-medium text-sm">
+    ⚠️ Completá tus datos para poder enviarte la caja. 
+    Sin esta información no podremos realizar la entrega.
+  </p>
+</div>
 
         {!saved && (
           <div className="space-y-4 text-left">
