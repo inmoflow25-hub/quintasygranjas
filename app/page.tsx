@@ -33,24 +33,13 @@ export default function Home() {
   const [email, setEmail] = useState("")
   const [selectedBox, setSelectedBox] = useState<BoxType | null>(null)
 
+  // 🔥 LOGIN DESACTIVADO (NO SE USA MÁS)
   async function loginWithEmail() {
-    if (!email) return
-
-  const { error } = await supabase.auth.signInWithOtp({
-  email
-})
-
-    if (error) {
-      alert("Error enviando el link")
-      console.error(error)
-      return
-    }
-
-    alert("Te anviamos un enlace por e-mail para ingresar. Por favor reivsalo y dale click🚀")
-    setShowLogin(false)
+    return
   }
 
-  async function createCheckout(boxType: BoxType, userId: string) {
+  // 🔥 CHECKOUT SIN USER
+  async function createCheckout(boxType: BoxType) {
     const boxId = BOX_DB_IDS[boxType]
 
     const res = await fetch("/api/checkout", {
@@ -59,8 +48,7 @@ export default function Home() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        box_id: boxId,
-        user_id: userId
+        box_id: boxId
       })
     })
 
@@ -68,6 +56,13 @@ export default function Home() {
 
     console.log("CHECKOUT RESPONSE", data)
 
+    // 🔥 REDIRECCIÓN DIRECTA A MERCADOPAGO
+    if (data.init_point) {
+      window.location.href = data.init_point
+      return
+    }
+
+    // fallback si seguís usando brick
     if (data.preference_id) {
       setPreferenceId(data.preference_id)
       return
@@ -77,26 +72,12 @@ export default function Home() {
     alert(data.error || "No se pudo iniciar el checkout")
   }
 
-async function onSelectBox(boxType: BoxType) {
-  console.log("CLICK", boxType)
+  // 🔥 SIN LOGIN
+  async function onSelectBox(boxType: BoxType) {
+    console.log("CLICK", boxType)
 
-  const {
-    data: { session }
-  } = await supabase.auth.getSession()
-
-  if (!session?.user) {
-    // 🔥 CLAVE: guardar la caja elegida para después del login
-    localStorage.setItem("selected_box", boxType)
-
-    // esto lo mantenés para tu UI
-    setSelectedBox(boxType)
-    setShowLogin(true)
-
-    return
+    await createCheckout(boxType)
   }
-
-  await createCheckout(boxType, session.user.id)
-}
 
   function onWhatsAppClick() {
     window.open(
@@ -106,35 +87,17 @@ async function onSelectBox(boxType: BoxType) {
   }
 
   useEffect(() => {
-  const restoreCheckout = async () => {
-  const urlParams = new URLSearchParams(window.location.search)
-  const shouldCheckout = urlParams.get("checkout")
+    // 🔥 BLOQUE ORIGINAL, PERO DESACTIVADO
+    const restoreCheckout = async () => {
+      return
+    }
 
-  if (!shouldCheckout) return
-
-  const savedBox = localStorage.getItem("selected_box") as BoxType | null
-  if (!savedBox) return
-
-  const {
-    data: { session }
-  } = await supabase.auth.getSession()
-
-  if (!session?.user) return
-
-  localStorage.removeItem("selected_box")
-
-  await createCheckout(savedBox, session.user.id)
-}
-
-restoreCheckout()
+    restoreCheckout()
 
     const {
       data: { subscription }
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_IN" && session?.user) {
-        if (!selectedBox) return
-        await createCheckout(selectedBox, session.user.id)
-      }
+    } = supabase.auth.onAuthStateChange(async () => {
+      return
     })
 
     return () => subscription.unsubscribe()
@@ -151,8 +114,8 @@ restoreCheckout()
       <FinalCTA onWhatsAppClick={onWhatsAppClick} />
       <Footer onWhatsAppClick={onWhatsAppClick} />
 
-      {/* LOGIN MODAL */}
-      {showLogin && (
+      {/* LOGIN MODAL (NO BORRADO, SOLO DESACTIVADO) */}
+      {showLogin && false && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-xl w-full max-w-md">
             <h2 className="text-lg font-semibold mb-4">
@@ -184,7 +147,7 @@ restoreCheckout()
         </div>
       )}
 
-      {/* CHECKOUT */}
+      {/* CHECKOUT MODAL (SE MANTIENE) */}
       {preferenceId && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-xl w-full max-w-lg">
@@ -202,3 +165,4 @@ restoreCheckout()
     </main>
   )
 }
+
