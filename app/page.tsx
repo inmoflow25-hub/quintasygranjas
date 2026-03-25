@@ -36,12 +36,9 @@ export default function Home() {
   async function loginWithEmail() {
     if (!email) return
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}?checkout=true`
-      }
-    })
+  const { error } = await supabase.auth.signInWithOtp({
+  email
+})
 
     if (error) {
       alert("Error enviando el link")
