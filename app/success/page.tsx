@@ -31,7 +31,6 @@ export default function SuccessPage() {
   const whatsappLink =
     "https://wa.me/5491133614865?text=Hola%20acabo%20de%20hacer%20un%20pedido%20en%20Quintas%20y%20Granjas"
 
-  // 🔥 PIXEL
   useEffect(() => {
     if (typeof window !== "undefined" && window.fbq) {
       window.fbq("track", "Purchase", {
@@ -58,74 +57,110 @@ export default function SuccessPage() {
   }
 
   const saveData = async () => {
-    const errorMsg = validate()
-    if (errorMsg) {
-      alert(errorMsg)
-      return
-    }
+    try {
+      const errorMsg = validate()
+      if (errorMsg) {
+        alert(errorMsg)
+        return
+      }
 
-    setLoading(true)
+      setLoading(true)
 
-    // 👤 UPSERT USER POR EMAIL
-    let { data: user } = await supabase
-      .from("users")
-      .select("*")
-      .eq("email", form.email)
-      .maybeSingle()
+      console.log("SAVE START", form)
 
-    if (!user) {
-      const { data: newUser } = await supabase
+      // 🔥 BUSCAR USER
+      const { data: existingUser, error: findError } = await supabase
         .from("users")
-        .insert({
-          email: form.email
-        })
-        .select()
-        .single()
+        .select("*")
+        .eq("email", form.email)
+        .maybeSingle()
 
-      user = newUser
-    }
+      if (findError) {
+        console.error("USER FIND ERROR", findError)
+        alert("Error buscando usuario")
+        setLoading(false)
+        return
+      }
 
-    // 👤 PROFILE
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .upsert({
-        id: user.id,
-        name: form.name,
-        phone: form.phone
-      })
+      let user = existingUser
 
-    if (profileError) {
-      console.error("PROFILE ERROR", profileError)
-      alert("Error guardando perfil")
-      setLoading(false)
-      return
-    }
+      // 🔥 CREAR USER SI NO EXISTE
+      if (!user) {
+        const { data: newUser, error: insertError } = await supabase
+          .from("users")
+          .insert({
+            email: form.email
+          })
+          .select()
+          .single()
 
-    // 📍 ADDRESS
-    const { error: addressError } = await supabase
-      .from("addresses")
-      .upsert(
-        {
-          user_id: user.id,
-          address: form.address,
-          city: form.city,
-          notes: form.notes,
-          phone: form.phone
-        },
-        {
-          onConflict: "user_id"
+        if (insertError || !newUser) {
+          console.error("USER INSERT ERROR", insertError)
+          alert("Error creando usuario")
+          setLoading(false)
+          return
         }
-      )
 
-    if (addressError) {
-      console.error("ADDRESS ERROR", addressError)
-      alert("Error guardando dirección")
+        user = newUser
+      }
+
+      if (!user?.id) {
+        alert("Error: usuario inválido")
+        setLoading(false)
+        return
+      }
+
+      console.log("USER OK", user)
+
+      // 🔥 PROFILE
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .upsert({
+          id: user.id,
+          name: form.name,
+          phone: form.phone
+        })
+
+      if (profileError) {
+        console.error("PROFILE ERROR", profileError)
+        alert("Error guardando perfil")
+        setLoading(false)
+        return
+      }
+
+      // 🔥 ADDRESS
+      const { error: addressError } = await supabase
+        .from("addresses")
+        .upsert(
+          {
+            user_id: user.id,
+            address: form.address,
+            city: form.city,
+            notes: form.notes,
+            phone: form.phone
+          },
+          {
+            onConflict: "user_id"
+          }
+        )
+
+      if (addressError) {
+        console.error("ADDRESS ERROR", addressError)
+        alert("Error guardando dirección")
+        setLoading(false)
+        return
+      }
+
+      console.log("SAVE DONE")
+
+      setSaved(true)
       setLoading(false)
-      return
-    }
 
-    setSaved(true)
-    setLoading(false)
+    } catch (err) {
+      console.error("SAVE CRASH", err)
+      alert("Error inesperado")
+      setLoading(false)
+    }
   }
 
   return (
@@ -135,66 +170,25 @@ export default function SuccessPage() {
           Pedido confirmado 🎉
         </h1>
 
-       <div className="mb-6 space-y-2">
-  <p className="text-gray-600">
-    Recibimos tu pago correctamente.
-  </p>
+        <div className="mb-6 space-y-2">
+          <p className="text-gray-600">
+            Recibimos tu pago correctamente.
+          </p>
 
-  <p className="text-red-600 font-medium text-sm">
-    ⚠️ Completá tus datos para poder enviarte la caja. 
-    Sin esta información no podremos realizar la entrega.
-  </p>
-</div>
+          <p className="text-red-600 font-medium text-sm">
+            ⚠️ Completá tus datos para poder enviarte la caja.
+            Sin esta información no podremos realizar la entrega.
+          </p>
+        </div>
 
         {!saved && (
           <div className="space-y-4 text-left">
-            <input
-              name="name"
-              placeholder="Nombre completo *"
-              value={form.name}
-              onChange={handleChange}
-              className="w-full border rounded-xl px-4 py-3"
-            />
-
-            <input
-              name="email"
-              placeholder="Email *"
-              value={form.email}
-              onChange={handleChange}
-              className="w-full border rounded-xl px-4 py-3"
-            />
-
-            <input
-              name="phone"
-              placeholder="Teléfono / WhatsApp *"
-              value={form.phone}
-              onChange={handleChange}
-              className="w-full border rounded-xl px-4 py-3"
-            />
-
-            <input
-              name="address"
-              placeholder="Dirección completa *"
-              value={form.address}
-              onChange={handleChange}
-              className="w-full border rounded-xl px-4 py-3"
-            />
-
-            <input
-              name="city"
-              placeholder="Barrio / Ciudad *"
-              value={form.city}
-              onChange={handleChange}
-              className="w-full border rounded-xl px-4 py-3"
-            />
-
-            <textarea
-              name="notes"
-              placeholder="Indicaciones (portón, timbre, etc)"
-              value={form.notes}
-              onChange={handleChange}
-              className="w-full border rounded-xl px-4 py-3"
-            />
+            <input name="name" placeholder="Nombre completo *" value={form.name} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
+            <input name="email" placeholder="Email *" value={form.email} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
+            <input name="phone" placeholder="Teléfono / WhatsApp *" value={form.phone} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
+            <input name="address" placeholder="Dirección completa *" value={form.address} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
+            <input name="city" placeholder="Barrio / Ciudad *" value={form.city} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
+            <textarea name="notes" placeholder="Indicaciones" value={form.notes} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
 
             <button
               onClick={saveData}
@@ -216,18 +210,11 @@ export default function SuccessPage() {
               Te vamos a contactar para coordinar la entrega.
             </p>
 
-            <a
-              href={whatsappLink}
-              target="_blank"
-              className="block w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition"
-            >
+            <a href={whatsappLink} target="_blank" className="block w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition">
               Contactar por WhatsApp
             </a>
 
-            <Link
-              href="/"
-              className="block w-full border border-gray-300 py-3 rounded-xl font-semibold hover:bg-gray-100 transition"
-            >
+            <Link href="/" className="block w-full border border-gray-300 py-3 rounded-xl font-semibold hover:bg-gray-100 transition">
               Volver al inicio
             </Link>
           </div>
@@ -236,3 +223,4 @@ export default function SuccessPage() {
     </main>
   )
 }
+
