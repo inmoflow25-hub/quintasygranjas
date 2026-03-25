@@ -136,6 +136,23 @@ export default function SuccessPage() {
           }
         )
 
+      // 🔥 ACTUALIZAR PEDIDO CON DATOS REALES DEL CLIENTE
+const { error: orderUpdateError } = await supabase
+  .from("orders")
+  .update({
+    full_name: form.name,
+    address: form.address,
+    city: form.city,
+    phone: form.phone
+  })
+  .eq("status", "paid")
+  .order("created_at", { ascending: false })
+  .limit(1)
+
+if (orderUpdateError) {
+  console.error("ORDER UPDATE ERROR", orderUpdateError)
+}
+
       if (addressError) {
         console.error(addressError)
         alert("Error guardando dirección")
