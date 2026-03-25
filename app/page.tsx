@@ -49,7 +49,7 @@ export default function Home() {
       return
     }
 
-    alert("Te anviamos un enlace por mail para ingresar. Por favor reivsalo y dale click🚀")
+    alert("Te anviamos un enlace por e-mail para ingresar. Por favor reivsalo y dale click🚀")
     setShowLogin(false)
   }
 
