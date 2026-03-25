@@ -18,10 +18,10 @@ declare global {
 export default function SuccessPage() {
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [email, setEmail] = useState<string | null>(null)
 
   const [form, setForm] = useState({
     name: "",
+    email: "",
     phone: "",
     address: "",
     city: "",
@@ -31,21 +31,7 @@ export default function SuccessPage() {
   const whatsappLink =
     "https://wa.me/5491133614865?text=Hola%20acabo%20de%20hacer%20un%20pedido%20en%20Quintas%20y%20Granjas"
 
-  useEffect(() => {
-    const loadUser = async () => {
-      const {
-        data: { user }
-      } = await supabase.auth.getUser()
-
-      if (user?.email) {
-        setEmail(user.email)
-      }
-    }
-
-    loadUser()
-  }, [])
-
-  // 🔥 EVENTO PURCHASE
+  // 🔥 PIXEL
   useEffect(() => {
     if (typeof window !== "undefined" && window.fbq) {
       window.fbq("track", "Purchase", {
@@ -62,28 +48,50 @@ export default function SuccessPage() {
     })
   }
 
+  const validate = () => {
+    if (!form.name) return "Falta nombre"
+    if (!form.email) return "Falta email"
+    if (!form.phone) return "Falta teléfono"
+    if (!form.address) return "Falta dirección"
+    if (!form.city) return "Falta ciudad"
+    return null
+  }
+
   const saveData = async () => {
-    setLoading(true)
-
-    const {
-      data: { user }
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      alert("No se encontró usuario")
-      setLoading(false)
+    const errorMsg = validate()
+    if (errorMsg) {
+      alert(errorMsg)
       return
     }
 
+    setLoading(true)
+
+    // 👤 UPSERT USER POR EMAIL
+    let { data: user } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", form.email)
+      .maybeSingle()
+
+    if (!user) {
+      const { data: newUser } = await supabase
+        .from("users")
+        .insert({
+          email: form.email
+        })
+        .select()
+        .single()
+
+      user = newUser
+    }
+
+    // 👤 PROFILE
     const { error: profileError } = await supabase
       .from("profiles")
       .upsert({
         id: user.id,
-        full_name: form.name,
-        phone: form.phone,
-        address: form.address,
-        city: form.city,
-        email: email
+        name: form.name,
+        phone: form.phone
       })
 
     if (profileError) {
@@ -93,15 +101,16 @@ export default function SuccessPage() {
       return
     }
 
+    // 📍 ADDRESS
     const { error: addressError } = await supabase
       .from("addresses")
       .upsert(
         {
           user_id: user.id,
-          phone: form.phone,
           address: form.address,
           city: form.city,
-          notes: form.notes
+          notes: form.notes,
+          phone: form.phone
         },
         {
           onConflict: "user_id"
@@ -130,25 +139,27 @@ export default function SuccessPage() {
           Recibimos tu pago correctamente.
         </p>
 
-        {email && (
-          <p className="text-sm text-gray-500 mb-6">
-            Confirmación enviada a: <span className="font-medium">{email}</span>
-          </p>
-        )}
-
         {!saved && (
           <div className="space-y-4 text-left">
             <input
               name="name"
-              placeholder="Nombre completo"
+              placeholder="Nombre completo *"
               value={form.name}
               onChange={handleChange}
               className="w-full border rounded-xl px-4 py-3"
             />
 
             <input
+              name="email"
+              placeholder="Email *"
+              value={form.email}
+              onChange={handleChange}
+              className="w-full border rounded-xl px-4 py-3"
+            />
+
+            <input
               name="phone"
-              placeholder="Teléfono / WhatsApp"
+              placeholder="Teléfono / WhatsApp *"
               value={form.phone}
               onChange={handleChange}
               className="w-full border rounded-xl px-4 py-3"
@@ -156,7 +167,7 @@ export default function SuccessPage() {
 
             <input
               name="address"
-              placeholder="Dirección de entrega"
+              placeholder="Dirección completa *"
               value={form.address}
               onChange={handleChange}
               className="w-full border rounded-xl px-4 py-3"
@@ -164,7 +175,7 @@ export default function SuccessPage() {
 
             <input
               name="city"
-              placeholder="Barrio / Ciudad"
+              placeholder="Barrio / Ciudad *"
               value={form.city}
               onChange={handleChange}
               className="w-full border rounded-xl px-4 py-3"
@@ -172,7 +183,7 @@ export default function SuccessPage() {
 
             <textarea
               name="notes"
-              placeholder="Indicaciones para la entrega"
+              placeholder="Indicaciones (portón, timbre, etc)"
               value={form.notes}
               onChange={handleChange}
               className="w-full border rounded-xl px-4 py-3"
@@ -195,7 +206,7 @@ export default function SuccessPage() {
             </p>
 
             <p className="text-gray-600 text-sm">
-              Contactanos ante cuqlquier duda sobre la entrega de tu caja.
+              Te vamos a contactar para coordinar la entrega.
             </p>
 
             <a
@@ -218,4 +229,3 @@ export default function SuccessPage() {
     </main>
   )
 }
-
