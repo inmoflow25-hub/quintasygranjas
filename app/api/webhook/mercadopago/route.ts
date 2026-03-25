@@ -37,60 +37,91 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true })
     }
 
-    const userId = String(paymentInfo.external_reference || "")
+    // 🔥 EMAIL Y NOMBRE DEL CLIENTE
+    const email =
+      paymentInfo.payer?.email ||
+      paymentInfo.additional_info?.payer?.email ||
+      null
+
+    const name =
+      paymentInfo.payer?.first_name ||
+      paymentInfo.additional_info?.payer?.first_name ||
+      "Cliente"
+
+    const lastName =
+      paymentInfo.payer?.last_name ||
+      paymentInfo.additional_info?.payer?.last_name ||
+      ""
+
+    const fullName = `${name} ${lastName}`.trim()
 
     const boxId =
       paymentInfo.metadata?.box_id ||
       paymentInfo.additional_info?.items?.[0]?.id ||
       null
 
-    if (!userId || !boxId) {
+    const price = Number(paymentInfo.transaction_amount || 0)
+
+    if (!email || !boxId) {
+      console.error("MISSING DATA", paymentInfo)
       return NextResponse.json({ ok: true })
     }
 
-    const { data: alreadyPaidOrder } = await supabase
+    // 🔒 evitar duplicados
+    const { data: existing } = await supabase
       .from("orders")
       .select("*")
       .eq("mp_payment_id", String(paymentId))
       .maybeSingle()
 
-    if (alreadyPaidOrder) {
-      return NextResponse.json({ success: true })
-    }
-
-    const { data: order } = await supabase
-      .from("orders")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("box_id", boxId)
-      .eq("status", "pending")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle()
-
-    if (!order) {
+    if (existing) {
       return NextResponse.json({ ok: true })
     }
 
-    const { error: orderUpdateError } = await supabase
+    // 👤 UPSERT USER
+    let { data: user } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", email)
+      .maybeSingle()
+
+    if (!user) {
+      const { data: newUser } = await supabase
+        .from("users")
+        .insert({
+          email: email
+        })
+        .select()
+        .single()
+
+      user = newUser
+    }
+
+    // 👤 PROFILE (NOMBRE)
+    await supabase.from("profiles").upsert({
+      id: user.id,
+      name: fullName
+    })
+
+    // 📦 ORDER
+    const { data: order } = await supabase
       .from("orders")
-      .update({
+      .insert({
+        user_id: user.id,
+        box_id: boxId,
+        price: price,
         status: "paid",
         mp_payment_id: String(paymentId)
       })
-      .eq("id", order.id)
+      .select()
+      .single()
 
-    if (orderUpdateError) {
-      console.error(orderUpdateError)
-      return NextResponse.json({ ok: true })
-    }
-
-    // 🔥 CREAR ENTREGA (UNA SOLA)
+    // 🚚 DELIVERY
     const deliveryDate = new Date()
-    deliveryDate.setDate(deliveryDate.getDate() + 2) // ajustá si querés
+    deliveryDate.setDate(deliveryDate.getDate() + 2)
 
     await supabase.from("deliveries").insert({
-      user_id: userId,
+      user_id: user.id,
       order_id: order.id,
       delivery_date: deliveryDate.toISOString().split("T")[0],
       status: "pending"
@@ -103,3 +134,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true })
   }
 }
+
