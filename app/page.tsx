@@ -33,12 +33,10 @@ export default function Home() {
   const [email, setEmail] = useState("")
   const [selectedBox, setSelectedBox] = useState<BoxType | null>(null)
 
-  // 🔥 LOGIN DESACTIVADO (NO SE USA MÁS)
   async function loginWithEmail() {
     return
   }
 
-  // 🔥 CHECKOUT SIN USER
   async function createCheckout(boxType: BoxType) {
     const boxId = BOX_DB_IDS[boxType]
 
@@ -56,13 +54,16 @@ export default function Home() {
 
     console.log("CHECKOUT RESPONSE", data)
 
-    // 🔥 REDIRECCIÓN DIRECTA A MERCADOPAGO
-    if (data.init_point) {
-      window.location.href = data.init_point
+    const url =
+      process.env.NODE_ENV === "production"
+        ? data.init_point
+        : data.sandbox_init_point || data.init_point
+
+    if (url) {
+      window.location.href = url
       return
     }
 
-    // fallback si seguís usando brick
     if (data.preference_id) {
       setPreferenceId(data.preference_id)
       return
@@ -72,7 +73,6 @@ export default function Home() {
     alert(data.error || "No se pudo iniciar el checkout")
   }
 
-  // 🔥 SIN LOGIN
   async function onSelectBox(boxType: BoxType) {
     console.log("CLICK", boxType)
 
@@ -87,7 +87,6 @@ export default function Home() {
   }
 
   useEffect(() => {
-    // 🔥 BLOQUE ORIGINAL, PERO DESACTIVADO
     const restoreCheckout = async () => {
       return
     }
@@ -114,7 +113,6 @@ export default function Home() {
       <FinalCTA onWhatsAppClick={onWhatsAppClick} />
       <Footer onWhatsAppClick={onWhatsAppClick} />
 
-      {/* LOGIN MODAL (NO BORRADO, SOLO DESACTIVADO) */}
       {showLogin && false && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-xl w-full max-w-md">
@@ -147,7 +145,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* CHECKOUT MODAL (SE MANTIENE) */}
       {preferenceId && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-xl w-full max-w-lg">
@@ -165,4 +162,3 @@ export default function Home() {
     </main>
   )
 }
-
