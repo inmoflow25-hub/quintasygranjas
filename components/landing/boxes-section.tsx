@@ -96,8 +96,6 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
              <CardHeader className="pb-2">
   <h3 className="text-xl font-bold text-foreground">{box.name}</h3>
 
-  {/* 👇 ACA VA */}
-  <p className="text-sm text-muted-foreground">{box.subtitle}</p>
 
   <p className="text-3xl font-bold text-primary">{box.price}</p>
 </CardHeader>
