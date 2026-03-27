@@ -11,40 +11,48 @@ const boxes = [
   {
     id: "veggie" as const,
     name: "Caja Veggie",
+    subtitle: "🟢 Para 1 persona",
     price: "$19.900",
     image: "/images/caja-veggie.jpg",
     features: [
       "8–9kg de frutas y verduras de estación",
+      "Productos frescos para tu consumo diario",
       "Tomate, papa, cebolla, zanahoria y hojas frescas",
-      "Incluye frutas de estación (manzana, banana y naranja)",
-      "Productos frescos directo de la quinta",
-      "Entrega a domicilio"
+      "Incluye frutas de estación",
+      "✔ Ideal si comprás solo para vos",
+      "✔ Rinde varios días sin desperdicio"
     ],
     popular: false
   },
   {
     id: "campo" as const,
     name: "Caja Campo",
+    subtitle: "🟡 Para 2 personas",
     price: "$33.900",
     image: "/images/caja-campo.jpg",
     features: [
       "Todo lo de la Caja Veggie",
       "1 maple de huevos de campo (30)",
-      "1 pollo entero fresco de granja (~2kg)",
-      "Entrega a domicilio"
+      "1 pollo entero fresco (~2kg)",
+      "Más cantidad y variedad para la semana",
+      "✔ Perfecta para dos personas",
+      "✔ Ideal si querés cocinar y tener stock"
     ],
     popular: true
   },
   {
     id: "granja" as const,
     name: "Caja Granja",
+    subtitle: "🔵 Para familia",
     price: "$40.575",
     image: "/images/caja-granja.jpg",
     features: [
       "Todo lo de la Caja Campo",
-      "1 pan de campo artesanal",
-      "1 frasco de miel natural cruda (500g)",
-      "Entrega a domicilio"
+      "Pan de campo artesanal",
+      "Miel natural cruda (500g)",
+      "Mayor cantidad y variedad",
+      "✔ Ideal para familias",
+      "✔ Pensada para toda la semana"
     ],
     popular: false
   }
@@ -88,11 +96,14 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
                 />
               </div>
 
-              <CardHeader className="pb-2">
-                <h3 className="text-xl font-bold text-foreground">{box.name}</h3>
+             <CardHeader className="pb-2">
+  <h3 className="text-xl font-bold text-foreground">{box.name}</h3>
 
-                <p className="text-3xl font-bold text-primary">{box.price}</p>
-              </CardHeader>
+  {/* 👇 ACA VA */}
+  <p className="text-sm text-muted-foreground">{box.subtitle}</p>
+
+  <p className="text-3xl font-bold text-primary">{box.price}</p>
+</CardHeader>
 
               <CardContent className="pb-4">
                 <ul className="space-y-3">
