@@ -60,7 +60,6 @@ export async function POST(req: Request) {
           }
         ],
 
-        // 🔥 SIN USER
         external_reference: String(box.id),
 
         metadata: {
@@ -69,12 +68,12 @@ export async function POST(req: Request) {
         },
 
         notification_url:
-          "https://quintasygranjas.com/api/webhook/mercadopago",
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/webhook/mercadopago`,
 
         back_urls: {
-          success: "https://quintasygranjas.com/success",
-          failure: "https://quintasygranjas.com/error",
-          pending: "https://quintasygranjas.com/pending"
+          success: `${process.env.NEXT_PUBLIC_BASE_URL}/success`,
+          failure: `${process.env.NEXT_PUBLIC_BASE_URL}/error`,
+          pending: `${process.env.NEXT_PUBLIC_BASE_URL}/pending`
         },
 
         auto_return: "approved"
@@ -82,6 +81,8 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json({
+      init_point: result.init_point,
+      sandbox_init_point: result.sandbox_init_point,
       preference_id: result.id
     })
   } catch (error) {
