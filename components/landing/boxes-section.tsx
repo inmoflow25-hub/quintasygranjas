@@ -11,7 +11,6 @@ const boxes = [
   {
     id: "veggie" as const,
     name: "Caja Veggie",
-    subtitle: "🟢 Para 1 persona",
     price: "$19.900",
     image: "/images/caja-veggie.jpg",
     features: [
@@ -27,7 +26,6 @@ const boxes = [
   {
     id: "campo" as const,
     name: "Caja Campo",
-    subtitle: "🟡 Para 2 personas",
     price: "$33.900",
     image: "/images/caja-campo.jpg",
     features: [
@@ -43,7 +41,6 @@ const boxes = [
   {
     id: "granja" as const,
     name: "Caja Granja",
-    subtitle: "🔵 Para familia",
     price: "$40.575",
     image: "/images/caja-granja.jpg",
     features: [
