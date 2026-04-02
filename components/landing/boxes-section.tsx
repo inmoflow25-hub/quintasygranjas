@@ -111,7 +111,22 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
                 </ul>
               </CardContent>
 
-              <CardFooter className="flex flex-col gap-3">
+            <CardFooter className="flex flex-col gap-3">
+
+  <BoxBenefits type={box.id} />
+
+  <Button
+    className={`w-full py-6 text-lg ${
+      box.popular
+        ? "bg-primary hover:bg-primary/90 text-primary-foreground"
+        : "bg-secondary hover:bg-secondary/80 text-secondary-foreground"
+    }`}
+    onClick={() => onSelectBox(box.id)}
+  >
+    Comprar caja
+  </Button>
+
+</CardFooter>
                 <Button
                   className={`w-full py-6 text-lg ${
                     box.popular
