@@ -2,6 +2,8 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Check } from "lucide-react"
+import { BoxBenefits } from "@/components/landing/BoxBenefits"
+
 
 interface BoxesSectionProps {
   onSelectBox: (boxType: "veggie" | "campo" | "granja") => void
