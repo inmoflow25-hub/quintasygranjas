@@ -130,3 +130,5 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
     </section>
   )
 }
+
+
