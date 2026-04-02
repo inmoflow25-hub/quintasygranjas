@@ -11,7 +11,7 @@ const boxes = [
   {
     id: "veggie" as const,
     name: "Caja Veggie",
-    price: "$19.900",
+    price: "$27.800",
     image: "/images/caja-veggie.jpg",
     features: [
       "8–9kg de frutas y verduras de estación",
@@ -26,7 +26,7 @@ const boxes = [
   {
     id: "campo" as const,
     name: "Caja Campo",
-    price: "$33.900",
+    price: "$47.400",
     image: "/images/caja-campo.jpg",
     features: [
       "Todo lo de la Caja Veggie",
@@ -41,7 +41,7 @@ const boxes = [
   {
     id: "granja" as const,
     name: "Caja Granja",
-    price: "$40.575",
+    price: "$56.800",
     image: "/images/caja-granja.jpg",
     features: [
       "Todo lo de la Caja Campo",
