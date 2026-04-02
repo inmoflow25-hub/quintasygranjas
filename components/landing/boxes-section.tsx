@@ -111,8 +111,7 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
                 </ul>
               </CardContent>
 
-            <CardFooter className="flex flex-col gap-3">
-
+         <CardFooter className="flex flex-col gap-3">
   <BoxBenefits type={box.id} />
 
   <Button
@@ -125,7 +124,6 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
   >
     Comprar caja
   </Button>
-
 </CardFooter>
                 <Button
                   className={`w-full py-6 text-lg ${
