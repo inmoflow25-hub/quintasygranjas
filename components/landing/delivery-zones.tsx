@@ -44,9 +44,7 @@ export function DeliveryZones() {
             <h3 className="text-xl font-semibold text-foreground">
               Zona Norte
             </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Entregas los días <span className="font-medium">Miércoles</span>
-            </p>
+         
 
             <div className="flex flex-wrap justify-center gap-3">
               {zonaNorte.map((zone) => (
@@ -65,9 +63,7 @@ export function DeliveryZones() {
             <h3 className="text-xl font-semibold text-foreground">
               Capital Federal
             </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Entregas los días <span className="font-medium">Viernes</span>
-            </p>
+          
 
             <div className="flex flex-wrap justify-center gap-3">
               {caba.map((zone) => (
