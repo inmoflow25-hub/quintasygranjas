@@ -11,6 +11,7 @@ import { DeliveryZones } from "@/components/landing/delivery-zones"
 import { FinalCTA } from "@/components/landing/final-cta"
 import { Footer } from "@/components/landing/footer"
 import { Header } from "@/components/landing/header"
+import { BoxBenefits } from "@/components/landing/box-benefits"
 
 import { createClient } from "@supabase/supabase-js"
 
