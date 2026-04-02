@@ -2,8 +2,6 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Check } from "lucide-react"
-import { BoxBenefits } from "@/components/landing/BoxBenefits"
-
 
 interface BoxesSectionProps {
   onSelectBox: (boxType: "veggie" | "campo" | "granja") => void
@@ -15,6 +13,8 @@ const boxes = [
     name: "Caja Veggie",
     price: "$27.800",
     image: "/images/caja-veggie.jpg",
+    benefit:
+      "Rica en fibra, vitaminas y antioxidantes. Mejora la digestión y fortalece tus defensas.",
     features: [
       "8–9kg de frutas y verduras de estación",
       "Productos frescos para tu consumo diario",
@@ -30,6 +30,8 @@ const boxes = [
     name: "Caja Campo",
     price: "$47.400",
     image: "/images/caja-campo.jpg",
+    benefit:
+      "Equilibrio entre vegetales y proteínas. Más energía, saciedad y nutrición completa.",
     features: [
       "Todo lo de la Caja Veggie",
       "1 maple de huevos de campo (30)",
@@ -45,6 +47,8 @@ const boxes = [
     name: "Caja Granja",
     price: "$56.800",
     image: "/images/caja-granja.jpg",
+    benefit:
+      "Nutrición completa para toda la familia. Proteínas, grasas saludables y alimentos reales.",
     features: [
       "Todo lo de la Caja Campo",
       "Pan de campo artesanal",
@@ -81,11 +85,12 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
               }`}
             >
               {box.popular && (
-                <div className="absolute top-4 right-4 z-10 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
+                <div className="absolute top-4 right-4 z-20 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
                   Más elegida
                 </div>
               )}
 
+              {/* BENEFICIO ARRIBA DE LA IMAGEN */}
               <div className="relative aspect-[4/3]">
                 <Image
                   src={box.image}
@@ -93,14 +98,18 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
                   fill
                   className="object-cover"
                 />
+
+                <div className="absolute inset-0 bg-black/40" />
+
+                <div className="absolute bottom-0 p-4 text-white text-sm leading-snug">
+                  {box.benefit}
+                </div>
               </div>
 
-             <CardHeader className="pb-2">
-  <h3 className="text-xl font-bold text-foreground">{box.name}</h3>
-
-
-  <p className="text-3xl font-bold text-primary">{box.price}</p>
-</CardHeader>
+              <CardHeader className="pb-2">
+                <h3 className="text-xl font-bold text-foreground">{box.name}</h3>
+                <p className="text-3xl font-bold text-primary">{box.price}</p>
+              </CardHeader>
 
               <CardContent className="pb-4">
                 <ul className="space-y-3">
@@ -113,20 +122,7 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
                 </ul>
               </CardContent>
 
-         <CardFooter className="flex flex-col gap-3">
-  <BoxBenefits type={box.id} />
-
-  <Button
-    className={`w-full py-6 text-lg ${
-      box.popular
-        ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-        : "bg-secondary hover:bg-secondary/80 text-secondary-foreground"
-    }`}
-    onClick={() => onSelectBox(box.id)}
-  >
-    Comprar caja
-  </Button>
-</CardFooter>
+              <CardFooter className="flex flex-col gap-3">
                 <Button
                   className={`w-full py-6 text-lg ${
                     box.popular
@@ -145,5 +141,3 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
     </section>
   )
 }
-
-
