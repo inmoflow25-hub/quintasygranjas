@@ -79,7 +79,7 @@ export function DeliveryZones() {
 
           {/* CTA */}
           <p className="mt-10 text-muted-foreground">
-            ¿Tu zona no está en la lista?{" "}
+            ¿Tu zona no está en la lista? Expandimos cada semana{" "}
             <a
               href={whatsappLink}
               target="_blank"
