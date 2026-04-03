@@ -60,6 +60,10 @@ export async function POST(req: Request) {
           }
         ],
 
+        payer: {
+          email: "test_user_123@testuser.com"
+        },
+
         external_reference: String(box.id),
 
         metadata: {
