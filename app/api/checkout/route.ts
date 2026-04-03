@@ -56,7 +56,9 @@ export async function POST(req: Request) {
             title: String(box.name),
             quantity: 1,
             currency_id: "ARS",
-            unit_price: price
+            unit_price: Number(
+  String(price).replace(/\./g, "").replace("$", "")
+)
           }
         ],
 
