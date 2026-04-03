@@ -20,8 +20,8 @@ const boxes = [
       "Productos frescos para tu consumo diario",
       "Tomate, papa, cebolla, zanahoria y hojas frescas",
       "Incluye frutas de estación",
-      "✔ Ideal si comprás solo para vos",
-      "✔ Rinde varios días sin desperdicio"
+      "Ideal si comprás solo para vos",
+      "Rinde varios días sin desperdicio"
     ],
     popular: false
   },
@@ -37,8 +37,8 @@ const boxes = [
       "1 maple de huevos de campo (30)",
       "1 pollo entero fresco (~2kg)",
       "Más cantidad y variedad para la semana",
-      "✔ Perfecta para dos personas",
-      "✔ Ideal si querés cocinar y tener stock"
+      "Perfecta para dos personas",
+      "Ideal si querés cocinar y tener stock"
     ],
     popular: true
   },
@@ -54,8 +54,8 @@ const boxes = [
       "Pan de campo artesanal",
       "Miel natural cruda (500g)",
       "Mayor cantidad y variedad",
-      "✔ Ideal para familias",
-      "✔ Pensada para toda la semana"
+      "Ideal para familias",
+      "Pensada para toda la semana"
     ],
     popular: false
   }
