@@ -38,3 +38,5 @@ export default function CheckoutBrick({ preferenceId }: { preferenceId: string }
 
   return <div id="paymentBrick_container"></div>
 }
+
+
