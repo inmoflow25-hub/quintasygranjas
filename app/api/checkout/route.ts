@@ -46,6 +46,11 @@ export async function POST(req: Request) {
       )
     }
 
+    // 🔥 OBTENER USUARIO (esto faltaba)
+    const {
+      data: { user }
+    } = await supabase.auth.getUser()
+
     const preference = new Preference(mp)
 
     const result = await preference.create({
@@ -60,8 +65,9 @@ export async function POST(req: Request) {
           }
         ],
 
+        // 🔥 FIX REAL (esto te estaba rompiendo el pago)
         payer: {
-          email: "test_user_123@testuser.com"
+          email: user?.email || "comprador@quintasygranjas.com"
         },
 
         external_reference: String(box.id),
