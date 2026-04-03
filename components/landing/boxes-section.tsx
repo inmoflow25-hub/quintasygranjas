@@ -11,7 +11,7 @@ const boxes = [
   {
     id: "veggie" as const,
     name: "Caja Veggie",
-    price: "$27.800",
+    price: "$1.000",
     image: "/images/caja-veggie.jpg",
     benefit:
       "Rica en fibra, vitaminas y antioxidantes. Mejora la digestión y fortalece tus defensas.",
@@ -28,7 +28,7 @@ const boxes = [
   {
     id: "campo" as const,
     name: "Caja Campo",
-    price: "$47.400",
+    price: "$1.000",
     image: "/images/caja-campo.jpg",
     benefit:
       "Equilibrio entre vegetales y proteínas. Más energía, saciedad y nutrición completa.",
@@ -45,7 +45,7 @@ const boxes = [
   {
     id: "granja" as const,
     name: "Caja Granja",
-    price: "$56.800",
+    price: "$1.000",
     image: "/images/caja-granja.jpg",
     benefit:
       "Nutrición completa para toda la familia. Proteínas, grasas saludables y alimentos reales.",
