@@ -1,39 +1,8 @@
 "use client"
 
-import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet"
-import { useEffect } from "react"
-import "leaflet/dist/leaflet.css"
-
-function SetView() {
-  const map = useMap()
-
-  useEffect(() => {
-    map.setView([-34.6, -58.45], 10)
-  }, [map])
-
-  return null
-}
-
 export function DeliveryZones() {
   const whatsappLink =
     "https://wa.me/5491133614865?text=Hola%20quiero%20coordinar%20una%20entrega"
-
-  const zona = {
-    type: "Feature",
-    geometry: {
-      type: "Polygon",
-      coordinates: [[
-        [-58.70, -34.45],
-        [-58.20, -34.45],
-        [-58.10, -34.55],
-        [-58.10, -34.75],
-        [-58.30, -34.90],
-        [-58.55, -34.90],
-        [-58.70, -34.75],
-        [-58.70, -34.45]
-      ]]
-    }
-  }
 
   return (
     <section id="zonas" className="py-24 bg-card">
@@ -47,27 +16,15 @@ export function DeliveryZones() {
           Cubrimos toda CABA y Gran Buenos Aires
         </p>
 
-        <div className="mt-12 rounded-2xl overflow-hidden border shadow-sm">
-          <MapContainer
-            zoom={10}
-            className="h-[400px] w-full"
-          >
-            <SetView />
+        <div className="mt-12 rounded-2xl overflow-hidden border shadow-sm relative">
+          <iframe
+            src="https://www.google.com/maps?q=Buenos+Aires&output=embed"
+            className="w-full h-[400px]"
+            loading="lazy"
+          />
 
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-
-            <GeoJSON
-              data={zona as any}
-              style={{
-                color: "#16a34a",
-                fillColor: "#16a34a",
-                fillOpacity: 0.25,
-                weight: 2
-              }}
-            />
-          </MapContainer>
+          {/* Overlay verde */}
+          <div className="absolute inset-0 bg-green-600/20 pointer-events-none" />
         </div>
 
         <p className="mt-8 text-muted-foreground">
