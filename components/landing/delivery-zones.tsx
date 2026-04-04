@@ -1,7 +1,18 @@
 "use client"
 
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet"
+import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet"
+import { useEffect } from "react"
 import "leaflet/dist/leaflet.css"
+
+function SetView() {
+  const map = useMap()
+
+  useEffect(() => {
+    map.setView([-34.6, -58.45], 10)
+  }, [map])
+
+  return null
+}
 
 export function DeliveryZones() {
   const whatsappLink =
@@ -38,13 +49,15 @@ export function DeliveryZones() {
 
         <div className="mt-12 rounded-2xl overflow-hidden border shadow-sm">
           <MapContainer
-            center={[-34.6, -58.45] as any}
             zoom={10}
             className="h-[400px] w-full"
           >
+            <SetView />
+
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+
             <GeoJSON
               data={zona as any}
               style={{
