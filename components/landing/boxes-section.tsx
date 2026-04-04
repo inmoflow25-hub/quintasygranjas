@@ -49,7 +49,7 @@ const boxes = [
       "banana 1 kg",
       "lechuga 1 planta",
       "espinaca 2 atados",
-      "huevos de campo",
+      "30 huevos de campo",
       "1 pollo fresco entero organico",
       "perfecta para dos personas",
       "ideal si queres cocinar y tener stock"
@@ -74,7 +74,7 @@ const boxes = [
       "banana 1 kg",
       "lechuga 1 planta",
       "espinaca 2 atados",
-      "huevos de campo",
+      "30 huevos de campo",
       "1 pollo fresco entero organico",
       "1 kg de miel de abejas real pura",
       "1 pan de campo grande",
