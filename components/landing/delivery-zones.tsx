@@ -36,15 +36,15 @@ export function DeliveryZones() {
           Cubrimos toda CABA y Gran Buenos Aires
         </p>
 
-      <MapContainer
-  center={[-34.6, -58.45] as any}
-  zoom={10}
-  className="h-[400px] w-full"
->
+        <div className="mt-12 rounded-2xl overflow-hidden border shadow-sm">
+          <MapContainer
+            center={[-34.6, -58.45] as any}
+            zoom={10}
+            className="h-[400px] w-full"
+          >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-
             <GeoJSON
               data={zona as any}
               style={{
@@ -64,6 +64,7 @@ export function DeliveryZones() {
         <a
           href={whatsappLink}
           target="_blank"
+          rel="noopener noreferrer"
           className="inline-block mt-6 px-8 py-4 bg-primary text-white rounded-xl font-semibold"
         >
           Consultar entrega
@@ -73,4 +74,3 @@ export function DeliveryZones() {
     </section>
   )
 }
-
