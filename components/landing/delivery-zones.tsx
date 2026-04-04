@@ -12,19 +12,17 @@ export function DeliveryZones() {
           Entregamos en tu zona
         </h2>
 
-        <p className="mt-4 text-muted-foreground">
+        <p className="mt-4 text-lg text-muted-foreground">
           Cubrimos toda CABA y Gran Buenos Aires
         </p>
 
-        <div className="mt-12 rounded-2xl overflow-hidden border shadow-sm relative">
-          <iframe
-            src="https://www.google.com/maps?q=Buenos+Aires&output=embed"
-            className="w-full h-[400px]"
-            loading="lazy"
+        {/* MAPA */}
+        <div className="mt-12 rounded-2xl overflow-hidden border shadow-sm bg-white">
+          <img
+            src="/mapa-zona.jpg"
+            alt="Zonas de entrega CABA y GBA"
+            className="w-full h-[400px] object-contain"
           />
-
-          {/* Overlay verde */}
-          <div className="absolute inset-0 bg-green-600/20 pointer-events-none" />
         </div>
 
         <p className="mt-8 text-muted-foreground">
@@ -35,7 +33,7 @@ export function DeliveryZones() {
           href={whatsappLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block mt-6 px-8 py-4 bg-primary text-white rounded-xl font-semibold"
+          className="inline-block mt-6 px-8 py-4 bg-primary text-white rounded-xl font-semibold hover:opacity-90 transition"
         >
           Consultar entrega
         </a>
