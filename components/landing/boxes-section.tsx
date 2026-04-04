@@ -16,12 +16,16 @@ const boxes = [
     benefit:
       "Rica en fibra, vitaminas y antioxidantes. Mejora la digestión y fortalece tus defensas.",
     features: [
-      "8–9kg de frutas y verduras de estación",
-      "Productos frescos para tu consumo diario",
-      "Tomate, papa, cebolla, zanahoria y hojas frescas",
-      "Incluye frutas de estación",
-      "Ideal si comprás solo para vos",
-      "Rinde varios días sin desperdicio"
+      "1 zapallo anco",
+      "papa negra 2 kg",
+      "cebolla 1 kg y 1/2",
+      "tomate 1/2 kg",
+      "zanahoria 1/2 kg",
+      "manzana 1/2 kg",
+      "citricos (naranja + limon) 1 kg",
+      "banana 1 kg",
+      "lechuga 1 planta",
+      "espinaca 2 atados"
     ],
     popular: false
   },
@@ -33,12 +37,9 @@ const boxes = [
     benefit:
       "Equilibrio entre vegetales y proteínas. Más energía, saciedad y nutrición completa.",
     features: [
-      "Todo lo de la Caja Veggie",
-      "1 maple de huevos de campo (30)",
-      "1 pollo entero fresco (~2kg)",
-      "Más cantidad y variedad para la semana",
-      "Perfecta para dos personas",
-      "Ideal si querés cocinar y tener stock"
+      "caja veggie",
+      "huevos de campo",
+      "1 pollo fresco entero organico"
     ],
     popular: true
   },
@@ -50,12 +51,9 @@ const boxes = [
     benefit:
       "Nutrición completa para toda la familia. Proteínas, grasas saludables y alimentos reales.",
     features: [
-      "Todo lo de la Caja Campo",
-      "Pan de campo artesanal",
-      "Miel natural cruda (500g)",
-      "Mayor cantidad y variedad",
-      "Ideal para familias",
-      "Pensada para toda la semana"
+      "caja campo",
+      "1 kg de miel de abejas real pura",
+      "1 pan de campo grande"
     ],
     popular: false
   }
