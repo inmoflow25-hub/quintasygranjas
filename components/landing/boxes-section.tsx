@@ -37,7 +37,16 @@ const boxes = [
     benefit:
       "Equilibrio entre vegetales y proteínas. Más energía, saciedad y nutrición completa.",
     features: [
-      "caja veggie",
+      "1 zapallo anco",
+      "papa negra 2 kg",
+      "cebolla 1 kg y 1/2",
+      "tomate 1/2 kg",
+      "zanahoria 1/2 kg",
+      "manzana 1/2 kg",
+      "citricos (naranja + limon) 1 kg",
+      "banana 1 kg",
+      "lechuga 1 planta",
+      "espinaca 2 atados",
       "huevos de campo",
       "1 pollo fresco entero organico"
     ],
@@ -51,7 +60,18 @@ const boxes = [
     benefit:
       "Nutrición completa para toda la familia. Proteínas, grasas saludables y alimentos reales.",
     features: [
-      "caja campo",
+      "1 zapallo anco",
+      "papa negra 2 kg",
+      "cebolla 1 kg y 1/2",
+      "tomate 1/2 kg",
+      "zanahoria 1/2 kg",
+      "manzana 1/2 kg",
+      "citricos (naranja + limon) 1 kg",
+      "banana 1 kg",
+      "lechuga 1 planta",
+      "espinaca 2 atados",
+      "huevos de campo",
+      "1 pollo fresco entero organico",
       "1 kg de miel de abejas real pura",
       "1 pan de campo grande"
     ],
