@@ -146,6 +146,18 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
                 </ul>
               </CardContent>
 
+const handleBuy = async (boxId: string) => {
+  const res = await fetch("/api/checkout", {
+    method: "POST",
+    body: JSON.stringify({ box: boxId })
+  })
+
+  const data = await res.json()
+
+  window.location.href = data.init_point
+}
+          
+              
               <CardFooter className="flex flex-col gap-3">
                 <Button
                   className={`w-full py-6 text-lg ${
