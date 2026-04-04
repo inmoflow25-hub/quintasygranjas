@@ -25,8 +25,8 @@ const boxes = [
       "citricos (naranja + limon) 1 kg",
       "banana 1 kg",
       "lechuga 1 planta",
-      "espinaca 2 atados"
-      "ideal si compras solo para vos"
+      "espinaca 2 atados",
+      "ideal si compras solo para vos",
       "rinde muy bien sin desperdicio"
     ],
     popular: false
@@ -50,8 +50,8 @@ const boxes = [
       "lechuga 1 planta",
       "espinaca 2 atados",
       "huevos de campo",
-      "1 pollo fresco entero organico"
-      "perfecta para dos personas"
+      "1 pollo fresco entero organico",
+      "perfecta para dos personas",
       "ideal si queres cocinar y tener stock"
     ],
     popular: true
@@ -77,8 +77,8 @@ const boxes = [
       "huevos de campo",
       "1 pollo fresco entero organico",
       "1 kg de miel de abejas real pura",
-      "1 pan de campo grande"
-      "le agrega nutrientes a tus desayunos"
+      "1 pan de campo grande",
+      "le agrega nutrientes a tus desayunos",
       "pensada para toda la familia"
     ],
     popular: false
