@@ -13,7 +13,7 @@ export function DeliveryZones() {
         </h2>
 
         <p className="mt-4 text-lg text-muted-foreground">
-          Cubrimos toda CABA y Gran Buenos Aires
+          Cubrimos CABA y Gran Buenos Aires.
         </p>
 
         {/* MAPA */}
@@ -26,7 +26,7 @@ export function DeliveryZones() {
         </div>
 
         <p className="mt-8 text-muted-foreground">
-          Coordinamos la entrega directamente por WhatsApp según tu ubicación
+          Consultanos si llegamos a tu barrio sin costo de envío.
         </p>
 
         <a
