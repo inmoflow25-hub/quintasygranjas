@@ -19,7 +19,7 @@ export function DeliveryZones() {
         {/* MAPA */}
         <div className="mt-12 rounded-2xl overflow-hidden border shadow-sm bg-white">
           <img
-            src="/mapa-zona.jpg"
+            src="https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/WhatsApp%20Image%202026-04-04%20at%2011.07.32.jpeg"
             alt="Zonas de entrega CABA y GBA"
             className="w-full h-[400px] object-contain"
           />
