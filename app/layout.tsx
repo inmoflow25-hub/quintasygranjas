@@ -10,6 +10,7 @@ const playfair = Playfair_Display({
   variable: "--font-playfair"
 })
 
+
 export const metadata: Metadata = {
   title: 'Quintas y Granjas | Cajas semanales de frutas, verduras y productos de granja',
   description: 'Recibí frutas, verduras y productos de granja frescos directo en tu casa todas las semanas. Sin supermercado. Sin filas. Entrega en zona norte del Gran Buenos Aires.',
