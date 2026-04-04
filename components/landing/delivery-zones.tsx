@@ -36,12 +36,11 @@ export function DeliveryZones() {
           Cubrimos toda CABA y Gran Buenos Aires
         </p>
 
-        <div className="mt-12 rounded-2xl overflow-hidden border shadow-sm">
-          <MapContainer
-            center={[-34.6, -58.45]}
-            zoom={10}
-            className="h-[400px] w-full"
-          >
+      <MapContainer
+  center={[-34.6, -58.45] as any}
+  zoom={10}
+  className="h-[400px] w-full"
+>
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
