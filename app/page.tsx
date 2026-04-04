@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import CheckoutBrick from "@/components/checkout/checkout-brick"
 
 import { Hero } from "@/components/landing/hero"
 import { HowItWorks } from "@/components/landing/how-it-works"
