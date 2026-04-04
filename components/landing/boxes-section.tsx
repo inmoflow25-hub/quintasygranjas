@@ -10,72 +10,18 @@ interface BoxesSectionProps {
 }
 
 const boxes = [
-  {
-    id: "veggie" as const,
-    name: "Caja Veggie",
-    price: "$27.800",
-    image: "/images/caja-veggie.jpg",
-    benefit:
-      "Rica en fibra, vitaminas y antioxidantes. Mejora la digestión y fortalece tus defensas.",
-    features: [
-      "1 zapallo anco",
-      "papa negra 2 kg",
-      "cebolla 1 kg y 1/2",
-      "tomate 1/2 kg",
-      "zanahoria 1/2 kg",
-      "manzana 1/2 kg",
-      "citricos (naranja + limon) 1 kg",
-      "banana 1 kg",
-      "lechuga 1 planta",
-      "espinaca 2 atados",
-      "ideal si compras solo para vos",
-      "rinde muy bien sin desperdicio"
-    ],
-    popular: false
-  },
-  {
-    id: "campo" as const,
-    name: "Caja Campo",
-    price: "$47.400",
-    image: "/images/caja-campo.jpg",
-    benefit:
-      "Equilibrio entre vegetales y proteínas. Más energía, saciedad y nutrición completa.",
-    features: [
-      "1 zapallo anco",
-      "papa negra 2 kg",
-      "cebolla 1 kg y 1/2",
-      "tomate 1/2 kg",
-      "zanahoria 1/2 kg",
-      "manzana 1/2 kg",
-      "citricos (naranja + limon) 1 kg",
-      "banana 1 kg",
-      "lechuga 1 planta",
-      "espinaca 2 atados",
-      "30 huevos de campo",
-      "1 pollo fresco entero organico"
-    ],
-    popular: true
-  },
-  {
-    id: "granja" as const,
-    name: "Caja Granja",
-    price: "$56.800",
-    image: "/images/caja-granja.jpg",
-    benefit:
-      "Nutrición completa para toda la familia.",
-    features: [
-      "1 zapallo anco",
-      "papa negra 2 kg",
-      "30 huevos",
-      "pollo",
-      "miel",
-      "pan"
-    ],
-    popular: false
-  }
+  { id: "veggie" as const, name: "Caja Veggie", price: "$27.800", image: "/images/caja-veggie.jpg", features: ["..."], popular: false },
+  { id: "campo" as const, name: "Caja Campo", price: "$47.400", image: "/images/caja-campo.jpg", features: ["..."], popular: true },
+  { id: "granja" as const, name: "Caja Granja", price: "$56.800", image: "/images/caja-granja.jpg", features: ["..."], popular: false }
 ]
 
 export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
+
+  // 🔥 ACA VA, AFUERA DEL RETURN
+  const handleBuy = (boxId: "veggie" | "campo" | "granja") => {
+    onSelectBox(boxId)
+  }
+
   return (
     <section className="py-24">
       <div className="grid md:grid-cols-3 gap-8">
@@ -93,7 +39,7 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
             </CardContent>
 
             <CardFooter>
-              <Button onClick={() => onSelectBox(box.id)}>
+              <Button onClick={() => handleBuy(box.id)}>
                 Comprar
               </Button>
             </CardFooter>
