@@ -1,57 +1,75 @@
-import { MapPin } from "lucide-react"
+"use client"
+
+import { MapContainer, TileLayer, GeoJSON } from "react-leaflet"
+import "leaflet/dist/leaflet.css"
 
 export function DeliveryZones() {
   const whatsappLink =
     "https://wa.me/5491133614865?text=Hola%20quiero%20coordinar%20una%20entrega"
 
+  const zona = {
+    type: "Feature",
+    geometry: {
+      type: "Polygon",
+      coordinates: [[
+        [-58.70, -34.45],
+        [-58.20, -34.45],
+        [-58.10, -34.55],
+        [-58.10, -34.75],
+        [-58.30, -34.90],
+        [-58.55, -34.90],
+        [-58.70, -34.75],
+        [-58.70, -34.45]
+      ]]
+    }
+  }
+
   return (
     <section id="zonas" className="py-24 bg-card">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 text-center max-w-5xl">
 
-        <div className="max-w-5xl mx-auto text-center">
+        <h2 className="text-3xl md:text-4xl font-bold">
+          Entregamos en tu zona
+        </h2>
 
-          {/* ICONO */}
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-            <MapPin className="w-8 h-8 text-primary" />
-          </div>
+        <p className="mt-4 text-muted-foreground">
+          Cubrimos toda CABA y Gran Buenos Aires
+        </p>
 
-          {/* TITULO */}
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-            Entregamos en tu zona
-          </h2>
-
-          <p className="mt-4 text-lg text-muted-foreground">
-            Cubrimos toda CABA y Gran Buenos Aires
-          </p>
-
-          {/* MAPA */}
-          <div className="mt-12 rounded-2xl overflow-hidden border shadow-sm">
-            <iframe
-              src="https://www.google.com/maps?q=Buenos+Aires&output=embed"
-              className="w-full h-[400px]"
-              loading="lazy"
-            />
-            
-            {/* OVERLAY */}
-            <div className="absolute inset-0 bg-primary/10 pointer-events-none" />
-          </div>
-
-          {/* TEXTO SIMPLE */}
-          <p className="mt-8 text-muted-foreground max-w-xl mx-auto">
-            Coordinamos la entrega directamente por WhatsApp según tu ubicación.
-          </p>
-
-          {/* CTA */}
-          <a
-            href={whatsappLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block mt-6 px-8 py-4 bg-primary text-primary-foreground rounded-xl font-semibold hover:opacity-90 transition"
+        <div className="mt-12 rounded-2xl overflow-hidden border shadow-sm">
+          <MapContainer
+            center={[-34.6, -58.45]}
+            zoom={10}
+            className="h-[400px] w-full"
           >
-            Consultar entrega
-          </a>
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
 
+            <GeoJSON
+              data={zona as any}
+              style={{
+                color: "#16a34a",
+                fillColor: "#16a34a",
+                fillOpacity: 0.25,
+                weight: 2
+              }}
+            />
+          </MapContainer>
         </div>
+
+        <p className="mt-8 text-muted-foreground">
+          Coordinamos la entrega directamente por WhatsApp según tu ubicación
+        </p>
+
+        <a
+          href={whatsappLink}
+          target="_blank"
+          className="inline-block mt-6 px-8 py-4 bg-primary text-white rounded-xl font-semibold"
+        >
+          Consultar entrega
+        </a>
+
       </div>
     </section>
   )
