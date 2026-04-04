@@ -1,18 +1,27 @@
 import { NextResponse } from "next/server"
 
 export async function POST(req: Request) {
-  const { box } = await req.json()
+  const { box_id } = await req.json()
 
-  const prices: any = {
-    veggie: 27800,
-    campo: 47400,
-    granja: 56800
+  const map: any = {
+    "dff394c8-6a17-45e8-ba3f-960c27f8d76c": {
+      title: "Caja Veggie",
+      price: 27800
+    },
+    "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d": {
+      title: "Caja Campo",
+      price: 47400
+    },
+    "d5b70577-a2b7-47d7-9ccd-e2f336e25af7": {
+      title: "Caja Granja",
+      price: 56800
+    }
   }
 
-  const titles: any = {
-    veggie: "Caja Veggie",
-    campo: "Caja Campo",
-    granja: "Caja Granja"
+  const selected = map[box_id]
+
+  if (!selected) {
+    return NextResponse.json({ error: "box inválida" }, { status: 400 })
   }
 
   const response = await fetch("https://api.mercadopago.com/checkout/preferences", {
@@ -24,10 +33,10 @@ export async function POST(req: Request) {
     body: JSON.stringify({
       items: [
         {
-          title: titles[box],
+          title: selected.title,
           quantity: 1,
           currency_id: "ARS",
-          unit_price: prices[box]
+          unit_price: selected.price
         }
       ],
       back_urls: {
@@ -40,6 +49,8 @@ export async function POST(req: Request) {
   })
 
   const data = await response.json()
+
+  console.log("MP RESPONSE", data)
 
   return NextResponse.json({
     init_point: data.init_point
