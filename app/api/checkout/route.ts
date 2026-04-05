@@ -6,15 +6,15 @@ export async function POST(req: Request) {
   const map: any = {
     "dff394c8-6a17-45e8-ba3f-960c27f8d76c": {
       title: "Caja Veggie",
-      price: 27.800
+      price: 27800
     },
     "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d": {
       title: "Caja Campo",
-      price: 47.400
+      price: 47400
     },
     "d5b70577-a2b7-47d7-9ccd-e2f336e25af7": {
       title: "Caja Granja",
-      price: 56.800
+      price: 56800
     }
   }
 
