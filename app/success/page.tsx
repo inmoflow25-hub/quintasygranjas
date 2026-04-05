@@ -64,7 +64,7 @@ useEffect(() => {
     return null
   }
 
- const saveData = async () => {
+const saveData = async () => {
   try {
     const errorMsg = validate()
     if (errorMsg) {
@@ -89,9 +89,9 @@ useEffect(() => {
 
     let user = existingUser
 
-    // 🔥 ACA ESTÁ LA CLAVE QUE TE FALTABA
+    // 🔥 CREAR USER SI NO EXISTE
     if (!user) {
-      const userId = crypto.randomUUID() // ← ESTE FALTABA
+      const userId = crypto.randomUUID()
 
       const { data: newUser, error: insertError } = await supabase
         .from("users")
@@ -118,7 +118,7 @@ useEffect(() => {
       return
     }
 
-    // 🔥 PROFILE CON ID
+    // 🔥 PROFILE
     const { error: profileError } = await supabase
       .from("profiles")
       .upsert({
@@ -155,43 +155,45 @@ useEffect(() => {
       return
     }
 
+    // 🔥 VALIDAR BOX (VIENE DE MP)
+    if (!boxId) {
+      alert("No llegó el producto desde MercadoPago")
+      setLoading(false)
+      return
+    }
+
+    // 🔥 PRECIOS
+    const priceMap: any = {
+      "dff394c8-6a17-45e8-ba3f-960c27f8d76c": 1000,
+      "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d": 1000,
+      "d5b70577-a2b7-47d7-9ccd-e2f336e25af7": 1000
+    }
+
+    // 🔥 CREAR ORDER (ESTO TE FALTABA)
+    const { error: orderError } = await supabase
+      .from("orders")
+      .insert({
+        user_id: user.id,
+        box_id: boxId,
+        price: priceMap[boxId],
+        status: "paid"
+      })
+
+    if (orderError) {
+      console.error(orderError)
+      alert("Error creando orden")
+      setLoading(false)
+      return
+    }
+
     setLoading(false)
-    alert("Datos guardados correctamente")
+    setSaved(true)
 
   } catch (err) {
     console.error(err)
     alert("Error inesperado")
     setLoading(false)
   }
-
-if (!boxId) {
-  alert("No llegó el producto desde MercadoPago")
-  setLoading(false)
-  return
-}
-
-const priceMap: any = {
-  "dff394c8-6a17-45e8-ba3f-960c27f8d76c": 1000,
-  "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d": 1000,
-  "d5b70577-a2b7-47d7-9ccd-e2f336e25af7": 1000
-}
-
-const { error: orderError } = await supabase
-  .from("orders")
-  .insert({
-    user_id: user.id,
-    box_id: boxId,
-    price: priceMap[boxId],
-    status: "paid"
-  })
-
-if (orderError) {
-  console.error(orderError)
-  alert("Error creando orden")
-  setLoading(false)
-  return
-}
-   
 }
   return (
     <main className="min-h-screen flex items-center justify-center bg-green-50 px-6">
