@@ -56,129 +56,106 @@ export default function SuccessPage() {
     return null
   }
 
-  const saveData = async () => {
-    try {
-      const errorMsg = validate()
-      if (errorMsg) {
-        alert(errorMsg)
-        return
-      }
-
-      setLoading(true)
-
-      // 🔍 buscar usuario
-      const { data: existingUser, error: findError } = await supabase
-        .from("users")
-        .select("*")
-        .eq("email", form.email)
-        .maybeSingle()
-
-      if (findError) {
-        console.error(findError)
-        alert("Error buscando usuario")
-        setLoading(false)
-        return
-      }
-
-      let user = existingUser
-      let userId = existingUser?.id
-
-      // 👤 crear usuario si no existe
-      if (!user) {
-        userId = crypto.randomUUID()
-
-        const { data: newUser, error: insertError } = await supabase
-          .from("users")
-          .insert({
-            id: userId,
-            email: form.email
-          })
-          .select()
-          .single()
-
-        if (insertError || !newUser) {
-          console.error(insertError)
-          alert("Error creando usuario")
-          setLoading(false)
-          return
-        }
-
-        user = newUser
-      }
-
-      if (!userId) {
-        alert("Error de usuario")
-        setLoading(false)
-        return
-      }
-
-      // 👤 PROFILE (SIN ID!)
-      const { error: profileError } = await supabase
-.from("profiles")
-.insert({
-  id: userId, 
-  name: form.name,
-  email: form.email,
-  phone: form.phone,
-  address: form.address,
-  city: form.city
-})
-
-      if (profileError) {
-        console.error(profileError)
-        alert("Error guardando perfil")
-        setLoading(false)
-        return
-      }
-
-      // 📦 ADDRESS
-      const { error: addressError } = await supabase
-        .from("addresses")
-        .upsert(
-          {
-            user_id: userId,
-            address: form.address,
-            city: form.city,
-            notes: form.notes,
-            phone: form.phone
-          },
-          {
-            onConflict: "user_id"
-          }
-        )
-
-      if (addressError) {
-        console.error(addressError)
-        alert("Error guardando dirección")
-        setLoading(false)
-        return
-      }
-
-      // 🧾 UPDATE ORDER
-      const { error: orderUpdateError } = await supabase
-        .from("orders")
-        .update({
-          status: "confirmed",
-          price: 0 // opcional
-        })
-        .eq("status", "paid")
-        .order("created_at", { ascending: false })
-        .limit(1)
-
-      if (orderUpdateError) {
-        console.error("ORDER UPDATE ERROR", orderUpdateError)
-      }
-
-      setSaved(true)
-      setLoading(false)
-
-    } catch (err) {
-      console.error(err)
-      alert("Error inesperado")
-      setLoading(false)
+ const saveData = async () => {
+  try {
+    const errorMsg = validate()
+    if (errorMsg) {
+      alert(errorMsg)
+      return
     }
-  }
 
+    setLoading(true)
+
+    const { data: existingUser, error: findError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", form.email)
+      .maybeSingle()
+
+    if (findError) {
+      console.error(findError)
+      alert("Error buscando usuario")
+      setLoading(false)
+      return
+    }
+
+    let user = existingUser
+
+    // 🔥 ACA ESTÁ LA CLAVE QUE TE FALTABA
+    if (!user) {
+      const userId = crypto.randomUUID() // ← ESTE FALTABA
+
+      const { data: newUser, error: insertError } = await supabase
+        .from("users")
+        .insert({
+          id: userId,
+          email: form.email
+        })
+        .select()
+        .single()
+
+      if (insertError || !newUser) {
+        console.error(insertError)
+        alert("Error creando usuario")
+        setLoading(false)
+        return
+      }
+
+      user = newUser
+    }
+
+    if (!user?.id) {
+      alert("Error de usuario")
+      setLoading(false)
+      return
+    }
+
+    // 🔥 PROFILE CON ID
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .upsert({
+        id: user.id,
+        name: form.name,
+        phone: form.phone
+      })
+
+    if (profileError) {
+      console.error(profileError)
+      alert("Error guardando perfil")
+      setLoading(false)
+      return
+    }
+
+    // 🔥 ADDRESS
+    const { error: addressError } = await supabase
+      .from("addresses")
+      .upsert(
+        {
+          user_id: user.id,
+          address: form.address,
+          city: form.city,
+          notes: form.notes,
+          phone: form.phone
+        },
+        { onConflict: "user_id" }
+      )
+
+    if (addressError) {
+      console.error(addressError)
+      alert("Error guardando dirección")
+      setLoading(false)
+      return
+    }
+
+    setLoading(false)
+    alert("Datos guardados correctamente")
+
+  } catch (err) {
+    console.error(err)
+    alert("Error inesperado")
+    setLoading(false)
+  }
+}
   return (
     <main className="min-h-screen flex items-center justify-center bg-green-50 px-6">
       <div className="max-w-xl w-full bg-white rounded-2xl shadow-lg p-10 text-center">
