@@ -164,9 +164,9 @@ const saveData = async () => {
 
     // 🔥 PRECIOS
     const priceMap: any = {
-      "dff394c8-6a17-45e8-ba3f-960c27f8d76c": 1000,
-      "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d": 1000,
-      "d5b70577-a2b7-47d7-9ccd-e2f336e25af7": 1000
+      "dff394c8-6a17-45e8-ba3f-960c27f8d76c": 27.800,
+      "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d": 47.400,
+      "d5b70577-a2b7-47d7-9ccd-e2f336e25af7": 56.800
     }
 
     // 🔥 CREAR ORDER (ESTO TE FALTABA)
