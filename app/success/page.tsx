@@ -16,6 +16,14 @@ declare global {
 }
 
 export default function SuccessPage() {
+  const [boxId, setBoxId] = useState<string | null>(null)
+
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search)
+  const ref = params.get("external_reference")
+  setBoxId(ref)
+}, [])
+  
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
 
