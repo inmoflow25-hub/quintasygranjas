@@ -18,11 +18,11 @@ declare global {
 export default function SuccessPage() {
   const [boxId, setBoxId] = useState<string | null>(null)
 
-useEffect(() => {
-  const params = new URLSearchParams(window.location.search)
-  const ref = params.get("external_reference")
-  setBoxId(ref)
-}, [])
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const ref = params.get("external_reference")
+    setBoxId(ref)
+  }, [])
   
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -39,14 +39,23 @@ useEffect(() => {
   const whatsappLink =
     "https://wa.me/5491133614865?text=Hola%20acabo%20de%20hacer%20un%20pedido%20en%20Quintas%20y%20Granjas"
 
+  // 🔥 PIXEL CORRECTO (DINÁMICO)
   useEffect(() => {
+    if (!boxId) return
+
+    const priceMap: any = {
+      "dff394c8-6a17-45e8-ba3f-960c27f8d76c": 27800,
+      "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d": 47400,
+      "d5b70577-a2b7-47d7-9ccd-e2f336e25af7": 56800
+    }
+
     if (typeof window !== "undefined" && window.fbq) {
       window.fbq("track", "Purchase", {
-        value: 18000,
+        value: priceMap[boxId],
         currency: "ARS"
       })
     }
-  }, [])
+  }, [boxId])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({
@@ -164,12 +173,12 @@ const saveData = async () => {
 
     // 🔥 PRECIOS
     const priceMap: any = {
-      "dff394c8-6a17-45e8-ba3f-960c27f8d76c": 27.800,
-      "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d": 47.400,
-      "d5b70577-a2b7-47d7-9ccd-e2f336e25af7": 56.800
+      "dff394c8-6a17-45e8-ba3f-960c27f8d76c": 27800,
+      "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d": 47400,
+      "d5b70577-a2b7-47d7-9ccd-e2f336e25af7": 56800
     }
 
-    // 🔥 CREAR ORDER (ESTO TE FALTABA)
+    // 🔥 CREAR ORDER
     const { error: orderError } = await supabase
       .from("orders")
       .insert({
@@ -195,6 +204,7 @@ const saveData = async () => {
     setLoading(false)
   }
 }
+
   return (
     <main className="min-h-screen flex items-center justify-center bg-green-50 px-6">
       <div className="max-w-xl w-full bg-white rounded-2xl shadow-lg p-10 text-center">
@@ -261,3 +271,4 @@ const saveData = async () => {
     </main>
   )
 }
+
