@@ -114,14 +114,15 @@ export default function SuccessPage() {
 
       // 👤 PROFILE (SIN ID!)
       const { error: profileError } = await supabase
-        .from("profiles")
-        .insert({
-          name: form.name,
-          email: form.email,
-          phone: form.phone,
-          address: form.address,
-          city: form.city
-        })
+.from("profiles")
+.insert({
+  id: userId, 
+  name: form.name,
+  email: form.email,
+  phone: form.phone,
+  address: form.address,
+  city: form.city
+})
 
       if (profileError) {
         console.error(profileError)
