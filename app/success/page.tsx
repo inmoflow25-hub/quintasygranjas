@@ -82,11 +82,16 @@ export default function SuccessPage() {
       let user = existingUser
 
       if (!user) {
-        const { data: newUser, error: insertError } = await supabase
-          .from("users")
-          .insert({
-            email: form.email
-          })
+       const userId = crypto.randomUUID()
+
+const { data: newUser, error: insertError } = await supabase
+  .from("users")
+  .insert({
+    id: userId,
+    email: form.email
+  })
+  .select()
+  .single()
           .select()
           .single()
 
