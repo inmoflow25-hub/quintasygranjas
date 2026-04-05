@@ -39,11 +39,16 @@ export async function POST(req: Request) {
           unit_price: selected.price
         }
       ],
+
+      // 🔥 ACA VA (CLAVE)
+      external_reference: box_id,
+
       back_urls: {
         success: `${process.env.NEXT_PUBLIC_BASE_URL}/success`,
         failure: `${process.env.NEXT_PUBLIC_BASE_URL}/error`,
         pending: `${process.env.NEXT_PUBLIC_BASE_URL}/pending`
       },
+
       auto_return: "approved"
     })
   })
