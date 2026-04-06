@@ -14,12 +14,12 @@ export async function GET() {
       <!-- BODY -->
       <div style="padding:20px;">
         
-        <h2 style="color:#2E7D32;">Hola {{contact.first_name}} 👋</h2>
-        <p>Te dejamos recetas personalizadas con productos frescos de nuestras quintas 🌱</p>
+        <h2 style="color:#2E7D32;">Hola {{contact.first_name}} </h2>
+        <p>Te dejamos recetas personalizadas con productos frescos de nuestras quintas </p>
 
         <!-- RECETA 1 -->
         <div style="margin-top:25px;">
-          <h3>🍗 Pollo glaseado con miel</h3>
+          <h3>Pollo glaseado con miel</h3>
           <p><strong>Ingredientes:</strong> pollo, miel, zanahoria</p>
           <ol>
             <li>Preparar ingredientes</li>
@@ -30,7 +30,7 @@ export async function GET() {
 
         <!-- RECETA 2 -->
         <div style="margin-top:25px;">
-          <h3>🍞 Tostadas con huevo</h3>
+          <h3>Tostadas con huevo</h3>
           <p><strong>Ingredientes:</strong> pan, huevo, miel</p>
           <ol>
             <li>Tostar pan</li>
@@ -43,7 +43,7 @@ export async function GET() {
         <div style="text-align:center; margin-top:30px;">
           <a href="https://quintasygranjas.com" 
              style="background:#2E7D32; color:white; padding:15px 25px; text-decoration:none; border-radius:5px; font-weight:bold;">
-             🛒 Comprar productos frescos
+             Comprar productos frescos
           </a>
         </div>
 
