@@ -20,7 +20,7 @@ export function FinalCTA({ onWhatsAppClick }: FinalCTAProps) {
             size="lg"
             onClick={()=>{
               window.open(
-                "https://wa.me/5491133614865?text=Hola%20quiero%20recibir%20una%20caja%20de%20Quintas%20y%20Granjas",
+                "https://wa.me/5491168303596?text=Hola%20quiero%20recibir%20una%20caja%20de%20Quintas%20y%20Granjas",
                 "_blank"
               )
             }}
