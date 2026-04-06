@@ -1,17 +1,22 @@
-import { openai } from "@/lib/openai";
+import { NextResponse } from "next/server";
 
 export async function GET() {
-  const response = await openai.chat.completions.create({
-    model: "gpt-4.1-mini",
-    messages: [
-      {
-        role: "user",
-        content: "Decime una receta simple con pollo y miel",
-      },
-    ],
-  });
-
-  return Response.json({
-    result: response.choices[0].message.content,
+  return NextResponse.json({
+    receta: {
+      titulo: "Pasta cremosa con pollo",
+      ingredientes: [
+        "200g de pasta",
+        "1 pechuga de pollo",
+        "1 taza de crema",
+        "Ajo",
+        "Sal y pimienta"
+      ],
+      pasos: [
+        "Hervir la pasta",
+        "Cocinar el pollo en sartén",
+        "Agregar crema y mezclar",
+        "Unir con la pasta"
+      ]
+    }
   });
 }
