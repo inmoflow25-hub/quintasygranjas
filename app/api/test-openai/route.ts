@@ -41,7 +41,7 @@ export async function GET() {
 
         <!-- CTA -->
         <div style="text-align:center; margin-top:30px;">
-          <a href="https://quintasygranjas.com" 
+          <a href="https://quintasygranjas.com/#cajas" 
              style="background:#2E7D32; color:white; padding:15px 25px; text-decoration:none; border-radius:5px; font-weight:bold;">
              Comprar productos frescos
           </a>
