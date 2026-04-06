@@ -44,9 +44,9 @@ export default function SuccessPage() {
     if (!boxId) return
 
     const priceMap: any = {
-      "dff394c8-6a17-45e8-ba3f-960c27f8d76c": 27800,
-      "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d": 47400,
-      "d5b70577-a2b7-47d7-9ccd-e2f336e25af7": 56800
+      "dff394c8-6a17-45e8-ba3f-960c27f8d76c": 18105,
+      "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d": 41355,
+      "d5b70577-a2b7-47d7-9ccd-e2f336e25af7": 51555
     }
 
     if (typeof window !== "undefined" && window.fbq) {
