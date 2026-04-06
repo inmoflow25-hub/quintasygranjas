@@ -1,5 +1,3 @@
-// app/api/test-openai/route.ts
-
 import { openai } from "@/lib/openai";
 
 export async function GET() {
