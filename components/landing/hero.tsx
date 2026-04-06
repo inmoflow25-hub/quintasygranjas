@@ -44,11 +44,11 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-2xl">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-            Caja semanal directo de la quinta
+            Caja de alimentos de calidad, directo de quintas y granjas
           </h1>
 
           <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
-            Frutas, verduras y productos de granja entregados en tu casa. Sin supermercado. Sin filas. Sin perder tiempo.
+            Frutas, verduras y productos de granja entregados en tu casa. Sin supermercado. Sin filas. Sin gastar de más.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
