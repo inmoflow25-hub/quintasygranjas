@@ -40,7 +40,7 @@ export default function Home() {
   }
 
   function onWhatsAppClick() {
-    window.open("https://wa.me/5491133614865", "_blank")
+    window.open("https://wa.me/5491168303596", "_blank")
   }
 
   return (
