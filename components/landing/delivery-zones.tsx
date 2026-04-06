@@ -2,7 +2,7 @@
 
 export function DeliveryZones() {
   const whatsappLink =
-    "https://wa.me/5491133614865?text=Hola%20quiero%20coordinar%20una%20entrega"
+    "https://wa.me/5491168303596?text=Hola%20quiero%20coordinar%20una%20entrega"
 
   return (
     <section id="zonas" className="py-24 bg-card">
