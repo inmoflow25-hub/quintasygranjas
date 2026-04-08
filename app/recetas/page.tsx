@@ -1,92 +1,51 @@
 "use client";
 
-const recetas = {
-  desayunos: [
-    "Tostadas con miel y banana",
-    "Huevos revueltos con espinaca",
-    "Licuado de banana y miel",
-    "Pan con tomate y aceite",
-    "Omelette de verduras",
-    "Tostadas con huevo y miel",
-    "Fruta fresca con miel",
-    "Sandwich caliente de huevo",
-  ],
-  almuerzos: [
-    "Pollo al horno con papas",
-    "Ensalada completa con huevo",
-    "Tarta de verduras",
-    "Pollo salteado con zanahoria",
-    "Ensalada tibia de papa y huevo",
-    "Sandwich de pollo desmenuzado",
-    "Zapallo al horno con huevo",
-    "Ensalada de tomate, huevo y lechuga",
-    "Pollo con ensalada fresca",
-    "Verduras salteadas con huevo",
-  ],
-  meriendas: [
-    "Pan con miel",
-    "Licuado de frutas",
-    "Tostadas con banana",
-    "Fruta fresca",
-    "Pan tostado con miel",
-    "Batido de banana",
-    "Sandwich dulce (pan + miel + banana)",
-  ],
-  cenas: [
-    "Pollo al horno con verduras",
-    "Tortilla de papa",
-    "Revuelto de verduras",
-    "Sopa de verduras",
-    "Ensalada completa con huevo",
-    "Pollo a la plancha con ensalada",
-    "Zapallo relleno",
-    "Omelette grande",
-    "Salteado de verduras con huevo",
-  ],
-  colaciones: [
-    "Banana",
-    "Manzana",
-    "Huevo duro",
-    "Zanahoria cruda",
-    "Pan con miel",
-    "Fruta con miel",
-  ],
-};
-
-function RecetaCard({ titulo }: { titulo: string }) {
-  return (
-    <button
-      onClick={() => alert(`Abrir receta: ${titulo}`)}
-      className="bg-white border border-gray-200 rounded-xl p-4 text-left hover:shadow-md hover:scale-[1.02] transition"
-    >
-      <p className="font-medium text-[#1f1f1f]">{titulo}</p>
-    </button>
-  );
-}
-
-function Seccion({
-  titulo,
-  items,
-}: {
-  titulo: string;
-  items: string[];
-}) {
-  return (
-    <section className="mb-14">
-      <h2 className="text-2xl font-semibold mb-6">
-        {titulo} ({items.length})
-      </h2>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {items.map((item, i) => (
-          <RecetaCard key={i} titulo={item} />
-        ))}
-      </div>
-    </section>
-  );
-}
+const recetas = [
+  {
+    titulo: "Tostadas con miel y banana",
+    categoria: "Desayunos",
+    img: "https://source.unsplash.com/400x300/?toast,honey",
+  },
+  {
+    titulo: "Huevos revueltos con espinaca",
+    categoria: "Desayunos",
+    img: "https://source.unsplash.com/400x300/?eggs,spinach",
+  },
+  {
+    titulo: "Pollo al horno con papas",
+    categoria: "Almuerzos",
+    img: "https://source.unsplash.com/400x300/?roast,chicken",
+  },
+  {
+    titulo: "Ensalada completa con huevo",
+    categoria: "Almuerzos",
+    img: "https://source.unsplash.com/400x300/?salad,egg",
+  },
+  {
+    titulo: "Licuado de banana",
+    categoria: "Meriendas",
+    img: "https://source.unsplash.com/400x300/?banana,smoothie",
+  },
+  {
+    titulo: "Pan con miel",
+    categoria: "Meriendas",
+    img: "https://source.unsplash.com/400x300/?bread,honey",
+  },
+  {
+    titulo: "Tortilla de papa",
+    categoria: "Cenas",
+    img: "https://source.unsplash.com/400x300/?potato,omelette",
+  },
+  {
+    titulo: "Pollo con verduras",
+    categoria: "Cenas",
+    img: "https://source.unsplash.com/400x300/?chicken,vegetables",
+  },
+];
 
 export default function RecetasPage() {
+  const categorias = ["Desayunos", "Almuerzos", "Meriendas", "Cenas", "Colaciones"];
+
   return (
     <div className="bg-[#f6f6f2] min-h-screen text-[#1f1f1f]">
       <div className="max-w-6xl mx-auto px-6 py-12">
@@ -97,25 +56,55 @@ export default function RecetasPage() {
         </h1>
 
         <p className="text-gray-600 mb-12 text-lg">
-          Desayunos, almuerzos, meriendas y cenas reales. Sin pensar.
+          Recetas reales con lo que recibís en tu caja.
         </p>
 
-        {/* SECCIONES */}
-        <Seccion titulo="Desayunos" items={recetas.desayunos} />
-        <Seccion titulo="Almuerzos" items={recetas.almuerzos} />
-        <Seccion titulo="Meriendas" items={recetas.meriendas} />
-        <Seccion titulo="Cenas" items={recetas.cenas} />
-        <Seccion titulo="Colaciones" items={recetas.colaciones} />
+        {/* LISTADO POR CATEGORÍA */}
+        {categorias.map((cat) => {
+          const items = recetas.filter((r) => r.categoria === cat);
 
-        {/* CTA FINAL */}
+          if (items.length === 0) return null;
+
+          return (
+            <section key={cat} className="mb-14">
+              <h2 className="text-2xl font-semibold mb-6">
+                {cat} ({items.length})
+              </h2>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {items.map((receta, i) => (
+                  <div
+                    key={i}
+                    className="cursor-pointer group"
+                    onClick={() => alert(receta.titulo)}
+                  >
+                    <div className="rounded-xl overflow-hidden bg-white shadow-sm group-hover:shadow-md transition">
+
+                      <img
+                        src={receta.img}
+                        alt={receta.titulo}
+                        className="w-full h-40 object-cover"
+                      />
+
+                      <div className="p-3">
+                        <p className="text-sm font-medium">
+                          {receta.titulo}
+                        </p>
+                      </div>
+
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          );
+        })}
+
+        {/* CTA */}
         <div className="mt-16 bg-[#e8efe6] p-8 rounded-xl text-center">
           <h3 className="text-2xl font-semibold mb-3">
             Todo esto sale de la Caja Granja
           </h3>
-
-          <p className="text-gray-600 mb-5">
-            Recibís ingredientes reales y resolvés toda la semana.
-          </p>
 
           <a
             href="/#cajas"
