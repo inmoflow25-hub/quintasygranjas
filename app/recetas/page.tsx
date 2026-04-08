@@ -2,10 +2,7 @@
 
 export default function RecetasPage() {
   return (
-    <div className="bg-[#f6f6f2] min-h-screen text-[#1f1f1f]">
-      <Header />
-
-      <div className="max-w-5xl mx-auto px-6 py-10">
+   
 
         {/* HERO */}
         <h1 className="text-4xl md:text-5xl font-serif mb-4">
