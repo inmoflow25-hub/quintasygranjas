@@ -1,7 +1,5 @@
 "use client";
 
-import Header from "@/components/Header";
-
 export default function RecetasPage() {
   return (
     <div className="bg-[#f6f6f2] min-h-screen text-[#1f1f1f]">
