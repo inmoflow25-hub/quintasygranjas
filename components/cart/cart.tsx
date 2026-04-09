@@ -27,12 +27,13 @@ const PRODUCTS: Product[] = [
   { id: "miel", name: "Miel", price: 4500, type: "unit", image: "/images/miel.jpg" },
   { id: "pan", name: "Pan", price: 1200, type: "unit", image: "/images/pan.jpg" },
 
-  // 🔥 POLLO
   { id: "pollo", name: "Suprema de pollo", price: 11300, type: "weight_1kg", image: "/images/pollo.jpg" }
 ]
 
 export default function Cart() {
   const [cart, setCart] = useState<any[]>([])
+  const [paymentMethod, setPaymentMethod] = useState<"mp" | "cash">("mp")
+  const [loading, setLoading] = useState(false)
 
   function addItem(product: Product) {
     setCart((prev) => {
@@ -89,6 +90,41 @@ export default function Cart() {
     if (product.type === "weight_1kg") return "kg"
   }
 
+  async function handleCheckout() {
+    if (cart.length === 0) {
+      alert("El carrito está vacío")
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      if (paymentMethod === "mp") {
+        const res = await fetch("/api/checkout", {
+          method: "POST",
+          body: JSON.stringify({ cart })
+        })
+
+        const data = await res.json()
+
+        window.location.href = data.init_point
+      } else {
+        await fetch("/api/order-cash", {
+          method: "POST",
+          body: JSON.stringify({ cart })
+        })
+
+        alert("Pedido realizado! Pagás al recibir")
+        setCart([])
+      }
+    } catch (err) {
+      console.error(err)
+      alert("Error en checkout")
+    }
+
+    setLoading(false)
+  }
+
   return (
     <div className="max-w-6xl mx-auto p-6">
 
@@ -143,6 +179,43 @@ export default function Cart() {
         <p className="text-2xl font-bold">
           Total: ${Math.round(getTotal()).toLocaleString()}
         </p>
+      </div>
+
+      {/* MÉTODO DE PAGO */}
+      <div className="mt-6">
+
+        <div className="flex flex-col gap-2">
+          <label className="flex items-center gap-2">
+            <input
+              type="radio"
+              name="payment"
+              value="mp"
+              checked={paymentMethod === "mp"}
+              onChange={() => setPaymentMethod("mp")}
+            />
+            Pagar ahora (MercadoPago)
+          </label>
+
+          <label className="flex items-center gap-2">
+            <input
+              type="radio"
+              name="payment"
+              value="cash"
+              checked={paymentMethod === "cash"}
+              onChange={() => setPaymentMethod("cash")}
+            />
+            Pagar al recibir
+          </label>
+        </div>
+
+        <button
+          onClick={handleCheckout}
+          disabled={loading}
+          className="mt-6 w-full bg-green-700 text-white py-3 rounded-xl text-lg"
+        >
+          {loading ? "Procesando..." : "Finalizar compra"}
+        </button>
+
       </div>
 
     </div>
