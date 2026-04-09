@@ -100,10 +100,13 @@ export default function Cart() {
 
     try {
       if (paymentMethod === "mp") {
-        const res = await fetch("/api/checkout", {
-          method: "POST",
-          body: JSON.stringify({ cart })
-        })
+        fetch("/api/checkout", {
+  method: "POST",
+  body: JSON.stringify({
+    custom: true,
+    cart
+  })
+})
 
         const data = await res.json()
 
