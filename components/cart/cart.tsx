@@ -6,39 +6,33 @@ type Product = {
   id: string
   name: string
   price: number
+  type: "unit" | "weight_500g" | "weight_1kg"
   image: string
 }
 
 const PRODUCTS: Product[] = [
-  {
-    id: "1",
-    name: "Tomate fresco",
-    price: 1200,
-    image: "/images/tomate.jpg"
-  },
-  {
-    id: "2",
-    name: "Papa blanca",
-    price: 800,
-    image: "/images/papa.jpg"
-  },
-  {
-    id: "3",
-    name: "Huevos de campo",
-    price: 2500,
-    image: "/images/huevos.jpg"
-  },
-  {
-    id: "4",
-    name: "Zanahoria",
-    price: 900,
-    image: "/images/zanahoria.jpg"
-  }
+  { id: "zapallo", name: "Zapallo Anco", price: 1500, type: "weight_500g", image: "/images/zapallo.jpg" },
+  { id: "cebolla", name: "Cebolla", price: 350, type: "weight_500g", image: "/images/cebolla.jpg" },
+  { id: "papa", name: "Papa negra", price: 525, type: "weight_500g", image: "/images/papa.jpg" },
+  { id: "tomate", name: "Tomate", price: 500, type: "weight_500g", image: "/images/tomate.jpg" },
+  { id: "zanahoria", name: "Zanahoria", price: 400, type: "weight_500g", image: "/images/zanahoria.jpg" },
+  { id: "manzana", name: "Manzana", price: 1600, type: "weight_500g", image: "/images/manzana.jpg" },
+  { id: "naranja", name: "Naranja jugo", price: 800, type: "weight_500g", image: "/images/naranja.jpg" },
+  { id: "limon", name: "Limón", price: 900, type: "weight_500g", image: "/images/limon.jpg" },
+  { id: "banana", name: "Banana", price: 370, type: "weight_500g", image: "/images/banana.jpg" },
+
+  { id: "lechuga", name: "Lechuga", price: 500, type: "unit", image: "/images/lechuga.jpg" },
+  { id: "espinaca", name: "Espinaca", price: 500, type: "unit", image: "/images/espinaca.jpg" },
+
+  { id: "miel", name: "Miel", price: 4500, type: "unit", image: "/images/miel.jpg" },
+  { id: "pan", name: "Pan", price: 1200, type: "unit", image: "/images/pan.jpg" },
+
+  // 🔥 POLLO
+  { id: "pollo", name: "Suprema de pollo", price: 11300, type: "weight_1kg", image: "/images/pollo.jpg" }
 ]
 
 export default function Cart() {
   const [cart, setCart] = useState<any[]>([])
-  const [paymentMethod, setPaymentMethod] = useState("mercadopago")
 
   function addItem(product: Product) {
     setCart((prev) => {
@@ -79,34 +73,20 @@ export default function Cart() {
   }
 
   function getTotal() {
-    return cart.reduce(
-      (acc, item) => acc + item.price * item.quantity,
-      0
-    )
+    return cart.reduce((acc, item) => {
+      let multiplier = 1
+
+      if (item.type === "weight_500g") multiplier = 0.5
+      if (item.type === "weight_1kg") multiplier = 1
+
+      return acc + item.price * item.quantity * multiplier
+    }, 0)
   }
 
-  async function checkout() {
-    const res = await fetch("/api/orders/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        items: cart,
-        payment_method: paymentMethod,
-        customer: {
-          email: "test@test.com"
-        }
-      })
-    })
-
-    const data = await res.json()
-
-    if (paymentMethod === "mercadopago") {
-      window.location.href = data.checkout_url
-    } else {
-      window.location.href = "/success"
-    }
+  function getLabel(product: Product) {
+    if (product.type === "unit") return "unidad"
+    if (product.type === "weight_500g") return "500g"
+    if (product.type === "weight_1kg") return "kg"
   }
 
   return (
@@ -116,36 +96,29 @@ export default function Cart() {
         Armar tu caja 🧺
       </h2>
 
-      {/* GRID PRODUCTOS */}
+      {/* GRID */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
 
         {PRODUCTS.map((p) => {
           const quantity = getQuantity(p.id)
 
           return (
-            <div
-              key={p.id}
-              className="border rounded-xl p-4 bg-white hover:shadow-md transition"
-            >
-              {/* IMAGEN */}
-              <div className="w-full h-32 flex items-center justify-center mb-4">
-                <img
-                  src={p.image}
-                  className="max-h-32 object-contain"
-                />
+            <div key={p.id} className="border rounded-xl p-4 bg-white hover:shadow-md">
+
+              <div className="h-32 flex items-center justify-center mb-4">
+                <img src={p.image} className="max-h-28 object-contain" />
               </div>
 
-              {/* NOMBRE */}
-              <p className="font-semibold text-sm mb-1">
-                {p.name}
-              </p>
+              <p className="font-semibold text-sm">{p.name}</p>
 
-              {/* PRECIO */}
-              <p className="text-lg font-bold mb-3">
+              <p className="text-lg font-bold">
                 ${p.price.toLocaleString()}
               </p>
 
-              {/* BOTÓN / CONTROLES */}
+              <p className="text-xs text-gray-500 mb-3">
+                por {getLabel(p)}
+              </p>
+
               {quantity === 0 ? (
                 <button
                   onClick={() => addItem(p)}
@@ -154,24 +127,10 @@ export default function Cart() {
                   AGREGAR
                 </button>
               ) : (
-                <div className="flex items-center justify-between">
-                  <button
-                    onClick={() => removeItem(p)}
-                    className="px-3 py-1 bg-gray-200 rounded"
-                  >
-                    -
-                  </button>
-
-                  <span className="font-bold">
-                    {quantity}
-                  </span>
-
-                  <button
-                    onClick={() => addItem(p)}
-                    className="px-3 py-1 bg-green-700 text-white rounded"
-                  >
-                    +
-                  </button>
+                <div className="flex justify-between items-center">
+                  <button onClick={() => removeItem(p)} className="px-3 bg-gray-200">-</button>
+                  <span>{quantity}</span>
+                  <button onClick={() => addItem(p)} className="px-3 bg-green-700 text-white">+</button>
                 </div>
               )}
             </div>
@@ -182,41 +141,9 @@ export default function Cart() {
       {/* TOTAL */}
       <div className="mt-10 text-right">
         <p className="text-2xl font-bold">
-          Total: ${getTotal().toLocaleString()}
+          Total: ${Math.round(getTotal()).toLocaleString()}
         </p>
       </div>
-
-      {/* PAGO */}
-      <div className="mt-6 space-y-2 text-right">
-        <label className="block">
-          <input
-            type="radio"
-            value="mercadopago"
-            checked={paymentMethod === "mercadopago"}
-            onChange={(e) => setPaymentMethod(e.target.value)}
-          />
-          <span className="ml-2">Pagar ahora (MercadoPago)</span>
-        </label>
-
-        <label className="block">
-          <input
-            type="radio"
-            value="cash"
-            checked={paymentMethod === "cash"}
-            onChange={(e) => setPaymentMethod(e.target.value)}
-          />
-          <span className="ml-2">Pagar al recibir</span>
-        </label>
-      </div>
-
-      {/* BOTÓN FINAL */}
-      <button
-        onClick={checkout}
-        disabled={cart.length === 0}
-        className="w-full mt-6 bg-green-800 text-white py-4 rounded-xl text-lg"
-      >
-        Finalizar compra
-      </button>
 
     </div>
   )
