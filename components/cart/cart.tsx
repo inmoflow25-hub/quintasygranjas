@@ -10,6 +10,7 @@ type Product = {
   image: string
 }
 
+// 🔥 PRODUCTOS (después esto va a DB)
 const PRODUCTS: Product[] = [
   { id: "zapallo", name: "Zapallo Anco", price: 1500, type: "weight_500g", image: "/images/zapallo.jpg" },
   { id: "cebolla", name: "Cebolla", price: 350, type: "weight_500g", image: "/images/cebolla.jpg" },
@@ -34,6 +35,10 @@ export default function Cart() {
   const [cart, setCart] = useState<any[]>([])
   const [paymentMethod, setPaymentMethod] = useState<"mp" | "cash">("mp")
   const [loading, setLoading] = useState(false)
+
+  // -----------------------
+  // CART LOGIC
+  // -----------------------
 
   function addItem(product: Product) {
     setCart((prev) => {
@@ -90,6 +95,10 @@ export default function Cart() {
     if (product.type === "weight_1kg") return "kg"
   }
 
+  // -----------------------
+  // CHECKOUT
+  // -----------------------
+
   async function handleCheckout() {
     if (cart.length === 0) {
       alert("El carrito está vacío")
@@ -99,27 +108,33 @@ export default function Cart() {
     setLoading(true)
 
     try {
+      // 🔥 SI ES MERCADOPAGO
       if (paymentMethod === "mp") {
-        fetch("/api/checkout", {
-  method: "POST",
-  body: JSON.stringify({
-    custom: true,
-    cart
-  })
-})
+        const res = await fetch("/api/checkout", {
+          method: "POST",
+          body: JSON.stringify({
+            custom: true,
+            cart
+          })
+        })
 
         const data = await res.json()
 
-        window.location.href = data.init_point
-      } else {
-        await fetch("/api/order-cash", {
-          method: "POST",
-          body: JSON.stringify({ cart })
-        })
+        if (!data.init_point) {
+          console.error(data)
+          alert("Error con MercadoPago")
+          return
+        }
 
-        alert("Pedido realizado! Pagás al recibir")
-        setCart([])
+        window.location.href = data.init_point
+        return
       }
+
+      // 🔥 SI ES CASH → IR A SUCCESS
+      const encodedCart = encodeURIComponent(JSON.stringify(cart))
+
+      window.location.href = `/success?cart=${encodedCart}`
+
     } catch (err) {
       console.error(err)
       alert("Error en checkout")
@@ -128,6 +143,10 @@ export default function Cart() {
     setLoading(false)
   }
 
+  // -----------------------
+  // UI
+  // -----------------------
+
   return (
     <div className="max-w-6xl mx-auto p-6">
 
@@ -135,7 +154,7 @@ export default function Cart() {
         Armar tu caja 🧺
       </h2>
 
-      {/* GRID */}
+      {/* GRID PRODUCTOS */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
 
         {PRODUCTS.map((p) => {
@@ -192,7 +211,6 @@ export default function Cart() {
             <input
               type="radio"
               name="payment"
-              value="mp"
               checked={paymentMethod === "mp"}
               onChange={() => setPaymentMethod("mp")}
             />
@@ -203,7 +221,6 @@ export default function Cart() {
             <input
               type="radio"
               name="payment"
-              value="cash"
               checked={paymentMethod === "cash"}
               onChange={() => setPaymentMethod("cash")}
             />
