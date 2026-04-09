@@ -33,7 +33,7 @@ export function HowItWorks() {
             Cómo funciona
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-            Elegís tu caja, pagás online y la recibís en tu casa sin complicaciones.
+            Elegís o armás tu caja, pagás online o en la entrega y la recibís en tu casa sin complicaciones.
           </p>
         </div>
 
