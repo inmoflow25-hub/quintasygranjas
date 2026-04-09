@@ -21,11 +21,12 @@ const PRODUCTS: Product[] = [
   { id: "naranja", name: "Naranja jugo", price: 800, type: "weight_500g", image: "/images/naranja.jpg" },
   { id: "limon", name: "Limón", price: 900, type: "weight_500g", image: "/images/limon.jpg" },
   { id: "banana", name: "Banana", price: 370, type: "weight_500g", image: "/images/banana.jpg" },
+  { id: "miel", name: "Miel", price: 4500, type: "weight_500g", image: "/images/miel.jpg" },
+
 
   { id: "lechuga", name: "Lechuga", price: 500, type: "unit", image: "/images/lechuga.jpg" },
   { id: "espinaca", name: "Espinaca", price: 500, type: "unit", image: "/images/espinaca.jpg" },
 
-  { id: "miel", name: "Miel", price: 4500, type: "unit", image: "/images/miel.jpg" },
   { id: "pan", name: "Pan", price: 1200, type: "unit", image: "/images/pan.jpg" },
 
   { id: "pollo", name: "Suprema de pollo", price: 11300, type: "weight_1kg", image: "/images/pollo.jpg" }
