@@ -12,7 +12,7 @@ const steps = [
     number: "02",
     title: "Pagás de forma segura",
     description:
-      "Realizás el pago online de forma rápida y segura.",
+      "Realizás el pago online o en la entrega de forma rápida y segura.",
     image: "/images/step-prepare.jpg"
   },
   {
