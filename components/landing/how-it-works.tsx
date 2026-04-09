@@ -3,7 +3,7 @@ import Image from "next/image"
 const steps = [
   {
     number: "01",
-    title: "Elegís tu caja",
+    title: "Elegís o armás tu caja",
     description:
       "Seleccionás la caja que querés según lo que necesites para tu semana.",
     image: "/images/step-choose.jpg"
