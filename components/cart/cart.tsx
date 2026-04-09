@@ -6,24 +6,33 @@ type Product = {
   id: string
   name: string
   price: number
-  image?: string
+  image: string
 }
 
 const PRODUCTS: Product[] = [
   {
     id: "1",
-    name: "Tomate",
-    price: 1200
+    name: "Tomate fresco",
+    price: 1200,
+    image: "/images/tomate.jpg"
   },
   {
     id: "2",
-    name: "Papa",
-    price: 800
+    name: "Papa blanca",
+    price: 800,
+    image: "/images/papa.jpg"
   },
   {
     id: "3",
-    name: "Huevos",
-    price: 2500
+    name: "Huevos de campo",
+    price: 2500,
+    image: "/images/huevos.jpg"
+  },
+  {
+    id: "4",
+    name: "Zanahoria",
+    price: 900,
+    image: "/images/zanahoria.jpg"
   }
 ]
 
@@ -65,6 +74,10 @@ export default function Cart() {
     })
   }
 
+  function getQuantity(id: string) {
+    return cart.find((i) => i.id === id)?.quantity || 0
+  }
+
   function getTotal() {
     return cart.reduce(
       (acc, item) => acc + item.price * item.quantity,
@@ -97,84 +110,110 @@ export default function Cart() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-6">
 
-      <h2 className="text-2xl font-bold mb-6">
+      <h2 className="text-3xl font-bold mb-8 text-center">
         Armar tu caja 🧺
       </h2>
 
-      {/* PRODUCTOS */}
-      <div className="space-y-4">
-        {PRODUCTS.map((p) => (
-          <div
-            key={p.id}
-            className="flex justify-between items-center border p-4 rounded-xl"
-          >
-            <div>
-              <p className="font-semibold">{p.name}</p>
-              <p className="text-sm text-gray-500">
-                ${p.price}
+      {/* GRID PRODUCTOS */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+
+        {PRODUCTS.map((p) => {
+          const quantity = getQuantity(p.id)
+
+          return (
+            <div
+              key={p.id}
+              className="border rounded-xl p-4 bg-white hover:shadow-md transition"
+            >
+              {/* IMAGEN */}
+              <div className="w-full h-32 flex items-center justify-center mb-4">
+                <img
+                  src={p.image}
+                  className="max-h-32 object-contain"
+                />
+              </div>
+
+              {/* NOMBRE */}
+              <p className="font-semibold text-sm mb-1">
+                {p.name}
               </p>
+
+              {/* PRECIO */}
+              <p className="text-lg font-bold mb-3">
+                ${p.price.toLocaleString()}
+              </p>
+
+              {/* BOTÓN / CONTROLES */}
+              {quantity === 0 ? (
+                <button
+                  onClick={() => addItem(p)}
+                  className="w-full bg-green-700 text-white py-2 rounded-lg text-sm"
+                >
+                  AGREGAR
+                </button>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={() => removeItem(p)}
+                    className="px-3 py-1 bg-gray-200 rounded"
+                  >
+                    -
+                  </button>
+
+                  <span className="font-bold">
+                    {quantity}
+                  </span>
+
+                  <button
+                    onClick={() => addItem(p)}
+                    className="px-3 py-1 bg-green-700 text-white rounded"
+                  >
+                    +
+                  </button>
+                </div>
+              )}
             </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => removeItem(p)}
-                className="px-3 py-1 bg-gray-200 rounded"
-              >
-                -
-              </button>
-
-              <span>
-                {cart.find((i) => i.id === p.id)?.quantity || 0}
-              </span>
-
-              <button
-                onClick={() => addItem(p)}
-                className="px-3 py-1 bg-green-600 text-white rounded"
-              >
-                +
-              </button>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* TOTAL */}
-      <div className="mt-6 border-t pt-4">
-        <p className="text-lg font-bold">
-          Total: ${getTotal()}
+      <div className="mt-10 text-right">
+        <p className="text-2xl font-bold">
+          Total: ${getTotal().toLocaleString()}
         </p>
       </div>
 
       {/* PAGO */}
-      <div className="mt-6 space-y-2">
-        <label className="flex gap-2">
+      <div className="mt-6 space-y-2 text-right">
+        <label className="block">
           <input
             type="radio"
             value="mercadopago"
             checked={paymentMethod === "mercadopago"}
             onChange={(e) => setPaymentMethod(e.target.value)}
           />
-          Pagar ahora (MercadoPago)
+          <span className="ml-2">Pagar ahora (MercadoPago)</span>
         </label>
 
-        <label className="flex gap-2">
+        <label className="block">
           <input
             type="radio"
             value="cash"
             checked={paymentMethod === "cash"}
             onChange={(e) => setPaymentMethod(e.target.value)}
           />
-          Pagar al recibir
+          <span className="ml-2">Pagar al recibir</span>
         </label>
       </div>
 
-      {/* BOTÓN */}
+      {/* BOTÓN FINAL */}
       <button
         onClick={checkout}
         disabled={cart.length === 0}
-        className="w-full mt-6 bg-green-700 text-white py-3 rounded-xl"
+        className="w-full mt-6 bg-green-800 text-white py-4 rounded-xl text-lg"
       >
         Finalizar compra
       </button>
