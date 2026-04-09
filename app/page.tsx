@@ -8,6 +8,7 @@ import { DeliveryZones } from "@/components/landing/delivery-zones"
 import { FinalCTA } from "@/components/landing/final-cta"
 import { Footer } from "@/components/landing/footer"
 import { Header } from "@/components/landing/header"
+import Cart from "@/components/cart/cart"
 
 type BoxType = "veggie" | "campo" | "granja"
 
@@ -48,6 +49,7 @@ export default function Home() {
       <Header />
       <Hero onWhatsAppClick={onWhatsAppClick} />
       <HowItWorks />
+      <Cart />
       <BoxesSection onSelectBox={onSelectBox} />
       <SocialProof />
       <DeliveryZones />
