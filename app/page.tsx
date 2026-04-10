@@ -49,7 +49,7 @@ export default function Home() {
       <Header />
       <Hero onWhatsAppClick={onWhatsAppClick} />
       <HowItWorks />
-      {/* <Cart /> */}
+      <Cart /> 
       <BoxesSection onSelectBox={onSelectBox} />
       <SocialProof />
       <DeliveryZones />
