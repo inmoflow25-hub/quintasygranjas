@@ -163,92 +163,112 @@ export default function Cart() {
     setLoading(false)
   }
 
-  return (
-    <div className="max-w-6xl mx-auto p-6">
+ return (
+  <div className="max-w-6xl mx-auto p-6">
 
-      <h2 className="text-3xl font-bold mb-8 text-center">
-        Armar tu caja 🧺
-      </h2>
+    <h2 className="text-3xl font-bold mb-8 text-center">
+      Armar tu caja 🧺
+    </h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+    {/* 🔥 CATEGORÍAS */}
+    {Array.from(new Set(PRODUCTS.map(p => p.category))).map((category) => {
 
-        {PRODUCTS.map((p) => {
-          const quantity = getQuantity(p.id)
+      const items = PRODUCTS.filter(p => p.category === category)
 
-          return (
-            <div key={p.id} className="border rounded-xl p-4 bg-white hover:shadow-md">
+      return (
+        <div key={category} className="mb-10">
 
-              <div className="h-32 flex items-center justify-center mb-4">
-                <img src={p.image} className="max-h-28 object-contain" />
-              </div>
+          {/* TITULO */}
+          <h3 className="text-2xl font-bold mb-4 capitalize">
+            {category.replace("_", " ")}
+          </h3>
 
-              <p className="font-semibold text-sm">{p.name}</p>
+          {/* GRID */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
 
-              <p className="text-lg font-bold">
-                ${p.price.toLocaleString()}
-              </p>
+            {items.map((p) => {
+              const quantity = getQuantity(p.id)
 
-              <p className="text-xs text-gray-500 mb-3">
-                por {getLabel(p)}
-              </p>
+              return (
+                <div key={p.id} className="border rounded-xl p-4 bg-white hover:shadow-md">
 
-              {quantity === 0 ? (
-                <button
-                  onClick={() => addItem(p)}
-                  className="w-full bg-green-700 text-white py-2 rounded-lg text-sm"
-                >
-                  AGREGAR
-                </button>
-              ) : (
-                <div className="flex justify-between items-center">
-                  <button onClick={() => removeItem(p)} className="px-3 bg-gray-200">-</button>
-                  <span>{quantity}</span>
-                  <button onClick={() => addItem(p)} className="px-3 bg-green-700 text-white">+</button>
+                  <div className="h-32 flex items-center justify-center mb-4">
+                    <img src={p.image} className="max-h-28 object-contain" />
+                  </div>
+
+                  <p className="font-semibold text-sm">{p.name}</p>
+
+                  <p className="text-lg font-bold">
+                    ${p.price.toLocaleString()}
+                  </p>
+
+                  <p className="text-xs text-gray-500 mb-3">
+                    por {getLabel(p)}
+                  </p>
+
+                  {quantity === 0 ? (
+                    <button
+                      onClick={() => addItem(p)}
+                      className="w-full bg-green-700 text-white py-2 rounded-lg text-sm"
+                    >
+                      AGREGAR
+                    </button>
+                  ) : (
+                    <div className="flex justify-between items-center">
+                      <button onClick={() => removeItem(p)} className="px-3 bg-gray-200">-</button>
+                      <span>{quantity}</span>
+                      <button onClick={() => addItem(p)} className="px-3 bg-green-700 text-white">+</button>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
+              )
+            })}
 
-      <div className="mt-10 text-right">
-        <p className="text-2xl font-bold">
-          Total: ${Math.round(getTotal()).toLocaleString()}
-        </p>
-      </div>
-
-      <div className="mt-6">
-
-        <div className="flex flex-col gap-2">
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              checked={paymentMethod === "mp"}
-              onChange={() => setPaymentMethod("mp")}
-            />
-            Pagar ahora (MercadoPago)
-          </label>
-
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              checked={paymentMethod === "cash"}
-              onChange={() => setPaymentMethod("cash")}
-            />
-            Pagar al recibir
-          </label>
+          </div>
         </div>
+      )
+    })}
 
-        <button
-          onClick={handleCheckout}
-          disabled={loading}
-          className="mt-6 w-full bg-green-700 text-white py-3 rounded-xl text-lg"
-        >
-          {loading ? "Procesando..." : "Finalizar compra"}
-        </button>
+    {/* TOTAL */}
+    <div className="mt-10 text-right">
+      <p className="text-2xl font-bold">
+        Total: ${Math.round(getTotal()).toLocaleString()}
+      </p>
+    </div>
 
+    {/* MÉTODO DE PAGO */}
+    <div className="mt-6">
+
+      <div className="flex flex-col gap-2">
+        <label className="flex items-center gap-2">
+          <input
+            type="radio"
+            checked={paymentMethod === "mp"}
+            onChange={() => setPaymentMethod("mp")}
+          />
+          Pagar ahora (MercadoPago)
+        </label>
+
+        <label className="flex items-center gap-2">
+          <input
+            type="radio"
+            checked={paymentMethod === "cash"}
+            onChange={() => setPaymentMethod("cash")}
+          />
+          Pagar al recibir
+        </label>
       </div>
+
+      <button
+        onClick={handleCheckout}
+        disabled={loading}
+        className="mt-6 w-full bg-green-700 text-white py-3 rounded-xl text-lg"
+      >
+        {loading ? "Procesando..." : "Finalizar compra"}
+      </button>
 
     </div>
-  )
+
+  </div>
+)
 }
