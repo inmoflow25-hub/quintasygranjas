@@ -8,38 +8,66 @@ type Product = {
   price: number
   type: "unit" | "weight_500g" | "weight_1kg"
   image: string
+  category: string
 }
 
-// 🔥 PRODUCTOS (después esto va a DB)
+// 🔥 PRODUCTOS
 const PRODUCTS: Product[] = [
-  { id: "zapallo", name: "Zapallo Anco", price: 1500, type: "weight_500g", image: "/images/zapallo.jpg" },
-  { id: "cebolla", name: "Cebolla", price: 350, type: "weight_500g", image: "/images/cebolla.jpg" },
-  { id: "papa", name: "Papa negra", price: 525, type: "weight_500g", image: "/images/papa.jpg" },
-  { id: "tomate", name: "Tomate", price: 500, type: "weight_500g", image: "/images/tomate.jpg" },
-  { id: "zanahoria", name: "Zanahoria", price: 400, type: "weight_500g", image: "/images/zanahoria.jpg" },
-  { id: "manzana", name: "Manzana", price: 1600, type: "weight_500g", image: "/images/manzana.jpg" },
-  { id: "naranja", name: "Naranja jugo", price: 800, type: "weight_500g", image: "/images/naranja.jpg" },
-  { id: "limon", name: "Limón", price: 900, type: "weight_500g", image: "/images/limon.jpg" },
-  { id: "banana", name: "Banana", price: 370, type: "weight_500g", image: "/images/banana.jpg" },
-  { id: "miel", name: "Miel", price: 4500, type: "weight_500g", image: "/images/miel.jpg" },
 
+  // -------------------
+  // VERDURAS
+  // -------------------
+  { id: "zapallo", name: "Zapallo Anco", price: 1500, type: "weight_500g", image: "/images/zapallo.jpg", category: "verduras" },
+  { id: "cebolla", name: "Cebolla", price: 350, type: "weight_500g", image: "/images/cebolla.jpg", category: "verduras" },
+  { id: "papa", name: "Papa negra", price: 525, type: "weight_500g", image: "/images/papa.jpg", category: "verduras" },
+  { id: "tomate", name: "Tomate", price: 500, type: "weight_500g", image: "/images/tomate.jpg", category: "verduras" },
+  { id: "zanahoria", name: "Zanahoria", price: 400, type: "weight_500g", image: "/images/zanahoria.jpg", category: "verduras" },
+  { id: "lechuga", name: "Lechuga", price: 500, type: "unit", image: "/images/lechuga.jpg", category: "verduras" },
+  { id: "espinaca", name: "Espinaca", price: 500, type: "unit", image: "/images/espinaca.jpg", category: "verduras" },
 
-  { id: "lechuga", name: "Lechuga", price: 500, type: "unit", image: "/images/lechuga.jpg" },
-  { id: "espinaca", name: "Espinaca", price: 500, type: "unit", image: "/images/espinaca.jpg" },
+  // -------------------
+  // FRUTAS
+  // -------------------
+  { id: "manzana", name: "Manzana", price: 1600, type: "weight_500g", image: "/images/manzana.jpg", category: "frutas" },
+  { id: "naranja", name: "Naranja jugo", price: 800, type: "weight_500g", image: "/images/naranja.jpg", category: "frutas" },
+  { id: "limon", name: "Limón", price: 900, type: "weight_500g", image: "/images/limon.jpg", category: "frutas" },
+  { id: "banana", name: "Banana", price: 370, type: "weight_500g", image: "/images/banana.jpg", category: "frutas" },
 
-  { id: "pan", name: "Pan", price: 1200, type: "unit", image: "/images/pan.jpg" },
+  // -------------------
+  // PAN / OTROS
+  // -------------------
+  { id: "pan", name: "Pan", price: 1200, type: "unit", image: "/images/pan.jpg", category: "otros" },
+  { id: "miel", name: "Miel", price: 4500, type: "weight_500g", image: "/images/miel.jpg", category: "otros" },
 
-  { id: "pollo", name: "Suprema de pollo", price: 11300, type: "weight_1kg", image: "/images/pollo.jpg" }
+  // -------------------
+  // POLLO
+  // -------------------
+  { id: "pollo_entero", name: "Pollo entero", price: 0, type: "weight_1kg", image: "/images/pollo.jpg", category: "pollo" },
+  { id: "suprema", name: "Suprema de pollo", price: 11300, type: "weight_1kg", image: "/images/pollo.jpg", category: "pollo" },
+  { id: "muslos", name: "Muslos de pollo", price: 0, type: "weight_1kg", image: "/images/pollo.jpg", category: "pollo" },
+
+  // -------------------
+  // CONGELADOS
+  // -------------------
+  { id: "medallones", name: "Medallones de pollo", price: 0, type: "unit", image: "/images/medallones.jpg", category: "congelados" },
+  { id: "medallones_espinaca", name: "Medallones pollo con espinaca", price: 0, type: "unit", image: "/images/medallones.jpg", category: "congelados" },
+  { id: "nuggets", name: "Nuggets de pollo", price: 0, type: "unit", image: "/images/nuggets.jpg", category: "congelados" },
+
+  // -------------------
+  // FRUTOS SECOS
+  // -------------------
+  { id: "nueces", name: "Nueces", price: 0, type: "weight_500g", image: "/images/nueces.jpg", category: "frutos_secos" },
+  { id: "almendras", name: "Almendras", price: 0, type: "weight_500g", image: "/images/almendras.jpg", category: "frutos_secos" },
+  { id: "pasas", name: "Pasas de uva", price: 0, type: "weight_500g", image: "/images/pasas.jpg", category: "frutos_secos" },
+  { id: "caju", name: "Castañas de cajú", price: 0, type: "weight_500g", image: "/images/caju.jpg", category: "frutos_secos" },
+  { id: "mix", name: "Mix frutos secos", price: 0, type: "weight_500g", image: "/images/mix.jpg", category: "frutos_secos" }
+
 ]
 
 export default function Cart() {
   const [cart, setCart] = useState<any[]>([])
   const [paymentMethod, setPaymentMethod] = useState<"mp" | "cash">("mp")
   const [loading, setLoading] = useState(false)
-
-  // -----------------------
-  // CART LOGIC
-  // -----------------------
 
   function addItem(product: Product) {
     setCart((prev) => {
@@ -96,10 +124,6 @@ export default function Cart() {
     if (product.type === "weight_1kg") return "kg"
   }
 
-  // -----------------------
-  // CHECKOUT
-  // -----------------------
-
   async function handleCheckout() {
     if (cart.length === 0) {
       alert("El carrito está vacío")
@@ -109,7 +133,6 @@ export default function Cart() {
     setLoading(true)
 
     try {
-      // 🔥 SI ES MERCADOPAGO
       if (paymentMethod === "mp") {
         const res = await fetch("/api/checkout", {
           method: "POST",
@@ -122,7 +145,6 @@ export default function Cart() {
         const data = await res.json()
 
         if (!data.init_point) {
-          console.error(data)
           alert("Error con MercadoPago")
           return
         }
@@ -131,22 +153,15 @@ export default function Cart() {
         return
       }
 
-      // 🔥 SI ES CASH → IR A SUCCESS
       const encodedCart = encodeURIComponent(JSON.stringify(cart))
-
       window.location.href = `/success?cart=${encodedCart}`
 
     } catch (err) {
-      console.error(err)
       alert("Error en checkout")
     }
 
     setLoading(false)
   }
-
-  // -----------------------
-  // UI
-  // -----------------------
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -155,7 +170,6 @@ export default function Cart() {
         Armar tu caja 🧺
       </h2>
 
-      {/* GRID PRODUCTOS */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
 
         {PRODUCTS.map((p) => {
@@ -197,21 +211,18 @@ export default function Cart() {
         })}
       </div>
 
-      {/* TOTAL */}
       <div className="mt-10 text-right">
         <p className="text-2xl font-bold">
           Total: ${Math.round(getTotal()).toLocaleString()}
         </p>
       </div>
 
-      {/* MÉTODO DE PAGO */}
       <div className="mt-6">
 
         <div className="flex flex-col gap-2">
           <label className="flex items-center gap-2">
             <input
               type="radio"
-              name="payment"
               checked={paymentMethod === "mp"}
               onChange={() => setPaymentMethod("mp")}
             />
@@ -221,7 +232,6 @@ export default function Cart() {
           <label className="flex items-center gap-2">
             <input
               type="radio"
-              name="payment"
               checked={paymentMethod === "cash"}
               onChange={() => setPaymentMethod("cash")}
             />
