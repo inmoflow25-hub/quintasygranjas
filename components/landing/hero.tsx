@@ -56,6 +56,10 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
             Armá tu caja con los productos que quieras o elegí una ya lista. Sin supermercado. Sin filas. Sin pagar de más.
           </p>
 
+          <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
+            Siempre calidad 100%.
+          </p> 
+          
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
 
             {/* 🔥 CTA 1 */}
