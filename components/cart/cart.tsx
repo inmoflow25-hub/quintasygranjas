@@ -119,7 +119,7 @@ export default function Cart() {
     if (product.type === "weight_1kg") return "kg"
   }
 
-  function getDisplayQuantity(item) {
+  function getDisplayQuantity(item: any) {
   if (item.type === "weight_500g") {
     const totalGrams = item.quantity * 500
 
