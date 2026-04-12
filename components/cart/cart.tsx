@@ -208,44 +208,51 @@ export default function Cart() {
   return `x${item.quantity}`
 }
 
-  async function handleCheckout() {
-    if (cart.length === 0) {
-      alert("El carrito está vacío")
-      return
-    }
+async function handleCheckout() {
+  if (cart.length === 0) {
+    alert("El carrito está vacío")
+    return
+  }
 
-    setLoading(true)
+  setLoading(true)
 
-    try {
-      if (paymentMethod === "mp") {
-        const res = await fetch("/api/orders/create", {
-          method: "POST",
-          body: JSON.stringify({
-            custom: true,
-            cart
-          })
-        })
+  try {
+    const res = await fetch("/api/orders/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        items: cart,
+        customer: {
+          email: "test@test.com" // 🔥 reemplazá por tu input real
+        },
+        payment_method: paymentMethod === "mp" ? "mercadopago" : "cash"
+      })
+    })
 
-        const data = await res.json()
+    const data = await res.json()
 
-        if (!data.init_point) {
-          alert("Error con MercadoPago")
-          return
-        }
-
-        window.location.href = data.init_point
+    // 💳 MERCADOPAGO
+    if (paymentMethod === "mp") {
+      if (!data.checkout_url) {
+        alert("Error con MercadoPago")
         return
       }
 
-      const encodedCart = encodeURIComponent(JSON.stringify(cart))
-      window.location.href = `/success?cart=${encodedCart}`
-
-    } catch (err) {
-      alert("Error en checkout")
+      window.location.href = data.checkout_url
+      return
     }
 
-    setLoading(false)
+    // 💵 EFECTIVO
+    window.location.href = `/success?order_id=${data.order_id}`
+
+  } catch (err) {
+    alert("Error en checkout")
   }
+
+  setLoading(false)
+}
 
   
 return (
