@@ -230,9 +230,12 @@ return (
                       className="rounded-xl p-3 bg-[#f1f1f1] hover:bg-[#e7e7e7] transition"
                     >
 
-                      <div className="h-32 flex items-center justify-center mb-2">
-                        <img src={p.image} className="max-h-24 object-contain" />
-                      </div>
+                      <div className="h-40 w-full mb-2 overflow-hidden rounded-lg">
+  <img
+    src={p.image}
+    className="w-full h-full object-cover"
+  />
+</div>
 
                       <p className="text-sm font-semibold">{p.name}</p>
 
