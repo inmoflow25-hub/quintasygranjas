@@ -45,11 +45,11 @@ export async function POST(req: Request) {
       user = newUser
     }
 
-    // 🔥 CALCULAR TOTAL
+    // 🔥 CALCULAR TOTAL (FIX)
     let total = 0
 
     for (const item of items) {
-      total += item.price * item.quantity
+      total += (item.price || 0) * item.quantity
     }
 
     // 🔥 CREAR ORDER
@@ -60,8 +60,7 @@ export async function POST(req: Request) {
         price: total,
         status: "pending",
         payment_method,
-        payment_status:
-          payment_method === "mercadopago" ? "pending" : "pending"
+        payment_status: "pending"
       })
       .select()
       .single()
@@ -70,12 +69,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "order error" }, { status: 500 })
     }
 
-    // 🔥 CREAR ITEMS
+    // 🔥 CREAR ITEMS (FIX IMPORTANTE)
     const itemsToInsert = items.map((item: any) => ({
       order_id: order.id,
-      product_id: item.id,
-      quantity: item.quantity,
-      price: item.price
+      product_name: item.name || "Producto",
+      quantity: item.quantity || 1,
+      price: item.price || 0
     }))
 
     const { error: itemsError } = await supabase
@@ -83,6 +82,7 @@ export async function POST(req: Request) {
       .insert(itemsToInsert)
 
     if (itemsError) {
+      console.error("ITEMS ERROR:", itemsError)
       return NextResponse.json({ error: "items error" }, { status: 500 })
     }
 
@@ -96,14 +96,14 @@ export async function POST(req: Request) {
         },
         body: JSON.stringify({
           items: items.map((item: any) => ({
-            title: item.name,
-            quantity: item.quantity,
+            title: item.name || "Producto",
+            quantity: item.quantity || 1,
             currency_id: "ARS",
-            unit_price: item.price
+            unit_price: item.price || 0
           })),
           external_reference: order.id,
           back_urls: {
-            success: `${process.env.NEXT_PUBLIC_BASE_URL}/success`,
+            success: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}`,
             failure: `${process.env.NEXT_PUBLIC_BASE_URL}/error`,
             pending: `${process.env.NEXT_PUBLIC_BASE_URL}/pending`
           },
@@ -130,3 +130,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "server error" }, { status: 500 })
   }
 }
+
