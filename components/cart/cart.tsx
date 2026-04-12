@@ -17,7 +17,7 @@ const PRODUCTS: Product[] = [
   // -------------------
   // VERDURAS
   // -------------------
-  { id: "zapallo", name: "Zapallo Anco", price: 1500, type: "weight_500g", image: "/images/zapallo.jpg", category: "verduras" },
+  { id: "zapallo", name: "Zapallo Anco", price: 1500, type: "unit", image: "/images/zapallo.jpg", category: "verduras" },
   { id: "cebolla", name: "Cebolla", price: 350, type: "weight_500g", image: "/images/cebolla.jpg", category: "verduras" },
   { id: "papa", name: "Papa negra", price: 525, type: "weight_500g", image: "/images/papa.jpg", category: "verduras" },
   { id: "tomate", name: "Tomate", price: 500, type: "weight_500g", image: "/images/tomate.jpg", category: "verduras" },
