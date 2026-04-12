@@ -54,7 +54,7 @@ const PRODUCTS: Product[] = [
   description: "pierna + muslo, ideal horno o parrilla",
   price: 6800,
   type: "weight_1kg",
-  image: "...",
+  image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cuarto%20trasero.jpg",
   category: "pollo"
 },
   // -------------------
