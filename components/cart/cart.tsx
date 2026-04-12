@@ -174,9 +174,15 @@ return (
     <div className="flex gap-2 mb-6 overflow-x-auto">
       {Array.from(new Set(PRODUCTS.map(p => p.category))).map((cat) => (
         <button
-          key={cat}
-          className="px-4 py-1 rounded-full bg-gray-200 text-sm whitespace-nowrap hover:bg-green-600 hover:text-white transition"
-        >
+  key={cat}
+  onClick={() => {
+    const el = document.getElementById(`cat-${cat}`)
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" })
+    }
+  }}
+  className="px-4 py-1 rounded-full bg-gray-200 text-sm whitespace-nowrap hover:bg-green-600 hover:text-white transition"
+>
           {cat.replace("_", " ")}
         </button>
       ))}
@@ -193,7 +199,11 @@ return (
           const items = PRODUCTS.filter(p => p.category === category)
 
           return (
-            <div key={category} className="mb-10">
+            <div
+  key={category}
+  id={`cat-${category}`}
+  className="mb-10 scroll-mt-32"
+>
 
               <h3 className="text-xl font-bold mb-3 capitalize">
                 {category.replace("_", " ")}
