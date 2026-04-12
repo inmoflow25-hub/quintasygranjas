@@ -63,7 +63,7 @@ const PRODUCTS: Product[] = [
   { id: "pasas", name: "Pasas de uva", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pasas%20de%20uva.jpg", category: "frutos_secos" },
   { id: "caju", name: "Castañas de cajú", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/castan%CC%83as%20de%20caju.jpg", category: "frutos_secos" },
   { id: "mix", name: "Mix frutos secos", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mix%20frutos%20secos.jpg", category: "frutos_secos" },
-  { id: "mani_tostado", name: "Maní tostado", price: 1800, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20tostado%20comun.jpg", category: "frutos_secos" }
+  { id: "mani_tostado", name: "Maní tostado", price: 1800, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20tostado%20comun.jpg", category: "frutos_secos" },
   { id: "mani_salado", name: "Maní salado", price: 1800, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20salado.jpg", category: "frutos_secos" }
 
 ]
