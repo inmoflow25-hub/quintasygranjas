@@ -49,7 +49,7 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
         <div className="max-w-2xl">
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-            Comprá como quieras
+           Alimentos directamente de productores a tu mesa
           </h1>
 
           <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
