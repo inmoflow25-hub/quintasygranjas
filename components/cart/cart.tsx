@@ -303,7 +303,11 @@ return (
   />
 </div>
 
-                      <p className="text-sm font-semibold">{p.name}</p>
+                      {p.description && (
+  <p className="text-xs text-gray-500 mb-1">
+    {p.description}
+  </p>
+)}
 
                       <p className="text-md font-bold">
                         ${p.price.toLocaleString()}
