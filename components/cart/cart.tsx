@@ -24,6 +24,7 @@ const PRODUCTS: Product[] = [
   { id: "zanahoria", name: "Zanahoria", price: 400, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/zanahorias.jpg", category: "verduras" },
   { id: "lechuga", name: "Lechuga", price: 500, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/lechugas.jpg", category: "verduras" },
   { id: "espinaca", name: "Espinaca", price: 500, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/espinacas.jpg", category: "verduras" },
+  { id: "morron", name: "Morrones", price: 1200, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/morrones.jpg", category: "verduras" },
 
   // -------------------
   // FRUTAS
@@ -38,6 +39,7 @@ const PRODUCTS: Product[] = [
   // -------------------
   { id: "pan", name: "Pan", price: 1200, type: "unit", image: "/images/pan.jpg", category: "otros" },
   { id: "miel", name: "Miel", price: 4500, type: "weight_500g", image: "/images/miel.jpg", category: "otros" },
+  { id: "huevos", name: "Huevos (docena)", price: 3000, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/huevos.jpg", category: "otros" },
 
   // -------------------
   // POLLO
@@ -60,7 +62,9 @@ const PRODUCTS: Product[] = [
   { id: "almendras", name: "Almendras", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/almendras.jpg", category: "frutos_secos" },
   { id: "pasas", name: "Pasas de uva", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pasas%20de%20uva.jpg", category: "frutos_secos" },
   { id: "caju", name: "Castañas de cajú", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/castan%CC%83as%20de%20caju.jpg", category: "frutos_secos" },
-  { id: "mix", name: "Mix frutos secos", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mix%20frutos%20secos.jpg", category: "frutos_secos" }
+  { id: "mix", name: "Mix frutos secos", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mix%20frutos%20secos.jpg", category: "frutos_secos" },
+  { id: "mani_tostado", name: "Maní tostado", price: 1800, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20tostado.jpg", category: "frutos_secos" },
+  { id: "mani_salado", name: "Maní salado", price: 1800, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20salado.jpg", category: "frutos_secos" }
 
 ]
 
