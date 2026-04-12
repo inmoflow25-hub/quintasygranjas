@@ -197,7 +197,7 @@ return (
 
                   return (
                         className="rounded-xl p-4 bg-[#f3f3f3] hover:bg-[#eaeaea] transition-all"
-                      <div className="h-32 flex items-center justify-center mb-4">
+                      <div className="h-40 flex items-center justify-center mb-2">
                         <img src={p.image} className="max-h-28 object-contain" />
                       </div>
 
