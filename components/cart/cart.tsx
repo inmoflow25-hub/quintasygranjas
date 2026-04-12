@@ -196,8 +196,7 @@ return (
                   const quantity = getQuantity(p.id)
 
                   return (
-                    <div key={p.id} className="border rounded-xl p-4 bg-white hover:shadow-md">
-
+                        className="rounded-xl p-4 bg-[#f3f3f3] hover:bg-[#eaeaea] transition-all"
                       <div className="h-32 flex items-center justify-center mb-4">
                         <img src={p.image} className="max-h-28 object-contain" />
                       </div>
