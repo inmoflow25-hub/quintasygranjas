@@ -17,7 +17,7 @@ const PRODUCTS: Product[] = [
   // -------------------
   // VERDURAS
   // -------------------
-  { id: "zapallo", name: "Zapallo Anco", price: 1500, type: "unit", image: "/images/zapallo.jpg", category: "verduras" },
+  { id: "zapallo", name: "Zapallo Anco", price: 1500, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/WhatsApp%20Image%202026-04-12%20at%2014.21.43.jpeg", category: "verduras" },
   { id: "cebolla", name: "Cebolla", price: 350, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cebollas.jpg", category: "verduras" },
   { id: "papa", name: "Papa negra", price: 525, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/papas%20negras.jpg", category: "verduras" },
   { id: "tomate", name: "Tomate", price: 500, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/tomates.jpg", category: "verduras" },
@@ -37,8 +37,8 @@ const PRODUCTS: Product[] = [
   // -------------------
   // PAN / OTROS
   // -------------------
-  { id: "pan", name: "Pan", price: 1200, type: "unit", image: "/images/pan.jpg", category: "otros" },
-  { id: "miel", name: "Miel", price: 4500, type: "weight_500g", image: "/images/miel.jpg", category: "otros" },
+  { id: "pan", name: "Pan", price: 1200, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pan%20de%20campo.jpg", category: "otros" },
+  { id: "miel", name: "Miel", price: 4500, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/miel.jpg", category: "otros" },
   { id: "huevos", name: "Huevos (30 unidades)", price: 3000, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/huevos.jpg", category: "otros" },
 
   // -------------------
