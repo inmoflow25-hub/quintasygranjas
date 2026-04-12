@@ -163,112 +163,157 @@ export default function Cart() {
     setLoading(false)
   }
 
- return (
-  <div className="max-w-6xl mx-auto p-6">
+return (
+  <div className="max-w-7xl mx-auto p-6">
 
     <h2 className="text-3xl font-bold mb-8 text-center">
       Armar tu caja 🧺
     </h2>
 
-    {/* 🔥 CATEGORÍAS */}
-    {Array.from(new Set(PRODUCTS.map(p => p.category))).map((category) => {
+    {/* 🔥 LAYOUT PRINCIPAL */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-      const items = PRODUCTS.filter(p => p.category === category)
+      {/* 🔥 IZQUIERDA: PRODUCTOS */}
+      <div className="md:col-span-2">
 
-      return (
-        <div key={category} className="mb-10">
+        {/* 🔥 CATEGORÍAS */}
+        {Array.from(new Set(PRODUCTS.map(p => p.category))).map((category) => {
 
-          {/* TITULO */}
-          <h3 className="text-2xl font-bold mb-4 capitalize">
-            {category.replace("_", " ")}
-          </h3>
+          const items = PRODUCTS.filter(p => p.category === category)
 
-          {/* GRID */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          return (
+            <div key={category} className="mb-10">
 
-            {items.map((p) => {
-              const quantity = getQuantity(p.id)
+              {/* TITULO */}
+              <h3 className="text-2xl font-bold mb-4 capitalize">
+                {category.replace("_", " ")}
+              </h3>
 
-              return (
-                <div key={p.id} className="border rounded-xl p-4 bg-white hover:shadow-md">
+              {/* GRID */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
 
-                  <div className="h-32 flex items-center justify-center mb-4">
-                    <img src={p.image} className="max-h-28 object-contain" />
-                  </div>
+                {items.map((p) => {
+                  const quantity = getQuantity(p.id)
 
-                  <p className="font-semibold text-sm">{p.name}</p>
+                  return (
+                    <div key={p.id} className="border rounded-xl p-4 bg-white hover:shadow-md">
 
-                  <p className="text-lg font-bold">
-                    ${p.price.toLocaleString()}
-                  </p>
+                      <div className="h-32 flex items-center justify-center mb-4">
+                        <img src={p.image} className="max-h-28 object-contain" />
+                      </div>
 
-                  <p className="text-xs text-gray-500 mb-3">
-                    por {getLabel(p)}
-                  </p>
+                      <p className="font-semibold text-sm">{p.name}</p>
 
-                  {quantity === 0 ? (
-                    <button
-                      onClick={() => addItem(p)}
-                      className="w-full bg-green-700 text-white py-2 rounded-lg text-sm"
-                    >
-                      AGREGAR
-                    </button>
-                  ) : (
-                    <div className="flex justify-between items-center">
-                      <button onClick={() => removeItem(p)} className="px-3 bg-gray-200">-</button>
-                      <span>{quantity}</span>
-                      <button onClick={() => addItem(p)} className="px-3 bg-green-700 text-white">+</button>
+                      <p className="text-lg font-bold">
+                        ${p.price.toLocaleString()}
+                      </p>
+
+                      <p className="text-xs text-gray-500 mb-3">
+                        por {getLabel(p)}
+                      </p>
+
+                      {quantity === 0 ? (
+                        <button
+                          onClick={() => addItem(p)}
+                          className="w-full bg-green-700 text-white py-2 rounded-lg text-sm"
+                        >
+                          AGREGAR
+                        </button>
+                      ) : (
+                        <div className="flex justify-between items-center">
+                          <button onClick={() => removeItem(p)} className="px-3 bg-gray-200">-</button>
+                          <span>{quantity}</span>
+                          <button onClick={() => addItem(p)} className="px-3 bg-green-700 text-white">+</button>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              )
-            })}
+                  )
+                })}
 
-          </div>
-        </div>
-      )
-    })}
+              </div>
+            </div>
+          )
+        })}
 
-    {/* TOTAL */}
-    <div className="mt-10 text-right">
-      <p className="text-2xl font-bold">
-        Total: ${Math.round(getTotal()).toLocaleString()}
-      </p>
-    </div>
-
-    {/* MÉTODO DE PAGO */}
-    <div className="mt-6">
-
-      <div className="flex flex-col gap-2">
-        <label className="flex items-center gap-2">
-          <input
-            type="radio"
-            checked={paymentMethod === "mp"}
-            onChange={() => setPaymentMethod("mp")}
-          />
-          Pagar ahora (MercadoPago)
-        </label>
-
-        <label className="flex items-center gap-2">
-          <input
-            type="radio"
-            checked={paymentMethod === "cash"}
-            onChange={() => setPaymentMethod("cash")}
-          />
-          Pagar al recibir
-        </label>
       </div>
 
-      <button
-        onClick={handleCheckout}
-        disabled={loading}
-        className="mt-6 w-full bg-green-700 text-white py-3 rounded-xl text-lg"
-      >
-        {loading ? "Procesando..." : "Finalizar compra"}
-      </button>
+      {/* 🔥 DERECHA: CARRITO FIJO */}
+      <div className="md:col-span-1">
+
+        <div className="sticky top-6 border rounded-xl p-5 bg-white shadow-md">
+
+          <h3 className="text-xl font-bold mb-4">
+            Tu caja 🧺
+          </h3>
+
+          {cart.length === 0 && (
+            <p className="text-sm text-gray-500">
+              Todavía no agregaste productos
+            </p>
+          )}
+
+          {cart.map((item) => (
+            <div key={item.id} className="flex justify-between items-center mb-2 text-sm">
+
+              <div>
+                <p className="font-medium">{item.name}</p>
+                <p className="text-xs text-gray-500">
+                  x{item.quantity}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button onClick={() => removeItem(item)} className="px-2 bg-gray-200">-</button>
+                <button onClick={() => addItem(item)} className="px-2 bg-green-700 text-white">+</button>
+              </div>
+
+            </div>
+          ))}
+
+          {/* TOTAL */}
+          <div className="mt-6 border-t pt-4">
+            <p className="text-lg font-bold">
+              Total: ${Math.round(getTotal()).toLocaleString()}
+            </p>
+          </div>
+
+          {/* MÉTODO DE PAGO */}
+          <div className="mt-4 flex flex-col gap-2">
+
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                checked={paymentMethod === "mp"}
+                onChange={() => setPaymentMethod("mp")}
+              />
+              MercadoPago
+            </label>
+
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                checked={paymentMethod === "cash"}
+                onChange={() => setPaymentMethod("cash")}
+              />
+              Efectivo al recibir
+            </label>
+
+          </div>
+
+          {/* BOTÓN */}
+          <button
+            onClick={handleCheckout}
+            disabled={loading}
+            className="mt-6 w-full bg-green-700 text-white py-3 rounded-xl text-lg"
+          >
+            {loading ? "Procesando..." : "Finalizar compra"}
+          </button>
+
+        </div>
+
+      </div>
 
     </div>
 
   </div>
 )
-}
