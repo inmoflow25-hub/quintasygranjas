@@ -218,7 +218,7 @@ export default function Cart() {
 
     try {
       if (paymentMethod === "mp") {
-        const res = await fetch("/api/checkout", {
+        const res = await fetch("/api/orders/create", {
           method: "POST",
           body: JSON.stringify({
             custom: true,
