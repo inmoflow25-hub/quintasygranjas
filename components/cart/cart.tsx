@@ -196,7 +196,11 @@ return (
                   const quantity = getQuantity(p.id)
 
                   return (
-                        className="rounded-xl p-4 bg-[#f3f3f3] hover:bg-[#eaeaea] transition-all"
+                    <div
+                      key={p.id}
+                      className="rounded-xl p-4 bg-[#f3f3f3] hover:bg-[#eaeaea] transition-all"
+                    >
+
                       <div className="h-40 flex items-center justify-center mb-2">
                         <img src={p.image} className="max-h-28 object-contain" />
                       </div>
@@ -211,20 +215,29 @@ return (
                         por {getLabel(p)}
                       </p>
 
-                      {quantity === 0 ? (
+                      {/* 🔥 CONTROLES TIPO ELCLICK */}
+                      <div className="flex justify-center items-center gap-3 mt-2">
+
+                        <button
+                          onClick={() => removeItem(p)}
+                          className="w-8 h-8 rounded-full bg-gray-300"
+                        >
+                          -
+                        </button>
+
+                        <span className="text-sm font-medium">
+                          {quantity}
+                        </span>
+
                         <button
                           onClick={() => addItem(p)}
-                          className="w-full bg-green-700 text-white py-2 rounded-lg text-sm"
+                          className="w-8 h-8 rounded-full bg-green-600 text-white"
                         >
-                          AGREGAR
+                          +
                         </button>
-                      ) : (
-                        <div className="flex justify-between items-center">
-                          <button onClick={() => removeItem(p)} className="px-3 bg-gray-200">-</button>
-                          <span>{quantity}</span>
-                          <button onClick={() => addItem(p)} className="px-3 bg-green-700 text-white">+</button>
-                        </div>
-                      )}
+
+                      </div>
+
                     </div>
                   )
                 })}
