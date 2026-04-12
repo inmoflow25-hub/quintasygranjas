@@ -56,8 +56,8 @@ const PRODUCTS: Product[] = [
   // -------------------
   // FRUTOS SECOS
   // -------------------
-  { id: "nueces", name: "Nueces", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/almendras.jpg", category: "frutos_secos" },
-  { id: "almendras", name: "Almendras", price: 0, type: "weight_500g", image: "/images/almendras.jpg", category: "frutos_secos" },
+  { id: "nueces", name: "Nueces", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nueces.jpg", category: "frutos_secos" },
+  { id: "almendras", name: "Almendras", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/almendras.jpg", category: "frutos_secos" },
   { id: "pasas", name: "Pasas de uva", price: 0, type: "weight_500g", image: "/images/pasas.jpg", category: "frutos_secos" },
   { id: "caju", name: "Castañas de cajú", price: 0, type: "weight_500g", image: "/images/caju.jpg", category: "frutos_secos" },
   { id: "mix", name: "Mix frutos secos", price: 0, type: "weight_500g", image: "/images/mix.jpg", category: "frutos_secos" }
