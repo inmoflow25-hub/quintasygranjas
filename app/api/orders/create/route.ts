@@ -99,7 +99,7 @@ export async function POST(req: Request) {
   title: item.name || "Producto",
   quantity: item.quantity || 1,
   currency_id: "ARS",
-  unit_price: item.price && item.price > 0 ? item.price : 1
+  unit_price: item.price && item.price > 0 ? item.price : 1,
 }))
           external_reference: order.id,
           back_urls: {
