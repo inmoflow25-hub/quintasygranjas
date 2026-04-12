@@ -46,7 +46,7 @@ const PRODUCTS: Product[] = [
   // -------------------
   { id: "pollo_entero", name: "Pollo entero", price: 0, type: "weight_1kg", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pollo%20entero.jpg", category: "pollo" },
   { id: "suprema", name: "Suprema de pollo", price: 11300, type: "weight_1kg", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pechugas%20.jpg", category: "pollo" },
-  { id: "muslos", name: "Muslos de pollo", price: 0, type: "weight_1kg", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/muslo%20de%20pollo.html", category: "pollo" },
+  { id: "muslos", name: "Muslos de pollo", price: 0, type: "weight_1kg", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/muslo%20de%20pollo.jpg", category: "pollo" },
 
   // -------------------
   // CONGELADOS
