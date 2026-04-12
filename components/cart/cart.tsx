@@ -158,6 +158,20 @@ export default function Cart() {
     setLoading(false)
   }
 
+function getDisplayQuantity(item) {
+  if (item.type === "weight_500g") {
+    const totalGrams = item.quantity * 500
+
+    if (totalGrams >= 1000) {
+      return `${totalGrams / 1000} kg`
+    }
+
+    return `${totalGrams} g`
+  }
+
+  return `x${item.quantity}`
+}
+  
 return (
   <div className="max-w-7xl mx-auto p-6">
 
