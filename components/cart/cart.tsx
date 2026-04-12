@@ -18,20 +18,20 @@ const PRODUCTS: Product[] = [
   // VERDURAS
   // -------------------
   { id: "zapallo", name: "Zapallo Anco", price: 1500, type: "unit", image: "/images/zapallo.jpg", category: "verduras" },
-  { id: "cebolla", name: "Cebolla", price: 350, type: "weight_500g", image: "/images/cebolla.jpg", category: "verduras" },
-  { id: "papa", name: "Papa negra", price: 525, type: "weight_500g", image: "/images/papa.jpg", category: "verduras" },
-  { id: "tomate", name: "Tomate", price: 500, type: "weight_500g", image: "/images/tomate.jpg", category: "verduras" },
-  { id: "zanahoria", name: "Zanahoria", price: 400, type: "weight_500g", image: "/images/zanahoria.jpg", category: "verduras" },
-  { id: "lechuga", name: "Lechuga", price: 500, type: "unit", image: "/images/lechuga.jpg", category: "verduras" },
-  { id: "espinaca", name: "Espinaca", price: 500, type: "unit", image: "/images/espinaca.jpg", category: "verduras" },
+  { id: "cebolla", name: "Cebolla", price: 350, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cebollas.jpg", category: "verduras" },
+  { id: "papa", name: "Papa negra", price: 525, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/papas%20negras.jpg", category: "verduras" },
+  { id: "tomate", name: "Tomate", price: 500, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/tomates.jpg", category: "verduras" },
+  { id: "zanahoria", name: "Zanahoria", price: 400, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/zanahorias.jpg", category: "verduras" },
+  { id: "lechuga", name: "Lechuga", price: 500, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/lechugas.jpg", category: "verduras" },
+  { id: "espinaca", name: "Espinaca", price: 500, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/espinacas.jpg", category: "verduras" },
 
   // -------------------
   // FRUTAS
   // -------------------
-  { id: "manzana", name: "Manzana", price: 1600, type: "weight_500g", image: "/images/manzana.jpg", category: "frutas" },
-  { id: "naranja", name: "Naranja jugo", price: 800, type: "weight_500g", image: "/images/naranja.jpg", category: "frutas" },
-  { id: "limon", name: "Limón", price: 900, type: "weight_500g", image: "/images/limon.jpg", category: "frutas" },
-  { id: "banana", name: "Banana", price: 370, type: "weight_500g", image: "/images/banana.jpg", category: "frutas" },
+  { id: "manzana", name: "Manzana", price: 1600, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/manzanas.jpg", category: "frutas" },
+  { id: "naranja", name: "Naranja jugo", price: 800, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/naranja%20jugo.jpg", category: "frutas" },
+  { id: "limon", name: "Limón", price: 900, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/limones.jpg", category: "frutas" },
+  { id: "banana", name: "Banana", price: 370, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/banana.jpg", category: "frutas" },
 
   // -------------------
   // PAN / OTROS
@@ -42,25 +42,25 @@ const PRODUCTS: Product[] = [
   // -------------------
   // POLLO
   // -------------------
-  { id: "pollo_entero", name: "Pollo entero", price: 0, type: "weight_1kg", image: "/images/pollo.jpg", category: "pollo" },
-  { id: "suprema", name: "Suprema de pollo", price: 11300, type: "weight_1kg", image: "/images/pollo.jpg", category: "pollo" },
-  { id: "muslos", name: "Muslos de pollo", price: 0, type: "weight_1kg", image: "/images/pollo.jpg", category: "pollo" },
+  { id: "pollo_entero", name: "Pollo entero", price: 0, type: "weight_1kg", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pollo%20entero.jpg", category: "pollo" },
+  { id: "suprema", name: "Suprema de pollo", price: 11300, type: "weight_1kg", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pechugas%20.jpg", category: "pollo" },
+  { id: "muslos", name: "Muslos de pollo", price: 0, type: "weight_1kg", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/muslo%20de%20pollo.html", category: "pollo" },
 
   // -------------------
   // CONGELADOS
   // -------------------
-  { id: "medallones", name: "Medallones de pollo", price: 0, type: "unit", image: "/images/medallones.jpg", category: "congelados" },
-  { id: "medallones_espinaca", name: "Medallones pollo con espinaca", price: 0, type: "unit", image: "/images/medallones.jpg", category: "congelados" },
-  { id: "nuggets", name: "Nuggets de pollo", price: 0, type: "unit", image: "/images/nuggets.jpg", category: "congelados" },
+  { id: "medallones", name: "Medallones de pollo", price: 0, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo%20sin%20espinaca.webp", category: "congelados" },
+  { id: "medallones_espinaca", name: "Medallones pollo con espinaca", price: 0, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo.jpg", category: "congelados" },
+  { id: "nuggets", name: "Nuggets de pollo", price: 0, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nuggets.jpeg", category: "congelados" },
 
   // -------------------
   // FRUTOS SECOS
   // -------------------
   { id: "nueces", name: "Nueces", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nueces.jpg", category: "frutos_secos" },
   { id: "almendras", name: "Almendras", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/almendras.jpg", category: "frutos_secos" },
-  { id: "pasas", name: "Pasas de uva", price: 0, type: "weight_500g", image: "/images/pasas.jpg", category: "frutos_secos" },
-  { id: "caju", name: "Castañas de cajú", price: 0, type: "weight_500g", image: "/images/caju.jpg", category: "frutos_secos" },
-  { id: "mix", name: "Mix frutos secos", price: 0, type: "weight_500g", image: "/images/mix.jpg", category: "frutos_secos" }
+  { id: "pasas", name: "Pasas de uva", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pasas%20de%20uva.jpg", category: "frutos_secos" },
+  { id: "caju", name: "Castañas de cajú", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/castan%CC%83as%20de%20caju.jpg", category: "frutos_secos" },
+  { id: "mix", name: "Mix frutos secos", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mix%20frutos%20secos.jpg", category: "frutos_secos" }
 
 ]
 
