@@ -299,7 +299,7 @@ return (
               <div>
                 <p className="font-medium">{item.name}</p>
                 <p className="text-xs text-green-200">
-                  x{item.quantity}
+                  {getDisplayQuantity(item)}
                 </p>
               </div>
 
