@@ -39,7 +39,7 @@ const PRODUCTS: Product[] = [
   // -------------------
   { id: "pan", name: "Pan", price: 1200, type: "unit", image: "/images/pan.jpg", category: "otros" },
   { id: "miel", name: "Miel", price: 4500, type: "weight_500g", image: "/images/miel.jpg", category: "otros" },
-  { id: "huevos", name: "Huevos (docena)", price: 3000, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/huevos.jpg", category: "otros" },
+  { id: "huevos", name: "Huevos (30 unidades)", price: 3000, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/huevos.jpg", category: "otros" },
 
   // -------------------
   // POLLO
