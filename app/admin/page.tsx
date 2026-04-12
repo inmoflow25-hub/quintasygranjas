@@ -15,61 +15,61 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [orders, setOrders] = useState<any[]>([])
 
-  useEffect(() => {
+useEffect(() => {
 
-    async function loadData() {
+  async function loadData() {
 
-      const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser()
 
-      if (!user) {
-        router.push("/")
-        return
-      }
+    if (!user) {
+      router.push("/")
+      return
+    }
 
-      const ADMIN_IDS = [
-        "95aae067-c075-4a04-95b2-8e4aa5cfb25f",
-        "92b5059a-69b1-4cbb-ac1f-a5f6c17a87d6"
-      ]
+    const ADMIN_IDS = [
+      "95aae067-c075-4a04-95b2-8e4aa5cfb25f",
+      "92b5059a-69b1-4cbb-ac1f-a5f6c17a87d6"
+    ]
 
-      if (!ADMIN_IDS.includes(user.id)) {
-        router.push("/")
-        return
-      }
+    if (!ADMIN_IDS.includes(user.id)) {
+      router.push("/")
+      return
+    }
 
-      const { data, error } = await supabase.rpc("get_admin_orders")
+    const { data, error } = await supabase.rpc("get_admin_orders")
 
-      if (error) {
-        console.error("ADMIN ERROR:", error)
-        setLoading(false)
-        return
-      }
-
-      setOrders(data || [])
+    if (error) {
+      console.error("ADMIN ERROR:", error)
       setLoading(false)
+      return
     }
 
-    loadData()
+    setOrders(data || [])
+    setLoading(false)
+  }
 
-    const channel = supabase
-      .channel("orders-realtime")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "orders"
-        },
-        () => {
-          loadData()
-        }
-      )
-      .subscribe()
+  loadData()
 
-    return () => {
-      supabase.removeChannel(channel)
-    }
+  const channel = supabase
+    .channel("orders-realtime")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "orders"
+      },
+      () => {
+        loadData()
+      }
+    )
+    .subscribe()
 
-  }, [])
+  return () => {
+    supabase.removeChannel(channel)
+  }
+
+}, [])
 
   if (loading) {
     return (
@@ -96,6 +96,7 @@ export default function AdminPage() {
               <th className="p-3">Nombre</th>
               <th className="p-3">Email</th>
               <th className="p-3">Caja / Productos</th>
+              <th className="p-3">Pago</th>
               <th className="p-3">Dirección</th>
               <th className="p-3">Zona</th>
               <th className="p-3">Teléfono</th>
@@ -124,6 +125,10 @@ export default function AdminPage() {
 
                 <td className="p-3 font-medium">
                   {o.productos || o.caja || "-"}
+                </td>
+
+                <td className="p-3">
+                  {o.payment_method || "-"}
                 </td>
 
                 <td className="p-3">
