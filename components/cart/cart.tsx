@@ -166,17 +166,28 @@ export default function Cart() {
 return (
   <div className="max-w-7xl mx-auto p-6">
 
-    <h2 className="text-3xl font-bold mb-8 text-center">
+    <h2 className="text-3xl font-bold mb-6 text-center">
       Armar tu caja 🧺
     </h2>
 
-    {/* 🔥 LAYOUT PRINCIPAL */}
+    {/* 🟢 PILLS DE CATEGORÍAS */}
+    <div className="flex gap-2 mb-6 overflow-x-auto">
+      {Array.from(new Set(PRODUCTS.map(p => p.category))).map((cat) => (
+        <button
+          key={cat}
+          className="px-4 py-1 rounded-full bg-gray-200 text-sm whitespace-nowrap hover:bg-green-600 hover:text-white transition"
+        >
+          {cat.replace("_", " ")}
+        </button>
+      ))}
+    </div>
+
+    {/* 🔥 LAYOUT */}
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-      {/* 🔥 IZQUIERDA: PRODUCTOS */}
+      {/* IZQUIERDA */}
       <div className="md:col-span-2">
 
-        {/* 🔥 CATEGORÍAS */}
         {Array.from(new Set(PRODUCTS.map(p => p.category))).map((category) => {
 
           const items = PRODUCTS.filter(p => p.category === category)
@@ -184,13 +195,11 @@ return (
           return (
             <div key={category} className="mb-10">
 
-              {/* TITULO */}
-              <h3 className="text-2xl font-bold mb-4 capitalize">
+              <h3 className="text-xl font-bold mb-3 capitalize">
                 {category.replace("_", " ")}
               </h3>
 
-              {/* GRID */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
 
                 {items.map((p) => {
                   const quantity = getQuantity(p.id)
@@ -198,40 +207,40 @@ return (
                   return (
                     <div
                       key={p.id}
-                      className="rounded-xl p-4 bg-[#f3f3f3] hover:bg-[#eaeaea] transition-all"
+                      className="rounded-xl p-3 bg-[#f1f1f1] hover:bg-[#e7e7e7] transition"
                     >
 
-                      <div className="h-40 flex items-center justify-center mb-2">
-                        <img src={p.image} className="max-h-28 object-contain" />
+                      <div className="h-32 flex items-center justify-center mb-2">
+                        <img src={p.image} className="max-h-24 object-contain" />
                       </div>
 
-                      <p className="font-semibold text-sm">{p.name}</p>
+                      <p className="text-sm font-semibold">{p.name}</p>
 
-                      <p className="text-lg font-bold">
+                      <p className="text-md font-bold">
                         ${p.price.toLocaleString()}
                       </p>
 
-                      <p className="text-xs text-gray-500 mb-3">
+                      <p className="text-xs text-gray-500 mb-2">
                         por {getLabel(p)}
                       </p>
 
-                      {/* 🔥 CONTROLES TIPO ELCLICK */}
-                      <div className="flex justify-center items-center gap-3 mt-2">
+                      {/* CONTROLES */}
+                      <div className="flex justify-center items-center gap-2">
 
                         <button
                           onClick={() => removeItem(p)}
-                          className="w-8 h-8 rounded-full bg-gray-300"
+                          className="w-7 h-7 rounded-full bg-gray-300"
                         >
                           -
                         </button>
 
-                        <span className="text-sm font-medium">
+                        <span className="text-sm">
                           {quantity}
                         </span>
 
                         <button
                           onClick={() => addItem(p)}
-                          className="w-8 h-8 rounded-full bg-green-600 text-white"
+                          className="w-7 h-7 rounded-full bg-green-600 text-white"
                         >
                           +
                         </button>
@@ -249,50 +258,60 @@ return (
 
       </div>
 
-      {/* 🔥 DERECHA: CARRITO FIJO */}
+      {/* 🔥 CARRITO VERDE */}
       <div className="md:col-span-1">
 
-        <div className="sticky top-6 border rounded-xl p-5 bg-white shadow-md">
+        <div className="sticky top-24 rounded-xl p-5 bg-green-600 text-white shadow-lg">
 
           <h3 className="text-xl font-bold mb-4">
-            Tu caja 🧺
+            Mi pedido 🛒
           </h3>
 
           {cart.length === 0 && (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-green-100">
               Todavía no agregaste productos
             </p>
           )}
 
           {cart.map((item) => (
-            <div key={item.id} className="flex justify-between items-center mb-2 text-sm">
+            <div key={item.id} className="flex justify-between items-center mb-3 text-sm">
 
               <div>
                 <p className="font-medium">{item.name}</p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-green-200">
                   x{item.quantity}
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
-                <button onClick={() => removeItem(item)} className="px-2 bg-gray-200">-</button>
-                <button onClick={() => addItem(item)} className="px-2 bg-green-700 text-white">+</button>
+                <button
+                  onClick={() => removeItem(item)}
+                  className="w-6 h-6 rounded-full bg-white text-black"
+                >
+                  -
+                </button>
+                <button
+                  onClick={() => addItem(item)}
+                  className="w-6 h-6 rounded-full bg-black text-white"
+                >
+                  +
+                </button>
               </div>
 
             </div>
           ))}
 
           {/* TOTAL */}
-          <div className="mt-6 border-t pt-4">
+          <div className="mt-4 border-t border-green-400 pt-3">
             <p className="text-lg font-bold">
               Total: ${Math.round(getTotal()).toLocaleString()}
             </p>
           </div>
 
-          {/* MÉTODO DE PAGO */}
-          <div className="mt-4 flex flex-col gap-2">
+          {/* PAGOS */}
+          <div className="mt-3 flex flex-col gap-2 text-sm">
 
-            <label className="flex items-center gap-2 text-sm">
+            <label className="flex items-center gap-2">
               <input
                 type="radio"
                 checked={paymentMethod === "mp"}
@@ -301,22 +320,22 @@ return (
               MercadoPago
             </label>
 
-            <label className="flex items-center gap-2 text-sm">
+            <label className="flex items-center gap-2">
               <input
                 type="radio"
                 checked={paymentMethod === "cash"}
                 onChange={() => setPaymentMethod("cash")}
               />
-              Efectivo al recibir
+              Efectivo
             </label>
 
           </div>
 
-          {/* BOTÓN */}
+          {/* CTA */}
           <button
             onClick={handleCheckout}
             disabled={loading}
-            className="mt-6 w-full bg-green-700 text-white py-3 rounded-xl text-lg"
+            className="mt-5 w-full bg-black text-white py-3 rounded-xl text-lg"
           >
             {loading ? "Procesando..." : "Finalizar compra"}
           </button>
