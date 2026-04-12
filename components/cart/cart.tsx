@@ -59,11 +59,12 @@ const PRODUCTS: Product[] = [
 // -------------------
 // FRUTOS SECOS
 // -------------------
+
 { 
   id: "nueces", 
   name: "Nueces peladas", 
   description: "sin cáscara, listas para consumir", 
-  price: 0, 
+  price: 5200, // 🔥 margen bueno sin pasarte
   type: "weight_500g", 
   image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nueces.jpg", 
   category: "frutos_secos" 
@@ -73,7 +74,7 @@ const PRODUCTS: Product[] = [
   id: "almendras", 
   name: "Almendras naturales", 
   description: "crudas, sin sal", 
-  price: 0, 
+  price: 2900, 
   type: "weight_500g", 
   image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/almendras.jpg", 
   category: "frutos_secos" 
@@ -83,7 +84,7 @@ const PRODUCTS: Product[] = [
   id: "pasas", 
   name: "Pasas de uva", 
   description: "dulces, ideales para snacks o cocina", 
-  price: 0, 
+  price: 1700, 
   type: "weight_500g", 
   image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pasas%20de%20uva.jpg", 
   category: "frutos_secos" 
@@ -93,7 +94,7 @@ const PRODUCTS: Product[] = [
   id: "caju", 
   name: "Castañas de cajú", 
   description: "suaves y crocantes", 
-  price: 0, 
+  price: 4800, 
   type: "weight_500g", 
   image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/castan%CC%83as%20de%20caju.jpg", 
   category: "frutos_secos" 
@@ -103,7 +104,7 @@ const PRODUCTS: Product[] = [
   id: "mix", 
   name: "Mix frutos secos", 
   description: "mezcla de nuez, almendra, pasas y maní", 
-  price: 0, 
+  price: 3200, // 🔥 más margen acá (producto armado)
   type: "weight_500g", 
   image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mix%20frutos%20secos.jpg", 
   category: "frutos_secos" 
@@ -113,7 +114,7 @@ const PRODUCTS: Product[] = [
   id: "mani_tostado", 
   name: "Maní tostado", 
   description: "tostado sin sal", 
-  price: 1800, 
+  price: 1800, // ✔ ya perfecto
   type: "weight_500g", 
   image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20tostado%20comun.jpg", 
   category: "frutos_secos" 
