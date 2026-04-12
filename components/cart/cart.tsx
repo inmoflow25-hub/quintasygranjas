@@ -107,16 +107,11 @@ export default function Cart() {
     return cart.find((i) => i.id === id)?.quantity || 0
   }
 
-  function getTotal() {
-    return cart.reduce((acc, item) => {
-      let multiplier = 1
-
-      if (item.type === "weight_500g") multiplier = 0.5
-      if (item.type === "weight_1kg") multiplier = 1
-
-      return acc + item.price * item.quantity * multiplier
-    }, 0)
-  }
+ function getTotal() {
+  return cart.reduce((acc, item) => {
+    return acc + item.price * item.quantity
+  }, 0)
+}
 
   function getLabel(product: Product) {
     if (product.type === "unit") return "unidad"
