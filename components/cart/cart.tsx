@@ -9,6 +9,7 @@ type Product = {
   type: "unit" | "weight_500g" | "weight_1kg"
   image: string
   category: string
+  description?: string // 👈 AGREGÁ ESTO
 }
 
 // 🔥 PRODUCTOS
@@ -55,17 +56,78 @@ const PRODUCTS: Product[] = [
   { id: "medallones_espinaca", name: "Medallones pollo con espinaca", price: 0, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo.jpg", category: "congelados" },
   { id: "nuggets", name: "Nuggets de pollo", price: 0, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nuggets.jpeg", category: "congelados" },
 
-  // -------------------
-  // FRUTOS SECOS
-  // -------------------
-  { id: "nueces", name: "Nueces", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nueces.jpg", category: "frutos_secos" },
-  { id: "almendras", name: "Almendras", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/almendras.jpg", category: "frutos_secos" },
-  { id: "pasas", name: "Pasas de uva", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pasas%20de%20uva.jpg", category: "frutos_secos" },
-  { id: "caju", name: "Castañas de cajú", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/castan%CC%83as%20de%20caju.jpg", category: "frutos_secos" },
-  { id: "mix", name: "Mix frutos secos", price: 0, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mix%20frutos%20secos.jpg", category: "frutos_secos" },
-  { id: "mani_tostado", name: "Maní tostado", price: 1800, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20tostado%20comun.jpg", category: "frutos_secos" },
-  { id: "mani_salado", name: "Maní salado", price: 1800, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20salado.jpg", category: "frutos_secos" }
+// -------------------
+// FRUTOS SECOS
+// -------------------
+{ 
+  id: "nueces", 
+  name: "Nueces peladas", 
+  description: "sin cáscara, listas para consumir", 
+  price: 0, 
+  type: "weight_500g", 
+  image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nueces.jpg", 
+  category: "frutos_secos" 
+},
 
+{ 
+  id: "almendras", 
+  name: "Almendras naturales", 
+  description: "crudas, sin sal", 
+  price: 0, 
+  type: "weight_500g", 
+  image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/almendras.jpg", 
+  category: "frutos_secos" 
+},
+
+{ 
+  id: "pasas", 
+  name: "Pasas de uva", 
+  description: "dulces, ideales para snacks o cocina", 
+  price: 0, 
+  type: "weight_500g", 
+  image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pasas%20de%20uva.jpg", 
+  category: "frutos_secos" 
+},
+
+{ 
+  id: "caju", 
+  name: "Castañas de cajú", 
+  description: "suaves y crocantes", 
+  price: 0, 
+  type: "weight_500g", 
+  image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/castan%CC%83as%20de%20caju.jpg", 
+  category: "frutos_secos" 
+},
+
+{ 
+  id: "mix", 
+  name: "Mix frutos secos", 
+  description: "mezcla de nuez, almendra, pasas y maní", 
+  price: 0, 
+  type: "weight_500g", 
+  image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mix%20frutos%20secos.jpg", 
+  category: "frutos_secos" 
+},
+
+{ 
+  id: "mani_tostado", 
+  name: "Maní tostado", 
+  description: "tostado sin sal", 
+  price: 1800, 
+  type: "weight_500g", 
+  image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20tostado%20comun.jpg", 
+  category: "frutos_secos" 
+},
+
+{ 
+  id: "mani_salado", 
+  name: "Maní salado", 
+  description: "tostado con sal", 
+  price: 1800, 
+  type: "weight_500g", 
+  image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20salado.jpg", 
+  category: "frutos_secos" 
+}
 ]
 
 export default function Cart() {
