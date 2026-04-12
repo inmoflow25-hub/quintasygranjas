@@ -45,11 +45,10 @@ export async function POST(req: Request) {
       user = newUser
     }
 
-    // 🔥 CALCULAR TOTAL (FIX)
+    // 🔥 CALCULAR TOTAL
     let total = 0
-
     for (const item of items) {
-      total += (item.price || 0) * item.quantity
+      total += (item.price || 0) * (item.quantity || 1)
     }
 
     // 🔥 CREAR ORDER
@@ -69,13 +68,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "order error" }, { status: 500 })
     }
 
-    // 🔥 CREAR ITEMS (FIX IMPORTANTE)
-   const itemsToInsert = items.map((item: any) => ({
-  order_id: order.id,
-  product_name: item.name || "Producto",
-  quantity: item.quantity || 1,
-  price: item.price && item.price > 0 ? item.price : 1
-}))
+    // 🔥 CREAR ITEMS
+    const itemsToInsert = items.map((item: any) => ({
+      order_id: order.id,
+      product_name: item.name || "Producto",
+      quantity: item.quantity || 1,
+      price: item.price && item.price > 0 ? item.price : 1
+    }))
 
     const { error: itemsError } = await supabase
       .from("order_items")
@@ -96,11 +95,11 @@ export async function POST(req: Request) {
         },
         body: JSON.stringify({
           items: items.map((item: any) => ({
-  title: item.name || "Producto",
-  quantity: item.quantity || 1,
-  currency_id: "ARS",
-  unit_price: item.price && item.price > 0 ? item.price : 1,
-}))
+            title: item.name || "Producto",
+            quantity: item.quantity || 1,
+            currency_id: "ARS",
+            unit_price: item.price && item.price > 0 ? item.price : 1
+          })), // 🔥 ESTA COMA ERA CLAVE
           external_reference: order.id,
           back_urls: {
             success: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}`,
@@ -119,7 +118,7 @@ export async function POST(req: Request) {
       })
     }
 
-    // 🔥 SI ES CASH / TRANSFER
+    // 🔥 CASH / TRANSFER
     return NextResponse.json({
       success: true,
       order_id: order.id
@@ -130,4 +129,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "server error" }, { status: 500 })
   }
 }
+
 
