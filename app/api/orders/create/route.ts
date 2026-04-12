@@ -70,12 +70,12 @@ export async function POST(req: Request) {
     }
 
     // 🔥 CREAR ITEMS (FIX IMPORTANTE)
-    const itemsToInsert = items.map((item: any) => ({
-      order_id: order.id,
-      product_name: item.name || "Producto",
-      quantity: item.quantity || 1,
-      price: item.price || 0
-    }))
+   const itemsToInsert = items.map((item: any) => ({
+  order_id: order.id,
+  product_name: item.name || "Producto",
+  quantity: item.quantity || 1,
+  price: item.price && item.price > 0 ? item.price : 1
+}))
 
     const { error: itemsError } = await supabase
       .from("order_items")
@@ -96,11 +96,11 @@ export async function POST(req: Request) {
         },
         body: JSON.stringify({
           items: items.map((item: any) => ({
-            title: item.name || "Producto",
-            quantity: item.quantity || 1,
-            currency_id: "ARS",
-            unit_price: item.price || 0
-          })),
+  title: item.name || "Producto",
+  quantity: item.quantity || 1,
+  currency_id: "ARS",
+  unit_price: item.price && item.price > 0 ? item.price : 1
+}))
           external_reference: order.id,
           back_urls: {
             success: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}`,
