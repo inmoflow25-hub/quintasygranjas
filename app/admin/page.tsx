@@ -123,7 +123,7 @@ useEffect(() => {
                 </td>
 
                 <td className="p-3 font-medium">
-                  {o.caja}
+                 {o.productos || o.caja}
                 </td>
 
                 <td className="p-3">
