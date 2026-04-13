@@ -168,21 +168,16 @@ const saveData = async () => {
       return
     }
 
-    // 🔥 SI VIENE DEL CART (order_id), la orden ya existe - solo actualizar user
-    if (orderId && !boxId) {
-      // La orden ya fue creada por /api/orders/create, solo linkear al user
-      const { error: updateError } = await supabase
-        .from("orders")
-        .update({ user_id: user.id })
-        .eq("id", orderId)
-      
-      if (updateError) {
-        console.error(updateError)
-        alert("Error actualizando orden")
-        setLoading(false)
-        return
-      }
-    } else if (boxId) {
+    // IDs de cajas conocidos
+    const boxIds = [
+      "dff394c8-6a17-45e8-ba3f-960c27f8d76c",
+      "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d", 
+      "d5b70577-a2b7-47d7-9ccd-e2f336e25af7"
+    ]
+    
+    const isBoxOrder = boxId && boxIds.includes(boxId)
+    
+    if (isBoxOrder) {
       // 🔥 VIENE DE MP CON CAJA - crear orden nueva
       const priceMap: any = {
         "dff394c8-6a17-45e8-ba3f-960c27f8d76c": 27800,
@@ -205,7 +200,20 @@ const saveData = async () => {
         setLoading(false)
         return
       }
-    } else if (!orderId && !boxId) {
+    } else if (orderId) {
+      // 🔥 VIENE DEL CART - la orden ya existe, solo linkear al user
+      const { error: updateError } = await supabase
+        .from("orders")
+        .update({ user_id: user.id, status: "paid" })
+        .eq("id", orderId)
+      
+      if (updateError) {
+        console.error(updateError)
+        alert("Error actualizando orden")
+        setLoading(false)
+        return
+      }
+    } else {
       alert("No se encontró información del pedido")
       setLoading(false)
       return
