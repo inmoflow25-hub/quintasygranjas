@@ -21,7 +21,7 @@ const BOX_DB_IDS: Record<BoxType, string> = {
 export default function Home() {
 
   async function onSelectBox(boxType: BoxType) {
-    const res = await fetch("/api/orders/create", {
+    const res = await fetch("/api/checkout", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
