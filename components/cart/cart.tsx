@@ -244,7 +244,7 @@ async function handleCheckout() {
       return
     }
 
-    // 💵 EFECTIVO
+    {/* // 💵 EFECTIVO
     window.location.href = `/success?order_id=${data.order_id}`
 
   } catch (err) {
@@ -253,7 +253,7 @@ async function handleCheckout() {
 
   setLoading(false)
 }
-
+*/}
   
 return (
   <div className="max-w-7xl mx-auto p-6">
