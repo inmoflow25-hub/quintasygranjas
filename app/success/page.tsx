@@ -16,12 +16,16 @@ declare global {
 }
 
 export default function SuccessPage() {
+  const [orderId, setOrderId] = useState<string | null>(null)
   const [boxId, setBoxId] = useState<string | null>(null)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
+    // order_id viene del Cart, external_reference viene de MP
+    const oid = params.get("order_id")
     const ref = params.get("external_reference")
-    setBoxId(ref)
+    setOrderId(oid || ref)
+    setBoxId(ref) // Solo para cajas de MP
   }, [])
   
   const [loading, setLoading] = useState(false)
@@ -164,33 +168,45 @@ const saveData = async () => {
       return
     }
 
-    // 🔥 VALIDAR BOX (VIENE DE MP)
-    if (!boxId) {
-      alert("No llegó el producto desde MercadoPago")
-      setLoading(false)
-      return
-    }
+    // 🔥 SI VIENE DEL CART (order_id), la orden ya existe - solo actualizar user
+    if (orderId && !boxId) {
+      // La orden ya fue creada por /api/orders/create, solo linkear al user
+      const { error: updateError } = await supabase
+        .from("orders")
+        .update({ user_id: user.id })
+        .eq("id", orderId)
+      
+      if (updateError) {
+        console.error(updateError)
+        alert("Error actualizando orden")
+        setLoading(false)
+        return
+      }
+    } else if (boxId) {
+      // 🔥 VIENE DE MP CON CAJA - crear orden nueva
+      const priceMap: any = {
+        "dff394c8-6a17-45e8-ba3f-960c27f8d76c": 27800,
+        "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d": 47400,
+        "d5b70577-a2b7-47d7-9ccd-e2f336e25af7": 56800
+      }
 
-    // 🔥 PRECIOS
-    const priceMap: any = {
-      "dff394c8-6a17-45e8-ba3f-960c27f8d76c": 27800,
-      "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d": 47400,
-      "d5b70577-a2b7-47d7-9ccd-e2f336e25af7": 56800
-    }
+      const { error: orderError } = await supabase
+        .from("orders")
+        .insert({
+          user_id: user.id,
+          box_id: boxId,
+          price: priceMap[boxId],
+          status: "paid"
+        })
 
-    // 🔥 CREAR ORDER
-    const { error: orderError } = await supabase
-      .from("orders")
-      .insert({
-        user_id: user.id,
-        box_id: boxId,
-        price: priceMap[boxId],
-        status: "paid"
-      })
-
-    if (orderError) {
-      console.error(orderError)
-      alert("Error creando orden")
+      if (orderError) {
+        console.error(orderError)
+        alert("Error creando orden")
+        setLoading(false)
+        return
+      }
+    } else {
+      alert("No se encontró información del pedido")
       setLoading(false)
       return
     }
