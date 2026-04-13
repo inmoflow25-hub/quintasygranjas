@@ -141,7 +141,7 @@ const PRODUCTS: Product[] = [
 
 export default function Cart() {
   const [cart, setCart] = useState<any[]>([])
-  const [paymentMethod, setPaymentMethod] = useState<"mp" | "cash">("mp")
+  const [paymentMethod] = useState<"mp">("mp")
   const [loading, setLoading] = useState(false)
 
   function addItem(product: Product) {
@@ -234,18 +234,12 @@ async function handleCheckout() {
     const data = await res.json()
 
     // 💳 MERCADOPAGO
-    if (paymentMethod === "mp") {
-      if (!data.checkout_url) {
-        alert("Error con MercadoPago")
-        return
-      }
-
-      window.location.href = data.checkout_url
+    if (data.init_point) {
+      window.location.href = data.init_point
       return
     }
 
-    // 💵 EFECTIVO
-    window.location.href = `/success?order_id=${data.order_id}`
+    alert("Error con MercadoPago")
 
   } catch (err) {
     alert("Error en checkout")
@@ -417,28 +411,10 @@ return (
             </p>
           </div>
 
-          {/* PAGOS */}
-          <div className="mt-3 flex flex-col gap-2 text-sm">
-
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                checked={paymentMethod === "mp"}
-                onChange={() => setPaymentMethod("mp")}
-              />
-              MercadoPago
-            </label>
-
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                checked={paymentMethod === "cash"}
-                onChange={() => setPaymentMethod("cash")}
-              />
-              Efectivo
-            </label>
-
-          </div>
+          {/* PAGO */}
+          <p className="mt-3 text-sm text-green-200">
+            Pago con MercadoPago
+          </p>
 
           {/* CTA */}
           <button
