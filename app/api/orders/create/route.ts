@@ -2,11 +2,11 @@ import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 
 const supabase = createClient(
-  process.env.SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-// Box IDs y precios
+// Box IDs y precios - ACTUALIZADO
 const BOX_MAP: Record<string, { name: string; price: number }> = {
   "dff394c8-6a17-45e8-ba3f-960c27f8d76c": { name: "Caja Veggie", price: 27800 },
   "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d": { name: "Caja Campo", price: 47400 },

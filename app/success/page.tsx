@@ -205,7 +205,7 @@ const saveData = async () => {
         setLoading(false)
         return
       }
-    } else {
+    } else if (!orderId && !boxId) {
       alert("No se encontró información del pedido")
       setLoading(false)
       return
