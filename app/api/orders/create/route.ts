@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
+import MercadoPagoConfig, { Preference } from "mercadopago"
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,20 +17,18 @@ const BOX_MAP: Record<string, { name: string; price: number }> = {
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    let { items, customer, payment_method } = body
-    const { box_id } = body
+    const { items, customer, payment_method, box_id } = body
 
-    // 🔥 SI VIENE BOX_ID -> CREAR PREFERENCE MP DIRECTO
+    // SI VIENE BOX_ID -> CREAR PREFERENCE MP
     if (box_id && BOX_MAP[box_id]) {
       const box = BOX_MAP[box_id]
-      const mpRes = await fetch("https://api.mercadopago.com/checkout/preferences", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
+      const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN! })
+      const preference = new Preference(client)
+      
+      const result = await preference.create({
+        body: {
           items: [{
+            id: box_id,
             title: box.name,
             quantity: 1,
             currency_id: "ARS",
@@ -37,135 +36,93 @@ export async function POST(req: Request) {
           }],
           external_reference: box_id,
           back_urls: {
-            success: `${process.env.NEXT_PUBLIC_BASE_URL}/success?external_reference=${box_id}`,
-            failure: `${process.env.NEXT_PUBLIC_BASE_URL}/error`,
-            pending: `${process.env.NEXT_PUBLIC_BASE_URL}/pending`
+            success: `${process.env.NEXT_PUBLIC_BASE_URL}/success`,
+            failure: `${process.env.NEXT_PUBLIC_BASE_URL}/`,
+            pending: `${process.env.NEXT_PUBLIC_BASE_URL}/`
           },
           auto_return: "approved"
-        })
+        }
       })
-      const mpData = await mpRes.json()
-      return NextResponse.json({ init_point: mpData.init_point })
+      
+      return NextResponse.json({ init_point: result.init_point })
     }
 
-    // 🔥 VALIDACIONES PARA CART
+    // VALIDACIONES PARA CART
     if (!items || items.length === 0) {
       return NextResponse.json({ error: "no items" }, { status: 400 })
     }
 
-    if (!customer?.email) {
-      return NextResponse.json({ error: "missing email" }, { status: 400 })
-    }
+    // Calcular total
+    const total = items.reduce((acc: number, item: any) => {
+      return acc + (item.price || 0) * (item.quantity || 1)
+    }, 0)
 
-    // 🔥 BUSCAR O CREAR USER
-    let { data: user } = await supabase
-      .from("users")
-      .select("*")
-      .eq("email", customer.email)
-      .maybeSingle()
-
-    if (!user) {
-      const userId = crypto.randomUUID()
-
-      const { data: newUser, error } = await supabase
-        .from("users")
-        .insert({
-          id: userId,
-          email: customer.email
-        })
-        .select()
-        .single()
-
-      if (error || !newUser) {
-        return NextResponse.json({ error: "user error" }, { status: 500 })
-      }
-
-      user = newUser
-    }
-
-    // 🔥 CALCULAR TOTAL
-    let total = 0
-    for (const item of items) {
-      total += (item.price || 0) * (item.quantity || 1)
-    }
-
-    // 🔥 CREAR ORDER
+    // Crear orden
     const { data: order, error: orderError } = await supabase
       .from("orders")
       .insert({
-        user_id: user.id,
         price: total,
         status: "pending",
-        payment_method,
-        payment_status: "pending"
+        payment_method: payment_method || "cash"
       })
       .select()
       .single()
 
-    if (orderError || !order) {
+    if (orderError) {
+      console.error("Order error:", orderError)
       return NextResponse.json({ error: "order error" }, { status: 500 })
     }
 
-    // 🔥 CREAR ITEMS
-    const itemsToInsert = items.map((item: any) => ({
+    // Insertar items
+    const orderItems = items.map((item: any) => ({
       order_id: order.id,
-      product_name: item.name || "Producto",
+      product_name: item.name || item.product_name,
       quantity: item.quantity || 1,
-      price: item.price && item.price > 0 ? item.price : 1
+      price: item.price > 0 ? item.price : 1
     }))
 
     const { error: itemsError } = await supabase
       .from("order_items")
-      .insert(itemsToInsert)
+      .insert(orderItems)
 
     if (itemsError) {
-      console.error("ITEMS ERROR:", itemsError)
+      console.error("Items error:", itemsError)
       return NextResponse.json({ error: "items error" }, { status: 500 })
     }
 
-    // 🔥 SI ES MP → CREAR PREFERENCE
+    // Si es MP, crear preference
     if (payment_method === "mercadopago") {
-      const mpRes = await fetch("https://api.mercadopago.com/checkout/preferences", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
+      const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN! })
+      const preference = new Preference(client)
+      
+      const result = await preference.create({
+        body: {
           items: items.map((item: any) => ({
-            title: item.name || "Producto",
+            id: String(item.id || "item"),
+            title: item.name || item.product_name,
             quantity: item.quantity || 1,
             currency_id: "ARS",
-            unit_price: item.price && item.price > 0 ? item.price : 1
-          })), // 🔥 ESTA COMA ERA CLAVE
+            unit_price: item.price || 1
+          })),
           external_reference: order.id,
           back_urls: {
             success: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}`,
-            failure: `${process.env.NEXT_PUBLIC_BASE_URL}/error`,
-            pending: `${process.env.NEXT_PUBLIC_BASE_URL}/pending`
+            failure: `${process.env.NEXT_PUBLIC_BASE_URL}/`,
+            pending: `${process.env.NEXT_PUBLIC_BASE_URL}/`
           },
           auto_return: "approved"
-        })
+        }
       })
-
-      const mpData = await mpRes.json()
-
-      return NextResponse.json({
-        checkout_url: mpData.init_point,
-        order_id: order.id
-      })
+      
+      return NextResponse.json({ init_point: result.init_point, order_id: order.id })
     }
 
-    // 🔥 CASH / TRANSFER
-    return NextResponse.json({
-      success: true,
-      order_id: order.id
-    })
+    // Cash - retornar order_id
+    return NextResponse.json({ order_id: order.id })
 
-  } catch (err) {
-    console.error(err)
+  } catch (error) {
+    console.error("Error:", error)
     return NextResponse.json({ error: "server error" }, { status: 500 })
   }
 }
-
 
