@@ -6,11 +6,49 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
+// Box IDs y precios
+const BOX_MAP: Record<string, { name: string; price: number }> = {
+  "dff394c8-6a17-45e8-ba3f-960c27f8d76c": { name: "Caja Veggie", price: 27800 },
+  "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d": { name: "Caja Campo", price: 47400 },
+  "d5b70577-a2b7-47d7-9ccd-e2f336e25af7": { name: "Caja Granja", price: 56800 }
+}
+
 export async function POST(req: Request) {
   try {
-    const { items, customer, payment_method } = await req.json()
+    const body = await req.json()
+    let { items, customer, payment_method } = body
+    const { box_id } = body
 
-    // 🔥 VALIDACIONES
+    // 🔥 SI VIENE BOX_ID -> CREAR PREFERENCE MP DIRECTO
+    if (box_id && BOX_MAP[box_id]) {
+      const box = BOX_MAP[box_id]
+      const mpRes = await fetch("https://api.mercadopago.com/checkout/preferences", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          items: [{
+            title: box.name,
+            quantity: 1,
+            currency_id: "ARS",
+            unit_price: box.price
+          }],
+          external_reference: box_id,
+          back_urls: {
+            success: `${process.env.NEXT_PUBLIC_BASE_URL}/success?external_reference=${box_id}`,
+            failure: `${process.env.NEXT_PUBLIC_BASE_URL}/error`,
+            pending: `${process.env.NEXT_PUBLIC_BASE_URL}/pending`
+          },
+          auto_return: "approved"
+        })
+      })
+      const mpData = await mpRes.json()
+      return NextResponse.json({ init_point: mpData.init_point })
+    }
+
+    // 🔥 VALIDACIONES PARA CART
     if (!items || items.length === 0) {
       return NextResponse.json({ error: "no items" }, { status: 400 })
     }
