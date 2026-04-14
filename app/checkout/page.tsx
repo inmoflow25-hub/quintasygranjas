@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { Suspense, useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { BOX_CATALOG } from "@/lib/boxes"
 
@@ -12,7 +12,7 @@ type CheckoutItem = {
   price: number
 }
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -214,8 +214,8 @@ export default function CheckoutPage() {
               {loading
                 ? "Procesando..."
                 : paymentMethod === "mercadopago"
-                ? "Ir a pagar"
-                : "Confirmar pedido"}
+                  ? "Ir a pagar"
+                  : "Confirmar pedido"}
             </button>
           </form>
         </div>
@@ -249,5 +249,13 @@ export default function CheckoutPage() {
         </div>
       </div>
     </main>
+  )
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div className="p-6">Cargando checkout...</div>}>
+      <CheckoutContent />
+    </Suspense>
   )
 }
