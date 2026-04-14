@@ -1,172 +1,179 @@
-"use client"
-
-import { useEffect, useState } from "react"
 import { createClient } from "@supabase/supabase-js"
-import { useRouter } from "next/navigation"
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-export default function AdminPage() {
+function formatDate(dateString: string | null) {
+  if (!dateString) return "-"
+  return new Date(dateString).toLocaleDateString("es-AR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit"
+  })
+}
 
-  const router = useRouter()
-  const [loading, setLoading] = useState(true)
-  const [orders, setOrders] = useState<any[]>([])
+function formatDateTime(dateString: string | null) {
+  if (!dateString) return "-"
+  return new Date(dateString).toLocaleString("es-AR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  })
+}
 
-useEffect(() => {
+function formatPayment(method: string | null, status: string | null, price: number | null) {
+  const methodLabel =
+    method === "mercadopago"
+      ? "MP"
+      : method === "cash"
+        ? "Efectivo"
+        : method || "-"
 
-  async function loadData() {
+  const statusLabel = status || "-"
 
-    const { data: { user } } = await supabase.auth.getUser()
+  return `${methodLabel} · ${statusLabel} · $${Number(price || 0).toLocaleString("es-AR")}`
+}
 
-    if (!user) {
-      router.push("/")
-      return
-    }
+function formatItems(items: any[] | null | undefined) {
+  if (!items || items.length === 0) return "-"
 
-    const ADMIN_IDS = [
-      "95aae067-c075-4a04-95b2-8e4aa5cfb25f",
-      "92b5059a-69b1-4cbb-ac1f-a5f6c17a87d6"
-    ]
+  return items
+    .map((item) => `${item.product_name} x${item.quantity}`)
+    .join(" · ")
+}
 
-    if (!ADMIN_IDS.includes(user.id)) {
-      router.push("/")
-      return
-    }
+export default async function AdminPage() {
+  const { data: orders, error } = await supabase
+    .from("orders")
+    .select(`
+      id,
+      created_at,
+      source,
+      box_id,
+      price,
+      payment_method,
+      payment_status,
+      status,
+      customer_name,
+      customer_email,
+      customer_phone,
+      delivery_address,
+      delivery_city,
+      delivery_notes,
+      order_items (
+        id,
+        product_name,
+        quantity,
+        price
+      )
+    `)
+    .order("created_at", { ascending: false })
 
-    const { data, error } = await supabase.rpc("get_admin_orders")
-
-    if (error) {
-      console.error("ADMIN ERROR:", error)
-      setLoading(false)
-      return
-    }
-
-    setOrders(data || [])
-    setLoading(false)
-  }
-
-  loadData()
-
-  const channel = supabase
-    .channel("orders-realtime")
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "orders"
-      },
-      () => {
-        loadData()
-      }
-    )
-    .subscribe()
-
-  return () => {
-    supabase.removeChannel(channel)
-  }
-
-}, [])
-
-  if (loading) {
+  if (error) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
-        Cargando pedidos...
+      <main className="min-h-screen bg-[#f5f5f3] p-10">
+        <h1 className="mb-6 text-5xl font-serif font-bold text-[#1f2a1f]">
+          📦 Pedidos / Entregas
+        </h1>
+        <div className="rounded-3xl bg-white p-6 shadow-sm">
+          <p className="text-red-600">Error cargando admin: {error.message}</p>
+        </div>
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-10">
-
-      <h1 className="text-3xl font-bold mb-8">
+    <main className="min-h-screen bg-[#f5f5f3] p-10">
+      <h1 className="mb-8 text-5xl font-serif font-bold text-[#1f2a1f]">
         📦 Pedidos / Entregas
       </h1>
 
-      <div className="overflow-x-auto bg-white rounded-xl shadow">
-
-        <table className="w-full text-sm">
-
-          <thead className="bg-gray-100 text-left">
+      <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">
+        <table className="min-w-full text-left">
+          <thead className="bg-[#efefed] text-[#2b2b2b]">
             <tr>
-              <th className="p-3">Fecha</th>
-              <th className="p-3">Nombre</th>
-              <th className="p-3">Email</th>
-              <th className="p-3">Caja / Productos</th>
-              <th className="p-3">Pago</th>
-              <th className="p-3">Dirección</th>
-              <th className="p-3">Zona</th>
-              <th className="p-3">Teléfono</th>
-              <th className="p-3">Día</th>
-              <th className="p-3">Entrega</th>
-              <th className="p-3">Estado</th>
+              <th className="px-4 py-4 text-xl font-serif">Fecha</th>
+              <th className="px-4 py-4 text-xl font-serif">Nombre</th>
+              <th className="px-4 py-4 text-xl font-serif">Email</th>
+              <th className="px-4 py-4 text-xl font-serif">Caja / Productos</th>
+              <th className="px-4 py-4 text-xl font-serif">Pago</th>
+              <th className="px-4 py-4 text-xl font-serif">Dirección</th>
+              <th className="px-4 py-4 text-xl font-serif">Zona</th>
+              <th className="px-4 py-4 text-xl font-serif">Teléfono</th>
+              <th className="px-4 py-4 text-xl font-serif">Día</th>
+              <th className="px-4 py-4 text-xl font-serif">Entrega</th>
+              <th className="px-4 py-4 text-xl font-serif">Estado</th>
             </tr>
           </thead>
 
           <tbody>
-
-            {orders.map((o:any) => (
-              <tr key={o.order_id} className="border-b">
-
-                <td className="p-3">
-                  {new Date(o.fecha_compra).toLocaleDateString()}
+            {!orders || orders.length === 0 ? (
+              <tr>
+                <td colSpan={11} className="px-4 py-10 text-center text-gray-500">
+                  No hay pedidos todavía.
                 </td>
-
-                <td className="p-3 font-medium">
-                  {o.nombre || "-"}
-                </td>
-
-                <td className="p-3">
-                  {o.email}
-                </td>
-
-                <td className="p-3 font-medium">
-                  {o.productos || o.caja || "-"}
-                </td>
-
-                <td className="p-3">
-                  {o.payment_method || "-"}
-                </td>
-
-                <td className="p-3">
-                  {o.direccion || "-"}
-                </td>
-
-                <td className="p-3">
-                  {o.zona || "-"}
-                </td>
-
-                <td className="p-3">
-                  {o.telefono || "-"}
-                </td>
-
-                <td className="p-3">
-                  {o.dia_entrega || "-"}
-                </td>
-
-                <td className="p-3">
-                  {o.delivery_date
-                    ? new Date(o.delivery_date).toLocaleDateString()
-                    : "Sin asignar"}
-                </td>
-
-                <td className="p-3">
-                  {o.estado || "-"}
-                </td>
-
               </tr>
-            ))}
+            ) : (
+              orders.map((order: any) => (
+                <tr key={order.id} className="border-t border-[#ecece8] align-top">
+                  <td className="px-4 py-4 text-sm text-[#2b2b2b]">
+                    {formatDateTime(order.created_at)}
+                  </td>
 
+                  <td className="px-4 py-4 text-sm text-[#2b2b2b]">
+                    {order.customer_name || "-"}
+                  </td>
+
+                  <td className="px-4 py-4 text-sm text-[#2b2b2b]">
+                    {order.customer_email || "-"}
+                  </td>
+
+                  <td className="px-4 py-4 text-sm text-[#2b2b2b] max-w-[320px]">
+                    <div className="font-medium">
+                      {order.source === "box" ? "Box" : order.source === "cart" ? "Cart" : "-"}
+                    </div>
+                    <div className="text-xs text-gray-600 mt-1">
+                      {formatItems(order.order_items)}
+                    </div>
+                  </td>
+
+                  <td className="px-4 py-4 text-sm text-[#2b2b2b]">
+                    {formatPayment(order.payment_method, order.payment_status, order.price)}
+                  </td>
+
+                  <td className="px-4 py-4 text-sm text-[#2b2b2b] max-w-[260px]">
+                    {order.delivery_address || "-"}
+                  </td>
+
+                  <td className="px-4 py-4 text-sm text-[#2b2b2b]">
+                    {order.delivery_city || "-"}
+                  </td>
+
+                  <td className="px-4 py-4 text-sm text-[#2b2b2b]">
+                    {order.customer_phone || "-"}
+                  </td>
+
+                  <td className="px-4 py-4 text-sm text-[#2b2b2b]">
+                    {formatDate(order.created_at)}
+                  </td>
+
+                  <td className="px-4 py-4 text-sm text-[#2b2b2b] max-w-[220px]">
+                    {order.delivery_notes || "-"}
+                  </td>
+
+                  <td className="px-4 py-4 text-sm font-medium text-[#2b2b2b]">
+                    {order.status || "-"}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
-
         </table>
-
       </div>
-
     </main>
   )
 }
-
