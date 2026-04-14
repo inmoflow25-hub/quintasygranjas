@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { Hero } from "@/components/landing/hero"
 import { HowItWorks } from "@/components/landing/how-it-works"
 import { BoxesSection } from "@/components/landing/boxes-section"
@@ -19,25 +20,11 @@ const BOX_DB_IDS: Record<BoxType, string> = {
 }
 
 export default function Home() {
+  const router = useRouter()
 
-  async function onSelectBox(boxType: BoxType) {
-    const res = await fetch("/api/checkout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        box_id: BOX_DB_IDS[boxType]
-      })
-    })
-
-    const data = await res.json()
-
-    if (data.init_point) {
-      window.location.href = data.init_point
-    } else {
-      alert("Error iniciando pago")
-    }
+  function onSelectBox(boxType: BoxType) {
+    const boxId = BOX_DB_IDS[boxType]
+    router.push(`/checkout?source=box&box_id=${boxId}`)
   }
 
   function onWhatsAppClick() {
@@ -50,7 +37,7 @@ export default function Home() {
       <Hero onWhatsAppClick={onWhatsAppClick} />
       <HowItWorks />
       <div id="cart" className="scroll-mt-32">
-      <Cart />
+        <Cart />
       </div>
       <BoxesSection onSelectBox={onSelectBox} />
       <SocialProof />
@@ -60,5 +47,3 @@ export default function Home() {
     </main>
   )
 }
-
-
