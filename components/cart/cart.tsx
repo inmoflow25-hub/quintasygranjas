@@ -217,43 +217,14 @@ async function handleCheckout() {
   setLoading(true)
 
   try {
-    const res = await fetch("/api/orders/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        items: cart,
-        customer: {
-          email: "test@test.com" // 🔥 reemplazá por tu input real
-        },
-        payment_method: paymentMethod === "mp" ? "mercadopago" : "cash"
-      })
-    })
-
-    const data = await res.json()
-
-    // 💳 MERCADOPAGO
-    if (paymentMethod === "mp") {
-      if (!data.checkout_url) {
-        alert("Error con MercadoPago")
-        return
-      }
-
-      window.location.href = data.checkout_url
-      return
-    }
-
-    // 💵 EFECTIVO
-    window.location.href = `/success?order_id=${data.order_id}`
-
+    localStorage.setItem("qyg_checkout_cart", JSON.stringify(cart))
+    window.location.href = "/checkout?source=cart"
   } catch (err) {
-    alert("Error en checkout")
+    console.error(err)
+    alert("No pudimos iniciar el checkout")
+    setLoading(false)
   }
-
-  setLoading(false)
 }
-
   
 return (
   <div className="max-w-7xl mx-auto p-6">
