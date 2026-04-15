@@ -31,7 +31,7 @@ const PRODUCTS: Product[] = [
     id: "cebolla",
     name: "Cebolla",
     description: "base para guisos, salsas y salteados",
-    price: 350,
+    price: 530,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cebollas.jpg",
     category: "verduras"
@@ -40,7 +40,7 @@ const PRODUCTS: Product[] = [
     id: "papa",
     name: "Papa negra",
     description: "ideal para horno, puré o fritas",
-    price: 525,
+    price: 600,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/papas%20negras.jpg",
     category: "verduras"
@@ -49,7 +49,7 @@ const PRODUCTS: Product[] = [
     id: "tomate",
     name: "Tomate",
     description: "fresco, ideal para ensaladas o salsa",
-    price: 500,
+    price: 833,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/tomates.jpg",
     category: "verduras"
@@ -58,7 +58,7 @@ const PRODUCTS: Product[] = [
     id: "zanahoria",
     name: "Zanahoria",
     description: "dulce y crocante, ideal cruda o cocida",
-    price: 400,
+    price: 670,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/zanahorias.jpg",
     category: "verduras"
@@ -85,7 +85,7 @@ const PRODUCTS: Product[] = [
     id: "morron",
     name: "Morrones",
     description: "ideal para rellenos, salteados o ensaladas",
-    price: 1200,
+    price: 1800,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/morrones.jpg",
     category: "verduras"
@@ -96,9 +96,9 @@ const PRODUCTS: Product[] = [
   // -------------------
   {
     id: "manzana",
-    name: "Manzana",
+    name: "Manzana RED",
     description: "dulce y crocante, ideal para todo momento",
-    price: 1600,
+    price: 2100,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/manzanas.jpg",
     category: "frutas"
@@ -107,7 +107,7 @@ const PRODUCTS: Product[] = [
     id: "naranja",
     name: "Naranja jugo",
     description: "jugosa, ideal para exprimir",
-    price: 800,
+    price: 1200,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/naranja%20jugo.jpg",
     category: "frutas"
@@ -116,7 +116,7 @@ const PRODUCTS: Product[] = [
     id: "limon",
     name: "Limón",
     description: "ácido y fresco, ideal para comidas o bebidas",
-    price: 900,
+    price: 1300,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/limones.jpg",
     category: "frutas"
@@ -125,7 +125,7 @@ const PRODUCTS: Product[] = [
     id: "banana",
     name: "Banana",
     description: "suave y energética, ideal para colaciones",
-    price: 370,
+    price: 1000,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/banana.jpg",
     category: "frutas"
@@ -167,7 +167,7 @@ const PRODUCTS: Product[] = [
   // -------------------
   {
     id: "pollo_entero",
-    name: "Pollo entero",
+    name: "Pollo entero Orgánico",
     description: "ideal para horno, parrilla o cacerola",
     price: 18500,
     type: "unit",
@@ -176,27 +176,27 @@ const PRODUCTS: Product[] = [
   },
   {
     id: "suprema",
-    name: "Suprema de pollo",
+    name: "Suprema deshuesada sin piel",
     description: "pechuga deshuesada, ideal para milanesas o plancha",
     price: 11300,
     type: "weight_1kg",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pechugas%20.jpg",
     category: "pollo"
   },
-  {
+  {/*{
     id: "muslos",
     name: "Muslos de pollo",
     description: "jugosos, ideales para horno o parrilla",
-    price: 0,
+    price: 3600,
     type: "weight_1kg",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/muslos%20d%20epolllo.jpg",
     category: "pollo"
-  },
+  },*/}
   {
     id: "cuartos",
-    name: "Cuartos traseros de pollo",
+    name: "Pata y muslo de pollo",
     description: "pierna + muslo, ideal horno o parrilla",
-    price: 6800,
+    price: 4500,
     type: "weight_1kg",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cuarto%20trasero.jpg",
     category: "pollo"
@@ -209,8 +209,8 @@ const PRODUCTS: Product[] = [
     id: "medallones",
     name: "Medallones de pollo",
     description: "prácticos, ideales para una comida rápida",
-    price: 0,
-    type: "unit",
+    price: 9380,
+    type: "weight_1kg",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo%20sin%20espinaca.webp",
     category: "congelados"
   },
@@ -218,8 +218,8 @@ const PRODUCTS: Product[] = [
     id: "medallones_espinaca",
     name: "Medallones pollo con espinaca",
     description: "opción práctica con relleno de espinaca",
-    price: 0,
-    type: "unit",
+    price: 10250,
+    type: "weight_1kg",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo.jpg",
     category: "congelados"
   },
@@ -227,8 +227,8 @@ const PRODUCTS: Product[] = [
     id: "nuggets",
     name: "Nuggets de pollo",
     description: "crocrantes y prácticos, ideales para chicos",
-    price: 0,
-    type: "unit",
+    price: 12300,
+    type: "weight_1kg",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nuggets.jpeg",
     category: "congelados"
   },
