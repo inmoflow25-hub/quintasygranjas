@@ -9,7 +9,7 @@ type Product = {
   type: "unit" | "weight_500g" | "weight_1kg"
   image: string
   category: string
-  description?: string // 👈 AGREGÁ ESTO
+  description?: string
 }
 
 // 🔥 PRODUCTOS
@@ -18,125 +18,287 @@ const PRODUCTS: Product[] = [
   // -------------------
   // VERDURAS
   // -------------------
-  { id: "zapallo", name: "Zapallo Anco", price: 1500, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/WhatsApp%20Image%202026-04-12%20at%2014.21.43.jpeg", category: "verduras" },
-  { id: "cebolla", name: "Cebolla", price: 350, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cebollas.jpg", category: "verduras" },
-  { id: "papa", name: "Papa negra", price: 525, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/papas%20negras.jpg", category: "verduras" },
-  { id: "tomate", name: "Tomate", price: 500, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/tomates.jpg", category: "verduras" },
-  { id: "zanahoria", name: "Zanahoria", price: 400, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/zanahorias.jpg", category: "verduras" },
-  { id: "lechuga", name: "Lechuga", price: 500, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/lechugas.jpg", category: "verduras" },
-  { id: "espinaca", name: "Espinaca", price: 500, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/espinacas.jpg", category: "verduras" },
-  { id: "morron", name: "Morrones", price: 1200, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/morrones.jpg", category: "verduras" },
+  {
+    id: "zapallo",
+    name: "Zapallo Anco",
+    description: "ideal para horno, puré o sopa",
+    price: 1500,
+    type: "unit",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/WhatsApp%20Image%202026-04-12%20at%2014.21.43.jpeg",
+    category: "verduras"
+  },
+  {
+    id: "cebolla",
+    name: "Cebolla",
+    description: "base para guisos, salsas y salteados",
+    price: 350,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cebollas.jpg",
+    category: "verduras"
+  },
+  {
+    id: "papa",
+    name: "Papa negra",
+    description: "ideal para horno, puré o fritas",
+    price: 525,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/papas%20negras.jpg",
+    category: "verduras"
+  },
+  {
+    id: "tomate",
+    name: "Tomate",
+    description: "fresco, ideal para ensaladas o salsa",
+    price: 500,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/tomates.jpg",
+    category: "verduras"
+  },
+  {
+    id: "zanahoria",
+    name: "Zanahoria",
+    description: "dulce y crocante, ideal cruda o cocida",
+    price: 400,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/zanahorias.jpg",
+    category: "verduras"
+  },
+  {
+    id: "lechuga",
+    name: "Lechuga",
+    description: "fresca y crocante, ideal para ensaladas",
+    price: 500,
+    type: "unit",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/lechugas.jpg",
+    category: "verduras"
+  },
+  {
+    id: "espinaca",
+    name: "Espinaca",
+    description: "hojas tiernas, ideal para tartas o salteados",
+    price: 500,
+    type: "unit",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/espinacas.jpg",
+    category: "verduras"
+  },
+  {
+    id: "morron",
+    name: "Morrones",
+    description: "ideal para rellenos, salteados o ensaladas",
+    price: 1200,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/morrones.jpg",
+    category: "verduras"
+  },
 
   // -------------------
   // FRUTAS
   // -------------------
-  { id: "manzana", name: "Manzana", price: 1600, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/manzanas.jpg", category: "frutas" },
-  { id: "naranja", name: "Naranja jugo", price: 800, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/naranja%20jugo.jpg", category: "frutas" },
-  { id: "limon", name: "Limón", price: 900, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/limones.jpg", category: "frutas" },
-  { id: "banana", name: "Banana", price: 370, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/banana.jpg", category: "frutas" },
+  {
+    id: "manzana",
+    name: "Manzana",
+    description: "dulce y crocante, ideal para todo momento",
+    price: 1600,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/manzanas.jpg",
+    category: "frutas"
+  },
+  {
+    id: "naranja",
+    name: "Naranja jugo",
+    description: "jugosa, ideal para exprimir",
+    price: 800,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/naranja%20jugo.jpg",
+    category: "frutas"
+  },
+  {
+    id: "limon",
+    name: "Limón",
+    description: "ácido y fresco, ideal para comidas o bebidas",
+    price: 900,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/limones.jpg",
+    category: "frutas"
+  },
+  {
+    id: "banana",
+    name: "Banana",
+    description: "suave y energética, ideal para colaciones",
+    price: 370,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/banana.jpg",
+    category: "frutas"
+  },
 
   // -------------------
   // PAN / OTROS
   // -------------------
-  { id: "pan", name: "Pan", price: 1200, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pan%20de%20campo.jpg", category: "otros" },
-  { id: "miel", name: "Miel", price: 4500, type: "weight_500g", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/miel.jpg", category: "otros" },
-  { id: "huevos", name: "Huevos (30 unidades)", price: 6000, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/huevos.jpg", category: "otros" },
+  {
+    id: "pan",
+    name: "Pan",
+    description: "pan de campo, ideal para acompañar comidas",
+    price: 1200,
+    type: "unit",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pan%20de%20campo.jpg",
+    category: "otros"
+  },
+  {
+    id: "miel",
+    name: "Miel",
+    description: "natural y dulce, ideal para infusiones o tostadas",
+    price: 4500,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/miel.jpg",
+    category: "otros"
+  },
+  {
+    id: "huevos",
+    name: "Huevos (30 unidades)",
+    description: "maple completo, ideal para consumo diario",
+    price: 6000,
+    type: "unit",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/huevos.jpg",
+    category: "otros"
+  },
 
   // -------------------
   // POLLO
   // -------------------
-  { id: "pollo_entero", name: "Pollo entero", price: 18500, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pollo%20entero.jpg", category: "pollo" },
-  { id: "suprema", name: "Suprema de pollo", price: 11300, type: "weight_1kg", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pechugas%20.jpg", category: "pollo" },
-  { id: "muslos", name: "Muslos de pollo", price: 0, type: "weight_1kg", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/muslos%20d%20epolllo.jpg", category: "pollo" },
-{
-  id: "cuartos",
-  name: "Cuartos traseros de pollo",
-  description: "pierna + muslo, ideal horno o parrilla",
-  price: 6800,
-  type: "weight_1kg",
-  image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cuarto%20trasero.jpg",
-  category: "pollo"
-},
+  {
+    id: "pollo_entero",
+    name: "Pollo entero",
+    description: "ideal para horno, parrilla o cacerola",
+    price: 18500,
+    type: "unit",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pollo%20entero.jpg",
+    category: "pollo"
+  },
+  {
+    id: "suprema",
+    name: "Suprema de pollo",
+    description: "pechuga deshuesada, ideal para milanesas o plancha",
+    price: 11300,
+    type: "weight_1kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pechugas%20.jpg",
+    category: "pollo"
+  },
+  {
+    id: "muslos",
+    name: "Muslos de pollo",
+    description: "jugosos, ideales para horno o parrilla",
+    price: 0,
+    type: "weight_1kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/muslos%20d%20epolllo.jpg",
+    category: "pollo"
+  },
+  {
+    id: "cuartos",
+    name: "Cuartos traseros de pollo",
+    description: "pierna + muslo, ideal horno o parrilla",
+    price: 6800,
+    type: "weight_1kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cuarto%20trasero.jpg",
+    category: "pollo"
+  },
+
   // -------------------
   // CONGELADOS
   // -------------------
-  { id: "medallones", name: "Medallones de pollo", price: 0, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo%20sin%20espinaca.webp", category: "congelados" },
-  { id: "medallones_espinaca", name: "Medallones pollo con espinaca", price: 0, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo.jpg", category: "congelados" },
-  { id: "nuggets", name: "Nuggets de pollo", price: 0, type: "unit", image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nuggets.jpeg", category: "congelados" },
+  {
+    id: "medallones",
+    name: "Medallones de pollo",
+    description: "prácticos, ideales para una comida rápida",
+    price: 0,
+    type: "unit",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo%20sin%20espinaca.webp",
+    category: "congelados"
+  },
+  {
+    id: "medallones_espinaca",
+    name: "Medallones pollo con espinaca",
+    description: "opción práctica con relleno de espinaca",
+    price: 0,
+    type: "unit",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo.jpg",
+    category: "congelados"
+  },
+  {
+    id: "nuggets",
+    name: "Nuggets de pollo",
+    description: "crocrantes y prácticos, ideales para chicos",
+    price: 0,
+    type: "unit",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nuggets.jpeg",
+    category: "congelados"
+  },
 
-// -------------------
-// FRUTOS SECOS
-// -------------------
-
-{ 
-  id: "nueces", 
-  name: "Nueces peladas", 
-  description: "sin cáscara, listas para consumir", 
-  price: 5200, // 🔥 margen bueno sin pasarte
-  type: "weight_500g", 
-  image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nueces.jpg", 
-  category: "frutos_secos" 
-},
-
-{ 
-  id: "almendras", 
-  name: "Almendras naturales", 
-  description: "crudas, sin sal", 
-  price: 2900, 
-  type: "weight_500g", 
-  image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/almendras.jpg", 
-  category: "frutos_secos" 
-},
-
-{ 
-  id: "pasas", 
-  name: "Pasas de uva", 
-  description: "dulces, ideales para snacks o cocina", 
-  price: 1700, 
-  type: "weight_500g", 
-  image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pasas%20de%20uva.jpg", 
-  category: "frutos_secos" 
-},
-
-{ 
-  id: "caju", 
-  name: "Castañas de cajú", 
-  description: "suaves y crocantes", 
-  price: 4800, 
-  type: "weight_500g", 
-  image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/castan%CC%83as%20de%20caju.jpg", 
-  category: "frutos_secos" 
-},
-
-{ 
-  id: "mix", 
-  name: "Mix frutos secos", 
-  description: "mezcla de nuez, almendra, pasas y maní", 
-  price: 3200, // 🔥 más margen acá (producto armado)
-  type: "weight_500g", 
-  image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mix%20frutos%20secos.jpg", 
-  category: "frutos_secos" 
-},
-
-{ 
-  id: "mani_tostado", 
-  name: "Maní tostado", 
-  description: "tostado sin sal", 
-  price: 1800, // ✔ ya perfecto
-  type: "weight_500g", 
-  image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20tostado%20comun.jpg", 
-  category: "frutos_secos" 
-},
-
-{ 
-  id: "mani_salado", 
-  name: "Maní salado", 
-  description: "tostado con sal", 
-  price: 1800, 
-  type: "weight_500g", 
-  image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20salado.jpg", 
-  category: "frutos_secos" 
-}
+  // -------------------
+  // FRUTOS SECOS
+  // -------------------
+  {
+    id: "nueces",
+    name: "Nueces peladas",
+    description: "sin cáscara, listas para consumir",
+    price: 5200,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nueces.jpg",
+    category: "frutos_secos"
+  },
+  {
+    id: "almendras",
+    name: "Almendras naturales",
+    description: "crudas, sin sal",
+    price: 2900,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/almendras.jpg",
+    category: "frutos_secos"
+  },
+  {
+    id: "pasas",
+    name: "Pasas de uva",
+    description: "dulces, ideales para snacks o cocina",
+    price: 1700,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pasas%20de%20uva.jpg",
+    category: "frutos_secos"
+  },
+  {
+    id: "caju",
+    name: "Castañas de cajú",
+    description: "suaves y crocantes",
+    price: 4800,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/castan%CC%83as%20de%20caju.jpg",
+    category: "frutos_secos"
+  },
+  {
+    id: "mix",
+    name: "Mix frutos secos",
+    description: "mezcla de nuez, almendra, pasas y maní",
+    price: 3200,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mix%20frutos%20secos.jpg",
+    category: "frutos_secos"
+  },
+  {
+    id: "mani_tostado",
+    name: "Maní tostado",
+    description: "tostado sin sal",
+    price: 1800,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20tostado%20comun.jpg",
+    category: "frutos_secos"
+  },
+  {
+    id: "mani_salado",
+    name: "Maní salado",
+    description: "tostado con sal",
+    price: 1800,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20salado.jpg",
+    category: "frutos_secos"
+  }
 ]
 
 export default function Cart() {
@@ -182,11 +344,11 @@ export default function Cart() {
     return cart.find((i) => i.id === id)?.quantity || 0
   }
 
- function getTotal() {
-  return cart.reduce((acc, item) => {
-    return acc + item.price * item.quantity
-  }, 0)
-}
+  function getTotal() {
+    return cart.reduce((acc, item) => {
+      return acc + item.price * item.quantity
+    }, 0)
+  }
 
   function getLabel(product: Product) {
     if (product.type === "unit") return "unidad"
@@ -195,237 +357,241 @@ export default function Cart() {
   }
 
   function getDisplayQuantity(item: any) {
-  if (item.type === "weight_500g") {
-    const totalGrams = item.quantity * 500
+    if (item.type === "weight_500g") {
+      const totalGrams = item.quantity * 500
 
-    if (totalGrams >= 1000) {
-      return `${totalGrams / 1000} kg`
+      if (totalGrams >= 1000) {
+        return `${totalGrams / 1000} kg`
+      }
+
+      return `${totalGrams} g`
     }
 
-    return `${totalGrams} g`
+    return `x${item.quantity}`
   }
 
-  return `x${item.quantity}`
-}
-
-async function handleCheckout() {
-  if (cart.length === 0) {
-    alert("El carrito está vacío")
-    return
-  }
-
-  setLoading(true)
-
-  try {
-    localStorage.setItem("qyg_checkout_cart", JSON.stringify(cart))
-    window.location.href = "/checkout?source=cart"
-  } catch (err) {
-    console.error(err)
-    alert("No pudimos iniciar el checkout")
-    setLoading(false)
-  }
-}
-  
-return (
-  <div className="max-w-7xl mx-auto p-6">
-
-    <h2 className="text-3xl font-bold mb-6 text-center">
-      Armar tu caja 🧺
-    </h2>
-
-    {/* 🟢 PILLS DE CATEGORÍAS */}
-    <div className="flex gap-2 mb-6 overflow-x-auto">
-      {Array.from(new Set(PRODUCTS.map(p => p.category))).map((cat) => (
-        <button
-  key={cat}
-  onClick={() => {
-    const el = document.getElementById(`cat-${cat}`)
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" })
+  async function handleCheckout() {
+    if (cart.length === 0) {
+      alert("El carrito está vacío")
+      return
     }
-  }}
-  className="px-4 py-1 rounded-full bg-gray-200 text-sm whitespace-nowrap hover:bg-green-600 hover:text-white transition"
->
-          {cat.replace("_", " ")}
-        </button>
-      ))}
-    </div>
 
-    {/* 🔥 LAYOUT */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    setLoading(true)
 
-      {/* IZQUIERDA */}
-      <div className="md:col-span-2">
+    try {
+      localStorage.setItem("qyg_checkout_cart", JSON.stringify(cart))
+      window.location.href = "/checkout?source=cart"
+    } catch (err) {
+      console.error(err)
+      alert("No pudimos iniciar el checkout")
+      setLoading(false)
+    }
+  }
 
-        {Array.from(new Set(PRODUCTS.map(p => p.category))).map((category) => {
+  return (
+    <div className="max-w-7xl mx-auto p-6">
 
-          const items = PRODUCTS.filter(p => p.category === category)
+      <h2 className="text-3xl font-bold mb-6 text-center">
+        Armar tu caja 🧺
+      </h2>
 
-          return (
-            <div
-  key={category}
-  id={`cat-${category}`}
-  className="mb-10 scroll-mt-32"
->
-
-              <h3 className="text-xl font-bold mb-3 capitalize">
-                {category.replace("_", " ")}
-              </h3>
-
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-
-                {items.map((p) => {
-                  const quantity = getQuantity(p.id)
-
-                  return (
-                    <div
-                      key={p.id}
-                      className="rounded-xl p-3 bg-[#f1f1f1] hover:bg-[#e7e7e7] transition"
-                    >
-
-                      <div className="h-40 w-full mb-2 overflow-hidden rounded-lg">
-  <img
-    src={p.image}
-    className="w-full h-full object-cover"
-  />
-</div>
-
-                      {p.description && (
-  <p className="text-xs text-gray-500 mb-1">
-    {p.description}
-  </p>
-)}
-
-                      <p className="text-md font-bold">
-                        ${p.price.toLocaleString()}
-                      </p>
-
-                      <p className="text-xs text-gray-500 mb-2">
-                        por {getLabel(p)}
-                      </p>
-
-                      {/* CONTROLES */}
-                      <div className="flex justify-center items-center gap-2">
-
-                        <button
-                          onClick={() => removeItem(p)}
-                          className="w-7 h-7 rounded-full bg-gray-300"
-                        >
-                          -
-                        </button>
-
-                        <span className="text-sm">
-                          {quantity}
-                        </span>
-
-                        <button
-                          onClick={() => addItem(p)}
-                          className="w-7 h-7 rounded-full bg-green-600 text-white"
-                        >
-                          +
-                        </button>
-
-                      </div>
-
-                    </div>
-                  )
-                })}
-
-              </div>
-            </div>
-          )
-        })}
-
+      {/* 🟢 PILLS DE CATEGORÍAS */}
+      <div className="flex gap-2 mb-6 overflow-x-auto">
+        {Array.from(new Set(PRODUCTS.map(p => p.category))).map((cat) => (
+          <button
+            key={cat}
+            onClick={() => {
+              const el = document.getElementById(`cat-${cat}`)
+              if (el) {
+                el.scrollIntoView({ behavior: "smooth" })
+              }
+            }}
+            className="px-4 py-1 rounded-full bg-gray-200 text-sm whitespace-nowrap hover:bg-green-600 hover:text-white transition"
+          >
+            {cat.replace("_", " ")}
+          </button>
+        ))}
       </div>
 
-      {/* 🔥 CARRITO VERDE */}
-      <div className="md:col-span-1">
+      {/* 🔥 LAYOUT */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-        <div className="sticky top-24 rounded-xl p-5 bg-green-600 text-white shadow-lg">
+        {/* IZQUIERDA */}
+        <div className="md:col-span-2">
 
-          <h3 className="text-xl font-bold mb-4">
-            Mi pedido 🛒
-          </h3>
+          {Array.from(new Set(PRODUCTS.map(p => p.category))).map((category) => {
 
-          {cart.length === 0 && (
-            <p className="text-sm text-green-100">
-              Todavía no agregaste productos
-            </p>
-          )}
+            const items = PRODUCTS.filter(p => p.category === category)
 
-          {cart.map((item) => (
-            <div key={item.id} className="flex justify-between items-center mb-3 text-sm">
+            return (
+              <div
+                key={category}
+                id={`cat-${category}`}
+                className="mb-10 scroll-mt-32"
+              >
 
-              <div>
-                <p className="font-medium">{item.name}</p>
-                <p className="text-xs text-green-200">
-                  {getDisplayQuantity(item)}
-                </p>
+                <h3 className="text-xl font-bold mb-3 capitalize">
+                  {category.replace("_", " ")}
+                </h3>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+
+                  {items.map((p) => {
+                    const quantity = getQuantity(p.id)
+
+                    return (
+                      <div
+                        key={p.id}
+                        className="rounded-xl p-3 bg-[#f1f1f1] hover:bg-[#e7e7e7] transition"
+                      >
+
+                        <div className="h-40 w-full mb-2 overflow-hidden rounded-lg">
+                          <img
+                            src={p.image}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+
+                        <p className="text-sm font-semibold text-black mb-1">
+                          {p.name}
+                        </p>
+
+                        {p.description && (
+                          <p className="text-xs text-gray-500 mb-2">
+                            {p.description}
+                          </p>
+                        )}
+
+                        <p className="text-md font-bold">
+                          ${p.price.toLocaleString()}
+                        </p>
+
+                        <p className="text-xs text-gray-500 mb-2">
+                          por {getLabel(p)}
+                        </p>
+
+                        {/* CONTROLES */}
+                        <div className="flex justify-center items-center gap-2">
+
+                          <button
+                            onClick={() => removeItem(p)}
+                            className="w-7 h-7 rounded-full bg-gray-300"
+                          >
+                            -
+                          </button>
+
+                          <span className="text-sm">
+                            {quantity}
+                          </span>
+
+                          <button
+                            onClick={() => addItem(p)}
+                            className="w-7 h-7 rounded-full bg-green-600 text-white"
+                          >
+                            +
+                          </button>
+
+                        </div>
+
+                      </div>
+                    )
+                  })}
+
+                </div>
               </div>
+            )
+          })}
 
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => removeItem(item)}
-                  className="w-6 h-6 rounded-full bg-white text-black"
-                >
-                  -
-                </button>
-                <button
-                  onClick={() => addItem(item)}
-                  className="w-6 h-6 rounded-full bg-black text-white"
-                >
-                  +
-                </button>
+        </div>
+
+        {/* 🔥 CARRITO VERDE */}
+        <div className="md:col-span-1">
+
+          <div className="sticky top-24 rounded-xl p-5 bg-green-600 text-white shadow-lg">
+
+            <h3 className="text-xl font-bold mb-4">
+              Mi pedido 🛒
+            </h3>
+
+            {cart.length === 0 && (
+              <p className="text-sm text-green-100">
+                Todavía no agregaste productos
+              </p>
+            )}
+
+            {cart.map((item) => (
+              <div key={item.id} className="flex justify-between items-center mb-3 text-sm">
+
+                <div>
+                  <p className="font-medium">{item.name}</p>
+                  <p className="text-xs text-green-200">
+                    {getDisplayQuantity(item)}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => removeItem(item)}
+                    className="w-6 h-6 rounded-full bg-white text-black"
+                  >
+                    -
+                  </button>
+                  <button
+                    onClick={() => addItem(item)}
+                    className="w-6 h-6 rounded-full bg-black text-white"
+                  >
+                    +
+                  </button>
+                </div>
+
               </div>
+            ))}
+
+            {/* TOTAL */}
+            <div className="mt-4 border-t border-green-400 pt-3">
+              <p className="text-lg font-bold">
+                Total: ${Math.round(getTotal()).toLocaleString()}
+              </p>
+            </div>
+
+            {/* PAGOS */}
+            <div className="mt-3 flex flex-col gap-2 text-sm">
+
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  checked={paymentMethod === "mp"}
+                  onChange={() => setPaymentMethod("mp")}
+                />
+                MercadoPago
+              </label>
+
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  checked={paymentMethod === "cash"}
+                  onChange={() => setPaymentMethod("cash")}
+                />
+                Efectivo
+              </label>
 
             </div>
-          ))}
 
-          {/* TOTAL */}
-          <div className="mt-4 border-t border-green-400 pt-3">
-            <p className="text-lg font-bold">
-              Total: ${Math.round(getTotal()).toLocaleString()}
-            </p>
-          </div>
-
-          {/* PAGOS */}
-          <div className="mt-3 flex flex-col gap-2 text-sm">
-
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                checked={paymentMethod === "mp"}
-                onChange={() => setPaymentMethod("mp")}
-              />
-              MercadoPago
-            </label>
-
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                checked={paymentMethod === "cash"}
-                onChange={() => setPaymentMethod("cash")}
-              />
-              Efectivo
-            </label>
+            {/* CTA */}
+            <button
+              onClick={handleCheckout}
+              disabled={loading}
+              className="mt-5 w-full bg-black text-white py-3 rounded-xl text-lg"
+            >
+              {loading ? "Procesando..." : "Finalizar compra"}
+            </button>
 
           </div>
-
-          {/* CTA */}
-          <button
-            onClick={handleCheckout}
-            disabled={loading}
-            className="mt-5 w-full bg-black text-white py-3 rounded-xl text-lg"
-          >
-            {loading ? "Procesando..." : "Finalizar compra"}
-          </button>
 
         </div>
 
       </div>
 
     </div>
-
-  </div>
-)
+  )
 }
