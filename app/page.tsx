@@ -36,9 +36,9 @@ export default function Home() {
       <Header />
       <Hero onWhatsAppClick={onWhatsAppClick} />
       <HowItWorks />
-      {/*<div id="cart" className="scroll-mt-32">
+      <div id="cart" className="scroll-mt-32">
         <Cart />
-      </div>*/}
+      </div>
       <BoxesSection onSelectBox={onSelectBox} />
       <SocialProof />
       <DeliveryZones />
