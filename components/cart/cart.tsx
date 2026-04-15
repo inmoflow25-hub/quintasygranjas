@@ -96,7 +96,7 @@ const PRODUCTS: Product[] = [
   // -------------------
   {
     id: "manzana",
-    name: "Manzana RED",
+    name: "Manzana RED DELICIOUS",
     description: "dulce y crocante, ideal para todo momento",
     price: 2100,
     type: "weight_500g",
