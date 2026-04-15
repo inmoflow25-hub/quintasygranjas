@@ -183,15 +183,6 @@ const PRODUCTS: Product[] = [
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pechugas%20.jpg",
     category: "pollo"
   },
-  {/*{
-    id: "muslos",
-    name: "Muslos de pollo",
-    description: "jugosos, ideales para horno o parrilla",
-    price: 3600,
-    type: "weight_1kg",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/muslos%20d%20epolllo.jpg",
-    category: "pollo"
-  },*/}
   {
     id: "cuartos",
     name: "Pata y muslo de pollo",
