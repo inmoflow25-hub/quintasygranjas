@@ -385,7 +385,7 @@ export default function Cart() {
       <h2 className="text-3xl font-bold mb-6 text-center">
         Armar tu caja 
       </h2>
-      <h3 className="text-3xl font-bold mb-6 text-center">
+      <h3 className="text-3xl font-bold mb-3 text-center">
         Recibís en tu casa en 24 hs máximo
       </h3>
 
