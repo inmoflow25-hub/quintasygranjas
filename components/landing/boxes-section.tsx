@@ -98,7 +98,7 @@ export function BoxesSection({ onSelectBox }: BoxesSectionProps) {
           </h2>
 
           <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-            Comprás tu caja online y la recibís en tu casa. Simple.
+            Comprás tu caja online y la recibís en tu casa dentro de las 24 hs.
           </p>
         </div>
 
