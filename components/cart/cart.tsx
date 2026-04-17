@@ -455,7 +455,7 @@ export default function Cart() {
                         </p>
 
                         {p.description && (
-                          <p className="text-xs text-gray-500 mb-2">
+                          <p className="text-xs text-gray-600 mb-2">
                             {p.description}
                           </p>
                         )}
@@ -464,7 +464,7 @@ export default function Cart() {
                           ${p.price.toLocaleString()}
                         </p>
 
-                        <p className="text-xs text-gray-500 mb-2">
+                        <p className="text-xs text-gray-600 mb-2">
                           por {getLabel(p)}
                         </p>
 
