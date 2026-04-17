@@ -432,7 +432,7 @@ export default function Cart() {
                   {category.replace("_", " ")}
                 </h3>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
 
                   {items.map((p) => {
                     const quantity = getQuantity(p.id)
