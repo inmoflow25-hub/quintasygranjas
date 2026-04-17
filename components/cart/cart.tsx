@@ -361,23 +361,28 @@ export default function Cart() {
     return `x${item.quantity}`
   }
 
-  async function handleCheckout() {
-    if (cart.length === 0) {
-      alert("El carrito está vacío")
-      return
-    }
-
-    setLoading(true)
-
-    try {
-      localStorage.setItem("qyg_checkout_cart", JSON.stringify(cart))
-      window.location.href = "/checkout?source=cart"
-    } catch (err) {
-      console.error(err)
-      alert("No pudimos iniciar el checkout")
-      setLoading(false)
-    }
+ async function handleCheckout() {
+  if (cart.length === 0) {
+    alert("El carrito está vacío")
+    return
   }
+
+  if (getTotal() < 20000) {
+    alert("El pedido mínimo es de $20.000")
+    return
+  }
+
+  setLoading(true)
+
+  try {
+    localStorage.setItem("qyg_checkout_cart", JSON.stringify(cart))
+    window.location.href = "/checkout?source=cart"
+  } catch (err) {
+    console.error(err)
+    alert("No pudimos iniciar el checkout")
+    setLoading(false)
+  }
+}
 
   return (
     <div className="max-w-7xl mx-auto p-6">
