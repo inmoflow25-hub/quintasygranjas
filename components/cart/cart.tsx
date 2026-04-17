@@ -76,7 +76,7 @@ const PRODUCTS: Product[] = [
     id: "espinaca",
     name: "Espinaca",
     description: "hojas tiernas, ideal para tartas o salteados",
-    price: 500,
+    price: 1670,
     type: "unit",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/espinacas.jpg",
     category: "verduras"
