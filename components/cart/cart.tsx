@@ -473,7 +473,7 @@ export default function Cart() {
 
                           <button
                             onClick={() => removeItem(p)}
-                            className="w-7 h-7 rounded-full bg-gray-300"
+                            className="w-7 h-7 rounded-full bg-gray-400"
                           >
                             -
                           </button>
