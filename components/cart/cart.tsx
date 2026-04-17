@@ -440,7 +440,7 @@ export default function Cart() {
                     return (
                       <div
                         key={p.id}
-                        className="rounded-xl p-3 bg-[#e2e2e2] hover:bg-[#d8d8d8] transition"
+                        className="rounded-xl p-2 bg-[#e2e2e2] hover:bg-[#d8d8d8] transition"
                       >
 
                         <div className="h-30 w-full mb-2 overflow-hidden rounded-lg">
