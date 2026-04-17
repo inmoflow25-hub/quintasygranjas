@@ -443,7 +443,7 @@ export default function Cart() {
                         className="rounded-xl p-3 bg-[#f1f1f1] hover:bg-[#e7e7e7] transition"
                       >
 
-                        <div className="h-40 w-full mb-2 overflow-hidden rounded-lg">
+                        <div className="h-30 w-full mb-2 overflow-hidden rounded-lg">
                           <img
                             src={p.image}
                             className="w-full h-full object-cover"
