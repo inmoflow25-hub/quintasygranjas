@@ -390,9 +390,9 @@ export default function Cart() {
       <h2 className="text-3xl font-bold mb-6 text-center">
   Armar tu caja
 </h2>
-<h3 className="text-2xl font-bold mb-3 text-center">
-  Recibís en tu casa en 24 hs máximo
-</h3>
+<p className="text-2xl font-bold mb-3 text-center">
+ Mínimo de compra 20.000 - Recibís en tu casa en 24 hs máximo
+</p>
       {/* 🟢 PILLS DE CATEGORÍAS */}
       <div className="flex gap-2 mb-6 overflow-x-auto">
         {Array.from(new Set(PRODUCTS.map(p => p.category))).map((cat) => (
