@@ -391,7 +391,7 @@ export default function Cart() {
   Armar tu caja
 </h2>
 <p className="text-2xl font-bold mb-3 text-center">
- Mínimo de compra 20.000 - Recibís en tu casa en 24 hs máximo
+ Mínimo de compra 20.000 - Recibís en tu casa 
 </p>
       {/* 🟢 PILLS DE CATEGORÍAS */}
       <div className="flex gap-2 mb-6 overflow-x-auto">
