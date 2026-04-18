@@ -16,70 +16,85 @@ type Product = {
 // 🔥 PRODUCTOS
 const PRODUCTS: Product[] = [
 
-  // -------------------
-  // CAJAS ARMADAS
-  // -------------------
-  {
-    id: "caja_veggie",
-    name: "Caja Veggie",
-    description: "lista para resolver frutas y verduras de la semana",
-    price: 24900,
-    type: "unit",
-    image: "PONER_FOTO_CAJA_VEGGIE",
-    category: "cajas_armadas",
-    boxItems: [
-      "1 zapallo anco",
-      "1 kg de papa negra",
-      "1 kg de cebolla",
-      "1 kg de zanahoria",
-      "1 lechuga",
-      "1 atado de espinaca",
-      "1 kg de tomate",
-      "1 kg de naranja jugo",
-      "1 kg de banana"
-    ]
-  },
-  {
-    id: "caja_campo",
-    name: "Caja Campo",
-    description: "una selección equilibrada para la heladera de la semana",
-    price: 32900,
-    type: "unit",
-    image: "PONER_FOTO_CAJA_CAMPO",
-    category: "cajas_armadas",
-    boxItems: [
-      "1 zapallo anco",
-      "1 kg de papa negra",
-      "1 kg de cebolla",
-      "1 kg de tomate",
-      "1 lechuga",
-      "1 maple de huevos",
-      "1 pan de campo",
-      "500 g de miel",
-      "1 kg de naranja jugo"
-    ]
-  },
-  {
-    id: "caja_granja",
-    name: "Caja Granja",
-    description: "caja completa con verduras, almacén y proteína",
-    price: 45900,
-    type: "unit",
-    image: "PONER_FOTO_CAJA_GRANJA",
-    category: "cajas_armadas",
-    boxItems: [
-      "1 pollo entero orgánico",
-      "1 kg de papa negra",
-      "1 kg de cebolla",
-      "1 kg de zanahoria",
-      "1 kg de tomate",
-      "1 lechuga",
-      "1 maple de huevos",
-      "1 pan de campo",
-      "500 g de miel",
-      "1 kg de banana"
-    ]
-  },
+
+// -------------------
+// CAJAS ARMADAS
+// -------------------
+{
+  id: "caja_veggie",
+  name: "Caja Veggie",
+  description: "Rica en fibra, vitaminas y antioxidantes. Mejora la digestión y fortalece tus defensas.",
+  price: 22820,
+  type: "unit",
+  image: "/images/caja-veggie.jpg",
+  category: "cajas_armadas",
+  boxItems: [
+    "1 zapallo anco",
+    "papa negra 2 kg",
+    "cebolla 1 kg y 1/2",
+    "tomate 1/2 kg",
+    "zanahoria 1/2 kg",
+    "manzana 1/2 kg",
+    "citricos (naranja + limon) 1 kg",
+    "banana 1 kg",
+    "lechuga 1 planta",
+    "espinaca 2 atados",
+    "ideal si compras solo para vos",
+    "rinde muy bien sin desperdicio"
+  ]
+},
+{
+  id: "caja_campo",
+  name: "Caja Campo",
+  description: "Equilibrio entre vegetales y proteínas. Más energía, saciedad y nutrición completa.",
+  price: 45320,
+  type: "unit",
+  image: "/images/caja-campo.jpg",
+  category: "cajas_armadas",
+  boxItems: [
+    "1 zapallo anco",
+    "papa negra 2 kg",
+    "cebolla 1 kg y 1/2",
+    "tomate 1/2 kg",
+    "zanahoria 1/2 kg",
+    "manzana 1/2 kg",
+    "citricos (naranja + limon) 1 kg",
+    "banana 1 kg",
+    "lechuga 1 planta",
+    "espinaca 2 atados",
+    "30 huevos de campo",
+    "1 pollo fresco entero organico",
+    "perfecta para dos personas",
+    "ideal si queres cocinar y tener stock"
+  ]
+},
+{
+  id: "caja_granja",
+  name: "Caja Granja",
+  description: "Nutrición completa para toda la familia. Proteínas, grasas saludables y alimentos reales.",
+  price: 55520,
+  type: "unit",
+  image: "/images/caja-granja.jpg",
+  category: "cajas_armadas",
+  boxItems: [
+    "1 zapallo anco",
+    "papa negra 2 kg",
+    "cebolla 1 kg y 1/2",
+    "tomate 1/2 kg",
+    "zanahoria 1/2 kg",
+    "manzana 1/2 kg",
+    "citricos (naranja + limon) 1 kg",
+    "banana 1 kg",
+    "lechuga 1 planta",
+    "espinaca 2 atados",
+    "30 huevos de campo",
+    "1 pollo fresco entero organico",
+    "1 kg de miel de abejas real pura",
+    "1 pan de campo grande",
+    "le agrega nutrientes a tus desayunos",
+    "pensada para toda la familia"
+  ]
+},
 
   // -------------------
   // VERDURAS
