@@ -35,7 +35,7 @@ export default function Home() {
     <main>
       <Header />
       <Hero onWhatsAppClick={onWhatsAppClick} />
-      <HowItWorks />
+      {/*<HowItWorks />*/}
       <div id="cart" className="scroll-mt-32">
         <Cart />
       </div>
