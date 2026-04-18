@@ -22,7 +22,7 @@ const PRODUCTS: Product[] = [
     id: "zapallo",
     name: "Zapallo Anco",
     description: "ideal para horno, puré o sopa",
-    price: 1500,
+    price: 1700,
     type: "unit",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/WhatsApp%20Image%202026-04-12%20at%2014.21.43.jpeg",
     category: "verduras"
@@ -31,7 +31,7 @@ const PRODUCTS: Product[] = [
     id: "cebolla",
     name: "Cebolla",
     description: "base para guisos, salsas y salteados",
-    price: 530,
+    price: 600,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cebollas.jpg",
     category: "verduras"
@@ -40,7 +40,7 @@ const PRODUCTS: Product[] = [
     id: "papa",
     name: "Papa negra",
     description: "ideal para horno, puré o fritas",
-    price: 600,
+    price: 733,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/papas%20negras.jpg",
     category: "verduras"
@@ -67,7 +67,7 @@ const PRODUCTS: Product[] = [
     id: "lechuga",
     name: "Lechuga",
     description: "fresca y crocante, ideal para ensaladas",
-    price: 500,
+    price: 390,
     type: "unit",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/lechugas.jpg",
     category: "verduras"
@@ -76,7 +76,7 @@ const PRODUCTS: Product[] = [
     id: "espinaca",
     name: "Espinaca",
     description: "hojas tiernas, ideal para tartas o salteados",
-    price: 1670,
+    price: 1750,
     type: "unit",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/espinacas.jpg",
     category: "verduras"
@@ -98,7 +98,7 @@ const PRODUCTS: Product[] = [
     id: "manzana",
     name: "Manzana RED DELICIOUS",
     description: "dulce y crocante, ideal para todo momento",
-    price: 2100,
+    price: 2600,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/manzanas.jpg",
     category: "frutas"
@@ -107,7 +107,7 @@ const PRODUCTS: Product[] = [
     id: "naranja",
     name: "Naranja jugo",
     description: "jugosa, ideal para exprimir",
-    price: 1200,
+    price: 1400,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/naranja%20jugo.jpg",
     category: "frutas"
@@ -125,7 +125,7 @@ const PRODUCTS: Product[] = [
     id: "banana",
     name: "Banana",
     description: "suave y energética, ideal para colaciones",
-    price: 1000,
+    price: 1250,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/banana.jpg",
     category: "frutas"
