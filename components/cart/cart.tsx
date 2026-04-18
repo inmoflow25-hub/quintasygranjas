@@ -669,7 +669,7 @@ export default function Cart() {
                   checked={paymentMethod === "mp"}
                   onChange={() => setPaymentMethod("mp")}
                 />
-                MercadoPago
+                Tarjetas débito / crédito
               </label>
 
               <label className="flex items-center gap-2">
