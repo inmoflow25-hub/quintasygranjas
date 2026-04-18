@@ -508,7 +508,7 @@ export default function Cart() {
           <div className="sticky top-24 rounded-xl p-5 bg-green-600 text-white shadow-lg">
 
             <h3 className="text-xl font-bold mb-4">
-              Mi pedido 🛒
+              Mi pedido 
             </h3>
 
             {cart.length === 0 && (
