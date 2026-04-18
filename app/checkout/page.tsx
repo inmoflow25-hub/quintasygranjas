@@ -193,7 +193,7 @@ function CheckoutContent() {
     checked={paymentMethod === "mercadopago"}
     onChange={() => setPaymentMethod("mercadopago")}
   />
-  Tarjetas
+  Tarjetas débito / crédito
 </label>
 
               <label className="flex items-center gap-2">
