@@ -31,15 +31,25 @@ export default function Home() {
     window.open("https://wa.me/5491168303596", "_blank")
   }
 
-  return (
+  
+ return (
     <main>
       <Header />
       <Hero onWhatsAppClick={onWhatsAppClick} />
       {/*<HowItWorks />*/}
-      <div id="cart" className="scroll-mt-32">
-        <Cart />
-      </div>
-      <BoxesSection onSelectBox={onSelectBox} />
+
+      <section className="max-w-7xl mx-auto px-4 md:px-6 py-8">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+          <div>
+            <BoxesSection onSelectBox={onSelectBox} />
+          </div>
+
+          <div id="cart" className="scroll-mt-32">
+            <Cart />
+          </div>
+        </div>
+      </section>
+
       {/*<SocialProof />*/}
       <DeliveryZones />
       <FinalCTA onWhatsAppClick={onWhatsAppClick} />
