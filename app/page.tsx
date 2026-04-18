@@ -40,7 +40,7 @@ export default function Home() {
         <Cart />
       </div>
       <BoxesSection onSelectBox={onSelectBox} />
-      <SocialProof />
+      {/*<SocialProof />*/}
       <DeliveryZones />
       <FinalCTA onWhatsAppClick={onWhatsAppClick} />
       <Footer onWhatsAppClick={onWhatsAppClick} />
