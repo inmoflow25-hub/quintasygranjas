@@ -40,7 +40,7 @@ export default function Home() {
       <div id="cart" className="scroll-mt-32">
         <Cart />
       </div>
-      <BoxesSection onSelectBox={onSelectBox} />
+      {/*<BoxesSection onSelectBox={onSelectBox} />*/}
       {/*<SocialProof />*/}
       <DeliveryZones />
       <FinalCTA onWhatsAppClick={onWhatsAppClick} />
