@@ -70,12 +70,12 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
                 document.getElementById("cart")?.scrollIntoView({ behavior: "smooth" })
               }}
             >
-              Armar tu caja
+              Armar tu pedido
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
 
             {/* 🔥 CTA 2 */}
-            <Button
+            {/*  <Button
               size="lg"
               className="bg-white text-black hover:bg-gray-200 text-lg px-8 py-6"
               onClick={() => {
@@ -83,7 +83,7 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
               }}
             >
               Ver cajas armadas
-            </Button>
+            </Button>*/}
 
           </div>
         </div>
