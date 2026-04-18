@@ -566,17 +566,17 @@ export default function Cart() {
                         )}
 
                         {isBox && isExpanded && p.boxItems && (
-                          <div className="mb-2 rounded-lg bg-white/70 p-2">
-                            <p className="text-xs font-semibold mb-1">
-                              Esta caja trae:
-                            </p>
-                            <ul className="text-xs text-gray-700 space-y-1">
-                              {p.boxItems.map((item, index) => (
-                                <li key={`${p.id}-item-${index}`}>• {item}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
+  <div className="mb-3 rounded-xl bg-white p-4 shadow-lg border border-gray-300">
+    <p className="text-sm font-bold mb-3">
+      Esta caja trae:
+    </p>
+    <ul className="text-sm text-gray-700 space-y-2 leading-6">
+      {p.boxItems.map((item, index) => (
+        <li key={`${p.id}-item-${index}`}>• {item}</li>
+      ))}
+    </ul>
+  </div>
+)}
 
                         <p className="text-md font-bold">
                           ${p.price.toLocaleString()}
