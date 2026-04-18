@@ -37,19 +37,10 @@ export default function Home() {
       <Header />
       <Hero onWhatsAppClick={onWhatsAppClick} />
       {/*<HowItWorks />*/}
-
-      <section className="max-w-7xl mx-auto px-4 md:px-6 py-8">
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
-          <div>
-            <BoxesSection onSelectBox={onSelectBox} />
-          </div>
-
-          <div id="cart" className="scroll-mt-32">
-            <Cart />
-          </div>
-        </div>
-      </section>
-
+      <div id="cart" className="scroll-mt-32">
+        <Cart />
+      </div>
+      <BoxesSection onSelectBox={onSelectBox} />
       {/*<SocialProof />*/}
       <DeliveryZones />
       <FinalCTA onWhatsAppClick={onWhatsAppClick} />
