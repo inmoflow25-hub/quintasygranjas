@@ -18,16 +18,25 @@ export function Header() {
         </div>
 
         <nav className="hidden md:flex items-center gap-8">
-          <a href="#como-funciona" className="text-muted-foreground hover:text-foreground transition-colors">
-            Cómo funciona
+          <a
+            href="#cart"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Tienda
           </a>
 
-          <a href="#cajas" className="text-muted-foreground hover:text-foreground transition-colors">
-            Cajas
-          </a>
-
-          <a href="#zonas" className="text-muted-foreground hover:text-foreground transition-colors">
+          <a
+            href="#zonas"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
             Zonas de entrega
+          </a>
+
+          <a
+            href="#final-cta"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Pedí ahora
           </a>
         </nav>
       </div>
