@@ -188,13 +188,13 @@ function CheckoutContent() {
               <p className="mb-3 font-semibold">Método de pago</p>
 
               <label className="mb-2 flex items-center gap-2">
-                <input
-                  type="radio"
-                  checked={paymentMethod === "mercadopago"}
-                  onChange={() => setPaymentMethod("mercadopago")}
-                />
-                Mercado Pago
-              </label>
+  <input
+    type="radio"
+    checked={paymentMethod === "mercadopago"}
+    onChange={() => setPaymentMethod("mercadopago")}
+  />
+  Tarjetas
+</label>
 
               <label className="flex items-center gap-2">
                 <input
