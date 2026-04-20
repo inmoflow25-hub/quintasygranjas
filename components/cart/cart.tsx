@@ -257,8 +257,8 @@ const PRODUCTS: Product[] = [
   },
   {
     id: "suprema",
-    name: "Suprema deshuesada sin piel",
-    description: "pechuga deshuesada, ideal para milanesas o plancha",
+    name: "Suprema deshuesada sin piel (Congelada)",
+    description: "Descongelar y cocinar, ideal para milanesas o plancha",
     price: 11300,
     type: "weight_1kg",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pechugas%20.jpg",
@@ -266,8 +266,8 @@ const PRODUCTS: Product[] = [
   },
   {
     id: "cuartos",
-    name: "Pata y muslo de pollo",
-    description: "pierna + muslo, ideal horno o parrilla",
+    name: "Pata y muslo de pollo (Congelado)",
+    description: "Desconglar y cocinar, ideal horno o parrilla",
     price: 4500,
     type: "weight_1kg",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cuarto%20trasero.jpg",
