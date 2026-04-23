@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic"
 export const revalidate = 0
 
 import { createClient } from "@supabase/supabase-js"
+import { requireAdmin } from "@/lib/admin-auth"
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -50,6 +51,8 @@ function formatItems(items: any[] | null | undefined) {
 }
 
 export default async function AdminPage() {
+  const admin = await requireAdmin()
+
   const { data: orders, error } = await supabase
     .from("orders")
     .select(`
@@ -83,6 +86,7 @@ export default async function AdminPage() {
           📦 Pedidos / Entregas
         </h1>
         <div className="rounded-3xl bg-white p-6 shadow-sm">
+          <p className="mb-4 text-sm text-gray-500">Ingresaste como {admin.email}</p>
           <p className="text-red-600">Error cargando admin: {error.message}</p>
         </div>
       </main>
@@ -91,9 +95,21 @@ export default async function AdminPage() {
 
   return (
     <main className="min-h-screen bg-[#f5f5f3] p-10">
-      <h1 className="mb-8 text-5xl font-serif font-bold text-[#1f2a1f]">
-        📦 Pedidos / Entregas
-      </h1>
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="text-5xl font-serif font-bold text-[#1f2a1f]">
+          📦 Pedidos / Entregas
+        </h1>
+
+        <form action="/api/admin/logout" method="POST">
+          <button className="rounded-xl bg-[#1f2a1f] px-4 py-2 text-white">
+            Cerrar sesión
+          </button>
+        </form>
+      </div>
+
+      <p className="mb-8 text-sm text-gray-600">
+        Sesión activa: {admin.email}
+      </p>
 
       <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">
         <table className="min-w-full text-left">
@@ -137,10 +153,10 @@ export default async function AdminPage() {
 
                   <td className="px-4 py-4 text-sm text-[#2b2b2b] max-w-[320px]">
                     <div className="font-medium">
-                      {order.source === "box" ? "Box" : order.source === "cart" ? "Cart" : "-"}
+                      {formatItems(order.order_items)}
                     </div>
                     <div className="text-xs text-gray-600 mt-1">
-                      {formatItems(order.order_items)}
+                      {order.source || "-"}
                     </div>
                   </td>
 
@@ -180,3 +196,5 @@ export default async function AdminPage() {
     </main>
   )
 }
+
+
