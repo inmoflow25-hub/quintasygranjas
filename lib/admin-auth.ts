@@ -53,20 +53,24 @@ export function readAdminSessionValue(value: string | undefined | null): AdminSe
 export async function getAdminUserByEmail(email: string) {
   const normalizedEmail = email.trim().toLowerCase()
 
-  const { data: user, error: userError } = await supabase
-    .from("users")
-    .select("id, email")
-    .eq("email", normalizedEmail)
-    .maybeSingle()
+  const { data, error } = await supabase.auth.admin.listUsers()
 
-  if (userError || !user?.id) {
+  if (error || !data?.users?.length) {
+    return null
+  }
+
+  const authUser = data.users.find(
+    (user) => user.email?.toLowerCase() === normalizedEmail
+  )
+
+  if (!authUser?.id || !authUser.email) {
     return null
   }
 
   const { data: admin, error: adminError } = await supabase
     .from("admins")
     .select("id, user_id")
-    .eq("user_id", user.id)
+    .eq("user_id", authUser.id)
     .maybeSingle()
 
   if (adminError || !admin?.user_id) {
@@ -74,8 +78,8 @@ export async function getAdminUserByEmail(email: string) {
   }
 
   return {
-    id: user.id,
-    email: user.email
+    id: authUser.id,
+    email: authUser.email
   }
 }
 
