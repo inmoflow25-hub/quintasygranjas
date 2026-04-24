@@ -14,6 +14,16 @@ type CheckoutItem = {
 const ZONA_NORTE_CONTEXT_KEY = "qyg_zona_norte_context"
 const ZONA_NORTE_CART_KEY = "qyg_zona_norte_cart"
 
+const BARRIOS = [
+  { slug: "belgrano", name: "Belgrano", delivery_day: "Lunes" },
+  { slug: "nunez", name: "Núñez", delivery_day: "Lunes" },
+  { slug: "saavedra", name: "Saavedra", delivery_day: "Lunes" },
+  { slug: "partido-vicente-lopez", name: "Partido de Vicente López", delivery_day: "Lunes" },
+  { slug: "partido-san-isidro", name: "Partido de San Isidro", delivery_day: "Martes" },
+  { slug: "partido-san-fernando", name: "Partido de San Fernando", delivery_day: "Martes" },
+  { slug: "partido-tigre", name: "Partido de Tigre", delivery_day: "Martes" }
+]
+
 function ZonaNorteCheckoutContent() {
   const router = useRouter()
 
@@ -60,6 +70,31 @@ function ZonaNorteCheckoutContent() {
       ...prev,
       [field]: value
     }))
+  }
+
+  function handleNeighborhoodChange(value: string) {
+    const barrio = BARRIOS.find((b) => b.slug === value)
+
+    if (!barrio) {
+      setNeighborhoodSlug("")
+      setNeighborhoodName("")
+      setDeliveryDay("")
+      localStorage.removeItem(ZONA_NORTE_CONTEXT_KEY)
+      return
+    }
+
+    setNeighborhoodSlug(barrio.slug)
+    setNeighborhoodName(barrio.name)
+    setDeliveryDay(barrio.delivery_day)
+
+    localStorage.setItem(
+      ZONA_NORTE_CONTEXT_KEY,
+      JSON.stringify({
+        neighborhood_slug: barrio.slug,
+        neighborhood_name: barrio.name,
+        delivery_day: barrio.delivery_day
+      })
+    )
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -137,22 +172,32 @@ function ZonaNorteCheckoutContent() {
             Checkout
           </h1>
 
-          {neighborhoodName ? (
-            <div className="mb-6 rounded-xl border border-green-200 bg-green-50 p-4 text-sm">
-              <p className="font-semibold">
-                Barrio/Zona: {neighborhoodName}
+          <div className="mb-6 rounded-xl border border-green-200 bg-green-50 p-4">
+            <p className="mb-3 text-sm font-semibold">
+              Elegí tu barrio/zona
+            </p>
+
+            <select
+              className="w-full rounded-xl border bg-white px-4 py-3"
+              value={neighborhoodSlug}
+              onChange={(e) => handleNeighborhoodChange(e.target.value)}
+              required
+            >
+              <option value="">Seleccionar barrio</option>
+              {BARRIOS.map((barrio) => (
+                <option key={barrio.slug} value={barrio.slug}>
+                  {barrio.name} - Entrega {barrio.delivery_day}
+                </option>
+              ))}
+            </select>
+
+            {neighborhoodName && (
+              <p className="mt-3 text-sm text-gray-700">
+                Barrio/Zona: <strong>{neighborhoodName}</strong> · Entrega:{" "}
+                <strong>{deliveryDay}</strong>
               </p>
-              {deliveryDay && (
-                <p className="text-gray-600">
-                  Día de entrega: {deliveryDay}
-                </p>
-              )}
-            </div>
-          ) : (
-            <div className="mb-6 rounded-xl border border-yellow-300 bg-yellow-50 p-4 text-sm">
-              No hay barrio seleccionado. Volvé a Zona Norte y elegí tu barrio.
-            </div>
-          )}
+            )}
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
