@@ -42,7 +42,7 @@ async function processWebhook(request: NextRequest) {
     let nextPaymentStatus = "pending"
 
     if (mpStatus === "approved") {
-      nextStatus = "paid"
+      nextStatus = "confirmed"
       nextPaymentStatus = "approved"
     } else if (mpStatus === "rejected" || mpStatus === "cancelled") {
       nextStatus = "cancelled"
