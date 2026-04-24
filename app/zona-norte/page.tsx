@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Link from "next/link"
 import ZonaNorteCart from "@/components/zona-norte/zona-norte-cart"
 
 const ZONA_NORTE_CONTEXT_KEY = "qyg_zona_norte_context"
