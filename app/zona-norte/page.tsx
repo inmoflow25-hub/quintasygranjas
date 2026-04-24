@@ -170,22 +170,7 @@ export default function ZonaNortePage() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-dashed p-6 text-center">
-              <p className="mb-4 text-lg font-semibold">
-                Próximo paso: conectar el carrito Zona Norte
-              </p>
-
-              <p className="mb-5 text-sm text-gray-500">
-                El barrio ya queda guardado. Falta agregar el carrito especial
-                que manda a /zona-norte/checkout.
-              </p>
-
-              <Link
-                href="/zona-norte/checkout"
-                className="inline-block rounded-xl bg-green-600 px-6 py-3 font-semibold text-white"
-              >
-                Ir al checkout Zona Norte
-              </Link>
+              <ZonaNorteCart />
             </div>
           </div>
         </div>
