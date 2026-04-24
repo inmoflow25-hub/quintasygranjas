@@ -3,8 +3,6 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
-const ZONA_NORTE_CART_KEY = "qyg_zona_norte_cart"
-
 type Product = {
   id: string
   name: string
@@ -16,11 +14,13 @@ type Product = {
   boxItems?: string[]
 }
 
+const ZONA_NORTE_CART_KEY = "qyg_zona_norte_cart"
+
 const PRODUCTS: Product[] = [
   {
     id: "caja_veggie",
     name: "Caja Veggie",
-    description: "Rica en fibra, vitaminas y antioxidantes.",
+    description: "Rica en fibra, vitaminas y antioxidantes. Mejora la digestión y fortalece tus defensas.",
     price: 22820,
     type: "unit",
     image: "/images/caja-veggie.jpg",
@@ -32,7 +32,7 @@ const PRODUCTS: Product[] = [
       "tomate 1/2 kg",
       "zanahoria 1/2 kg",
       "manzana 1/2 kg",
-      "citricos 1 kg",
+      "citricos (naranja + limon) 1 kg",
       "banana 1 kg",
       "lechuga 1 planta",
       "espinaca 2 atados"
@@ -41,7 +41,7 @@ const PRODUCTS: Product[] = [
   {
     id: "caja_campo",
     name: "Caja Campo",
-    description: "Vegetales, huevos y pollo.",
+    description: "Equilibrio entre vegetales y proteínas. Más energía, saciedad y nutrición completa.",
     price: 45320,
     type: "unit",
     image: "/images/caja-campo.jpg",
@@ -53,7 +53,7 @@ const PRODUCTS: Product[] = [
       "tomate 1/2 kg",
       "zanahoria 1/2 kg",
       "manzana 1/2 kg",
-      "citricos 1 kg",
+      "citricos (naranja + limon) 1 kg",
       "banana 1 kg",
       "lechuga 1 planta",
       "espinaca 2 atados",
@@ -64,7 +64,7 @@ const PRODUCTS: Product[] = [
   {
     id: "caja_granja",
     name: "Caja Granja",
-    description: "Caja familiar completa.",
+    description: "Nutrición completa para toda la familia. Proteínas, grasas saludables y alimentos reales.",
     price: 55520,
     type: "unit",
     image: "/images/caja-granja.jpg",
@@ -76,14 +76,14 @@ const PRODUCTS: Product[] = [
       "tomate 1/2 kg",
       "zanahoria 1/2 kg",
       "manzana 1/2 kg",
-      "citricos 1 kg",
+      "citricos (naranja + limon) 1 kg",
       "banana 1 kg",
       "lechuga 1 planta",
       "espinaca 2 atados",
       "30 huevos de campo",
       "1 pollo fresco entero organico",
-      "1 kg de miel",
-      "1 pan de campo"
+      "1 kg de miel de abejas real pura",
+      "1 pan de campo grande"
     ]
   },
   {
@@ -125,7 +125,7 @@ const PRODUCTS: Product[] = [
   {
     id: "zanahoria",
     name: "Zanahoria",
-    description: "dulce y crocante",
+    description: "dulce y crocante, ideal cruda o cocida",
     price: 670,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/zanahorias.jpg",
@@ -134,7 +134,7 @@ const PRODUCTS: Product[] = [
   {
     id: "lechuga",
     name: "Lechuga",
-    description: "fresca y crocante",
+    description: "fresca y crocante, ideal para ensaladas",
     price: 390,
     type: "unit",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/lechugas.jpg",
@@ -143,16 +143,25 @@ const PRODUCTS: Product[] = [
   {
     id: "espinaca",
     name: "Espinaca",
-    description: "ideal para tartas o salteados",
+    description: "hojas tiernas, ideal para tartas o salteados",
     price: 1750,
     type: "unit",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/espinacas.jpg",
     category: "verduras"
   },
   {
+    id: "morron",
+    name: "Morrones",
+    description: "ideal para rellenos, salteados o ensaladas",
+    price: 1800,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/morrones.jpg",
+    category: "verduras"
+  },
+  {
     id: "manzana",
     name: "Manzana RED DELICIOUS",
-    description: "dulce y crocante",
+    description: "dulce y crocante, ideal para todo momento",
     price: 2600,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/manzanas.jpg",
@@ -170,7 +179,7 @@ const PRODUCTS: Product[] = [
   {
     id: "limon",
     name: "Limón",
-    description: "ideal para comidas o bebidas",
+    description: "ácido y fresco, ideal para comidas o bebidas",
     price: 1300,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/limones.jpg",
@@ -179,7 +188,7 @@ const PRODUCTS: Product[] = [
   {
     id: "banana",
     name: "Banana",
-    description: "suave y energética",
+    description: "suave y energética, ideal para colaciones",
     price: 1250,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/banana.jpg",
@@ -188,7 +197,7 @@ const PRODUCTS: Product[] = [
   {
     id: "pan",
     name: "Pan",
-    description: "pan de campo",
+    description: "pan de campo, ideal para acompañar comidas",
     price: 1200,
     type: "unit",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pan%20de%20campo.jpg",
@@ -197,7 +206,7 @@ const PRODUCTS: Product[] = [
   {
     id: "miel",
     name: "Miel",
-    description: "natural y dulce",
+    description: "natural y dulce, ideal para infusiones o tostadas",
     price: 4500,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/miel.jpg",
@@ -206,7 +215,7 @@ const PRODUCTS: Product[] = [
   {
     id: "huevos",
     name: "Huevos (30 unidades)",
-    description: "maple completo",
+    description: "maple completo, ideal para consumo diario",
     price: 6000,
     type: "unit",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/huevos.jpg",
@@ -215,10 +224,28 @@ const PRODUCTS: Product[] = [
   {
     id: "pollo_entero",
     name: "Pollo entero Orgánico",
-    description: "ideal para horno",
+    description: "ideal para horno, parrilla o cacerola",
     price: 18500,
     type: "unit",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pollo%20entero.jpg",
+    category: "pollo"
+  },
+  {
+    id: "suprema",
+    name: "Suprema deshuesada sin piel (Congelada)",
+    description: "Descongelar y cocinar, ideal para milanesas o plancha",
+    price: 11300,
+    type: "weight_1kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pechugas%20.jpg",
+    category: "pollo"
+  },
+  {
+    id: "cuartos",
+    name: "Pata y muslo de pollo (Congelado)",
+    description: "Desconglar y cocinar, ideal horno o parrilla",
+    price: 4500,
+    type: "weight_1kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cuarto%20trasero.jpg",
     category: "pollo"
   }
 ]
@@ -234,9 +261,7 @@ export default function ZonaNorteCart() {
 
       if (existing) {
         return prev.map((p) =>
-          p.id === product.id
-            ? { ...p, quantity: p.quantity + 1 }
-            : p
+          p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
         )
       }
 
@@ -255,9 +280,7 @@ export default function ZonaNorteCart() {
       }
 
       return prev.map((p) =>
-        p.id === product.id
-          ? { ...p, quantity: p.quantity - 1 }
-          : p
+        p.id === product.id ? { ...p, quantity: p.quantity - 1 } : p
       )
     })
   }
@@ -267,9 +290,7 @@ export default function ZonaNorteCart() {
   }
 
   function getTotal() {
-    return cart.reduce((acc, item) => {
-      return acc + item.price * item.quantity
-    }, 0)
+    return cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
   }
 
   function getLabel(product: Product) {
@@ -290,11 +311,13 @@ export default function ZonaNorteCart() {
       return totalGrams >= 1000 ? `${totalGrams / 1000} kg` : `${totalGrams} g`
     }
 
-    if (item.type === "weight_1kg") {
-      return `${item.quantity} kg`
-    }
+    if (item.type === "weight_1kg") return `${item.quantity} kg`
 
     return `x${item.quantity}`
+  }
+
+  function toggleBoxDetails(productId: string) {
+    setExpandedBoxId((prev) => (prev === productId ? null : productId))
   }
 
   function handleCheckout() {
@@ -313,13 +336,13 @@ export default function ZonaNorteCart() {
   }
 
   return (
-    <div className="mt-8 rounded-2xl bg-white p-6 shadow">
-      <h2 className="mb-2 text-3xl font-bold text-center">
-        Armá tu pedido
+    <div className="max-w-7xl mx-auto p-6">
+      <h2 className="text-3xl font-bold mb-6 text-center">
+        Elegí una caja, armá la tuya o sumá productos
       </h2>
 
-      <p className="mb-6 text-center text-gray-600">
-        Pedido mínimo de $20.000
+      <p className="text-lg font-medium mb-6 text-center">
+        Pedido mínimo de $20.000 - Recibís en Zona Norte
       </p>
 
       <div className="flex gap-2 mb-6 overflow-x-auto">
@@ -337,22 +360,18 @@ export default function ZonaNorteCart() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2">
           {Array.from(new Set(PRODUCTS.map((p) => p.category))).map((category) => {
             const items = PRODUCTS.filter((p) => p.category === category)
 
             return (
-              <div
-                key={category}
-                id={`zn-cat-${category}`}
-                className="mb-10 scroll-mt-32"
-              >
-                <h3 className="mb-3 text-xl font-bold capitalize">
+              <div key={category} id={`zn-cat-${category}`} className="mb-10 scroll-mt-32">
+                <h3 className="text-xl font-bold mb-3 capitalize">
                   {category.replace("_", " ")}
                 </h3>
 
-                <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   {items.map((p) => {
                     const quantity = getQuantity(p.id)
                     const isBox = p.category === "cajas_armadas"
@@ -361,44 +380,32 @@ export default function ZonaNorteCart() {
                     return (
                       <div
                         key={p.id}
-                        className="rounded-xl bg-[#e2e2e2] p-2 transition hover:bg-[#d8d8d8]"
+                        className="rounded-xl p-2 bg-[#e2e2e2] hover:bg-[#d8d8d8] transition"
                       >
-                        <div className="mb-2 h-30 w-full overflow-hidden rounded-lg">
-                          <img
-                            src={p.image}
-                            className="h-full w-full object-cover"
-                            alt={p.name}
-                          />
+                        <div className="h-30 w-full mb-2 overflow-hidden rounded-lg">
+                          <img src={p.image} className="w-full h-full object-cover" alt={p.name} />
                         </div>
 
-                        <p className="mb-1 text-sm font-semibold text-black">
-                          {p.name}
-                        </p>
+                        <p className="text-sm font-semibold text-black mb-1">{p.name}</p>
 
                         {p.description && (
-                          <p className="mb-2 text-xs text-gray-600">
-                            {p.description}
-                          </p>
+                          <p className="text-xs text-gray-600 mb-2">{p.description}</p>
                         )}
 
                         {isBox && (
                           <button
                             type="button"
-                            onClick={() =>
-                              setExpandedBoxId(isExpanded ? null : p.id)
-                            }
-                            className="mb-2 text-xs font-medium text-black underline"
+                            onClick={() => toggleBoxDetails(p.id)}
+                            className="text-xs font-medium text-black underline mb-2"
                           >
                             {isExpanded ? "Ocultar qué trae" : "Qué trae"}
                           </button>
                         )}
 
                         {isBox && isExpanded && p.boxItems && (
-                          <div className="mb-3 rounded-xl border border-gray-300 bg-white p-4 shadow-lg">
-                            <p className="mb-3 text-sm font-bold">
-                              Esta caja trae:
-                            </p>
-                            <ul className="space-y-2 text-sm leading-6 text-gray-700">
+                          <div className="mb-3 rounded-xl bg-white p-4 shadow-lg border border-gray-300">
+                            <p className="text-sm font-bold mb-3">Esta caja trae:</p>
+                            <ul className="text-sm text-gray-700 space-y-2 leading-6">
                               {p.boxItems.map((item, index) => (
                                 <li key={`${p.id}-item-${index}`}>• {item}</li>
                               ))}
@@ -406,28 +413,18 @@ export default function ZonaNorteCart() {
                           </div>
                         )}
 
-                        <p className="text-md font-bold">
-                          ${p.price.toLocaleString("es-AR")}
-                        </p>
+                        <p className="text-md font-bold">${p.price.toLocaleString("es-AR")}</p>
 
-                        <p className="mb-2 text-xs text-gray-600">
-                          por {getLabel(p)}
-                        </p>
+                        <p className="text-xs text-gray-600 mb-2">por {getLabel(p)}</p>
 
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            onClick={() => removeItem(p)}
-                            className="h-7 w-7 rounded-full bg-gray-400"
-                          >
+                        <div className="flex justify-center items-center gap-2">
+                          <button onClick={() => removeItem(p)} className="w-7 h-7 rounded-full bg-gray-400">
                             -
                           </button>
 
                           <span className="text-sm">{quantity}</span>
 
-                          <button
-                            onClick={() => addItem(p)}
-                            className="h-7 w-7 rounded-full bg-green-600 text-white"
-                          >
+                          <button onClick={() => addItem(p)} className="w-7 h-7 rounded-full bg-green-600 text-white">
                             +
                           </button>
                         </div>
@@ -441,37 +438,25 @@ export default function ZonaNorteCart() {
         </div>
 
         <div className="md:col-span-1">
-          <div className="sticky top-24 rounded-xl bg-green-600 p-5 text-white shadow-lg">
-            <h3 className="mb-4 text-xl font-bold">
-              Mi pedido
-            </h3>
+          <div className="sticky top-24 rounded-xl p-5 bg-green-600 text-white shadow-lg">
+            <h3 className="text-xl font-bold mb-4">Mi pedido</h3>
 
             {cart.length === 0 && (
-              <p className="text-sm text-green-100">
-                Todavía no agregaste productos
-              </p>
+              <p className="text-sm text-green-100">Todavía no agregaste productos</p>
             )}
 
             {cart.map((item) => (
-              <div key={item.id} className="mb-3 flex items-center justify-between text-sm">
+              <div key={item.id} className="flex justify-between items-center mb-3 text-sm">
                 <div>
                   <p className="font-medium">{item.name}</p>
-                  <p className="text-xs text-green-200">
-                    {getDisplayQuantity(item)}
-                  </p>
+                  <p className="text-xs text-green-200">{getDisplayQuantity(item)}</p>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => removeItem(item)}
-                    className="h-6 w-6 rounded-full bg-white text-black"
-                  >
+                  <button onClick={() => removeItem(item)} className="w-6 h-6 rounded-full bg-white text-black">
                     -
                   </button>
-                  <button
-                    onClick={() => addItem(item)}
-                    className="h-6 w-6 rounded-full bg-black text-white"
-                  >
+                  <button onClick={() => addItem(item)} className="w-6 h-6 rounded-full bg-black text-white">
                     +
                   </button>
                 </div>
@@ -486,7 +471,7 @@ export default function ZonaNorteCart() {
 
             <button
               onClick={handleCheckout}
-              className="mt-5 w-full rounded-xl bg-black py-3 text-lg text-white"
+              className="mt-5 w-full bg-black text-white py-3 rounded-xl text-lg"
             >
               Finalizar compra
             </button>
