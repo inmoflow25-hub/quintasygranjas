@@ -14,8 +14,24 @@ type Product = {
   boxItems?: string[]
 }
 
+type Barrio = {
+  slug: string
+  name: string
+  delivery_day: string
+}
+
 const ZONA_NORTE_CONTEXT_KEY = "qyg_zona_norte_context"
 const ZONA_NORTE_CART_KEY = "qyg_zona_norte_cart"
+
+const BARRIOS: Barrio[] = [
+  { slug: "belgrano", name: "Belgrano", delivery_day: "Lunes" },
+  { slug: "nunez", name: "Núñez", delivery_day: "Lunes" },
+  { slug: "saavedra", name: "Saavedra", delivery_day: "Lunes" },
+  { slug: "partido-vicente-lopez", name: "Partido de Vicente López", delivery_day: "Lunes" },
+  { slug: "partido-san-isidro", name: "Partido de San Isidro", delivery_day: "Martes" },
+  { slug: "partido-san-fernando", name: "Partido de San Fernando", delivery_day: "Martes" },
+  { slug: "partido-tigre", name: "Partido de Tigre", delivery_day: "Martes" }
+]
 
 const PRODUCTS: Product[] = [
   {
@@ -255,34 +271,78 @@ export default function ZonaNorteCart() {
   const router = useRouter()
   const [cart, setCart] = useState<any[]>([])
   const [expandedBoxId, setExpandedBoxId] = useState<string | null>(null)
+  const [neighborhoodSlug, setNeighborhoodSlug] = useState("")
   const [neighborhoodName, setNeighborhoodName] = useState("")
   const [deliveryDay, setDeliveryDay] = useState("")
   const [progressPercent, setProgressPercent] = useState<number | null>(null)
+  const [progressLoading, setProgressLoading] = useState(false)
 
   useEffect(() => {
     const raw = localStorage.getItem(ZONA_NORTE_CONTEXT_KEY)
-    if (!raw) return
 
-    const context = JSON.parse(raw)
+    if (raw) {
+      const context = JSON.parse(raw)
 
-    setNeighborhoodName(context.neighborhood_name || "")
-    setDeliveryDay(context.delivery_day || "")
+      if (context.neighborhood_slug) {
+        setNeighborhoodSlug(context.neighborhood_slug)
+        setNeighborhoodName(context.neighborhood_name || "")
+        setDeliveryDay(context.delivery_day || "")
+        fetchProgress(context.neighborhood_slug)
+        return
+      }
+    }
 
-    if (!context.neighborhood_slug) return
+    const defaultBarrio = BARRIOS[0]
+    handleNeighborhoodChange(defaultBarrio.slug)
+  }, [])
 
-    fetch(`/api/zona-norte/progress?neighborhood_slug=${context.neighborhood_slug}`)
+  function fetchProgress(slug: string) {
+    setProgressLoading(true)
+
+    fetch(`/api/zona-norte/progress?neighborhood_slug=${slug}`)
       .then((res) => res.json())
       .then((data) => {
         if (typeof data.progress_percent !== "undefined") {
           setProgressPercent(Number(data.progress_percent))
-          setNeighborhoodName(data.name || context.neighborhood_name || "")
-          setDeliveryDay(data.delivery_day || context.delivery_day || "")
+          setNeighborhoodName(data.name || "")
+          setDeliveryDay(data.delivery_day || "")
         }
       })
       .catch((err) => {
         console.error("progress fetch error", err)
       })
-  }, [])
+      .finally(() => {
+        setProgressLoading(false)
+      })
+  }
+
+  function handleNeighborhoodChange(slug: string) {
+    const barrio = BARRIOS.find((b) => b.slug === slug)
+
+    if (!barrio) {
+      setNeighborhoodSlug("")
+      setNeighborhoodName("")
+      setDeliveryDay("")
+      setProgressPercent(null)
+      localStorage.removeItem(ZONA_NORTE_CONTEXT_KEY)
+      return
+    }
+
+    setNeighborhoodSlug(barrio.slug)
+    setNeighborhoodName(barrio.name)
+    setDeliveryDay(barrio.delivery_day)
+
+    localStorage.setItem(
+      ZONA_NORTE_CONTEXT_KEY,
+      JSON.stringify({
+        neighborhood_slug: barrio.slug,
+        neighborhood_name: barrio.name,
+        delivery_day: barrio.delivery_day
+      })
+    )
+
+    fetchProgress(barrio.slug)
+  }
 
   function addItem(product: Product) {
     setCart((prev) => {
@@ -350,6 +410,11 @@ export default function ZonaNorteCart() {
   }
 
   function handleCheckout() {
+    if (!neighborhoodSlug) {
+      alert("Elegí tu barrio antes de finalizar la compra")
+      return
+    }
+
     if (cart.length === 0) {
       alert("El carrito está vacío")
       return
@@ -468,6 +533,24 @@ export default function ZonaNorteCart() {
 
         <div className="md:col-span-1">
           <div className="sticky top-24 rounded-xl p-5 bg-green-600 text-white shadow-lg">
+            <div className="mb-4 rounded-xl bg-white/15 p-3">
+              <p className="text-xs font-semibold uppercase text-green-100">
+                Elegí tu barrio
+              </p>
+
+              <select
+                className="mt-2 w-full rounded-xl border border-white/30 bg-white px-3 py-2 text-sm text-black"
+                value={neighborhoodSlug}
+                onChange={(e) => handleNeighborhoodChange(e.target.value)}
+              >
+                {BARRIOS.map((barrio) => (
+                  <option key={barrio.slug} value={barrio.slug}>
+                    {barrio.name} - {barrio.delivery_day}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             {neighborhoodName && progressPercent !== null && (
               <div className="mb-4 rounded-xl bg-white/15 p-3">
                 <p className="text-xs font-semibold uppercase text-green-100">
@@ -487,7 +570,7 @@ export default function ZonaNorteCart() {
                   </div>
 
                   <p className="text-sm font-bold">
-                    {progressPercent}%
+                    {progressLoading ? "..." : `${progressPercent}%`}
                   </p>
                 </div>
 
