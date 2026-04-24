@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 
 type Product = {
@@ -14,6 +14,7 @@ type Product = {
   boxItems?: string[]
 }
 
+const ZONA_NORTE_CONTEXT_KEY = "qyg_zona_norte_context"
 const ZONA_NORTE_CART_KEY = "qyg_zona_norte_cart"
 
 const PRODUCTS: Product[] = [
@@ -254,6 +255,34 @@ export default function ZonaNorteCart() {
   const router = useRouter()
   const [cart, setCart] = useState<any[]>([])
   const [expandedBoxId, setExpandedBoxId] = useState<string | null>(null)
+  const [neighborhoodName, setNeighborhoodName] = useState("")
+  const [deliveryDay, setDeliveryDay] = useState("")
+  const [progressPercent, setProgressPercent] = useState<number | null>(null)
+
+  useEffect(() => {
+    const raw = localStorage.getItem(ZONA_NORTE_CONTEXT_KEY)
+    if (!raw) return
+
+    const context = JSON.parse(raw)
+
+    setNeighborhoodName(context.neighborhood_name || "")
+    setDeliveryDay(context.delivery_day || "")
+
+    if (!context.neighborhood_slug) return
+
+    fetch(`/api/zona-norte/progress?neighborhood_slug=${context.neighborhood_slug}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (typeof data.progress_percent !== "undefined") {
+          setProgressPercent(Number(data.progress_percent))
+          setNeighborhoodName(data.name || context.neighborhood_name || "")
+          setDeliveryDay(data.delivery_day || context.delivery_day || "")
+        }
+      })
+      .catch((err) => {
+        console.error("progress fetch error", err)
+      })
+  }, [])
 
   function addItem(product: Product) {
     setCart((prev) => {
@@ -439,6 +468,42 @@ export default function ZonaNorteCart() {
 
         <div className="md:col-span-1">
           <div className="sticky top-24 rounded-xl p-5 bg-green-600 text-white shadow-lg">
+            {neighborhoodName && progressPercent !== null && (
+              <div className="mb-4 rounded-xl bg-white/15 p-3">
+                <p className="text-xs font-semibold uppercase text-green-100">
+                  Beneficio del barrio
+                </p>
+
+                <div className="mt-1 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold">
+                      {neighborhoodName}
+                    </p>
+                    {deliveryDay && (
+                      <p className="text-xs text-green-100">
+                        Entrega: {deliveryDay}
+                      </p>
+                    )}
+                  </div>
+
+                  <p className="text-sm font-bold">
+                    {progressPercent}%
+                  </p>
+                </div>
+
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/25">
+                  <div
+                    className="h-full rounded-full bg-white"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+
+                <p className="mt-2 text-xs text-green-100">
+                  Avance semanal para beneficios en la próxima compra
+                </p>
+              </div>
+            )}
+
             <h3 className="text-xl font-bold mb-4">Mi pedido</h3>
 
             {cart.length === 0 && (
