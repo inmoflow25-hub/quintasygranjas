@@ -24,7 +24,7 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
             </div>
 
             <p className="text-background/70 leading-relaxed">
-              Cajas semanales con frutas, verduras y productos de granja directo a tu casa.
+              Cajas semanales con frutas, verduras, frutos secos y productos de granja directo a tu casa.
             </p>
           </div>
 
@@ -36,8 +36,8 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
             </h4>
 
             <p className="text-background/70 leading-relaxed">
-              Cubrimos toda <span className="text-background font-medium">CABA</span> y{" "}
-              <span className="text-background font-medium">Gran Buenos Aires</span>.
+              Cubrimos toda <span className="text-background font-medium">CABA NORTE</span> y{" "}
+              <span className="text-background font-medium">Gran Buenos Aires NORTE</span>.
               <br />
               Coordinamos la entrega según tu ubicación.
             </p>
