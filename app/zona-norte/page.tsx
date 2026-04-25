@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/landing/header"
-import { Hero } from "@/components/landing/hero"
+import { ZonaNorteHero } from "@/components/landing/zona-norte-hero"
 import { DeliveryZones } from "@/components/landing/delivery-zones"
 import { FinalCTA } from "@/components/landing/final-cta"
 import { Footer } from "@/components/landing/footer"
@@ -18,7 +18,7 @@ export default function ZonaNortePage() {
   return (
     <main>
       <Header />
-      <Hero onWhatsAppClick={onWhatsAppClick} />
+     <ZonaNorteHero onWhatsAppClick={onWhatsAppClick} />
 
       <div id="cart" className="scroll-mt-32">
         <ZonaNorteCart />
