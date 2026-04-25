@@ -13,7 +13,7 @@ export function DeliveryZones() {
         </h2>
 
         <p className="mt-4 text-lg text-muted-foreground">
-          Cubrimos CABA y Gran Buenos Aires.
+          Cubrimos CABA NORTE y Gran Buenos Aires NORTE
         </p>
 
       
