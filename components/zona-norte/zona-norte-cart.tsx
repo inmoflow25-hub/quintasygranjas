@@ -265,6 +265,104 @@ const PRODUCTS: Product[] = [
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cuarto%20trasero.jpg",
     category: "pollo"
   }
+    // -------------------
+  // CONGELADOS
+  // -------------------
+  {
+    id: "medallones",
+    name: "Medallones de pollo",
+    description: "prácticos, ideales para una comida rápida",
+    price: 9380,
+    type: "weight_1kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo%20sin%20espinaca.webp",
+    category: "congelados"
+  },
+  {
+    id: "medallones_espinaca",
+    name: "Medallones pollo con espinaca",
+    description: "opción práctica con relleno de espinaca",
+    price: 10250,
+    type: "weight_1kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo.jpg",
+    category: "congelados"
+  },
+  {
+    id: "nuggets",
+    name: "Nuggets de pollo",
+    description: "crocrantes y prácticos, ideales para chicos",
+    price: 12300,
+    type: "weight_1kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nuggets.jpeg",
+    category: "congelados"
+  },
+
+  // -------------------
+  // FRUTOS SECOS
+  // -------------------
+  {
+    id: "nueces",
+    name: "Nueces peladas Pecan",
+    description: "sin cáscara, listas para consumir",
+    price: 13500,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nueces.jpg",
+    category: "frutos_secos"
+  },
+  {
+    id: "almendras",
+    name: "Almendras naturales Felicia",
+    description: "crudas, sin sal",
+    price: 12375,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/almendras.jpg",
+    category: "frutos_secos"
+  },
+  {
+    id: "pasas",
+    name: "Pasas de uva Flame",
+    description: "dulces, ideales para snacks o cocina",
+    price: 3000,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pasas%20de%20uva.jpg",
+    category: "frutos_secos"
+  },
+  {
+    id: "caju",
+    name: "Castañas de cajú Vietnam",
+    description: "suaves y crocantes",
+    price: 9975,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/castan%CC%83as%20de%20caju.jpg",
+    category: "frutos_secos"
+  },
+  {
+    id: "mix",
+    name: "Mix frutos secos Econo Tropi",
+    description: "mezcla de nuez, almendra, pasas y maní",
+    price: 5775,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mix%20frutos%20secos.jpg",
+    category: "frutos_secos"
+  },
+  {
+    id: "mani_tostado",
+    name: "Maní tostado",
+    description: "tostado sin sal",
+    price: 1800,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20tostado%20comun.jpg",
+    category: "frutos_secos"
+  },
+  {
+    id: "mani_salado",
+    name: "Maní salado",
+    description: "tostado con sal",
+    price: 1900,
+    type: "weight_500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20salado.jpg",
+    category: "frutos_secos"
+  }
+
 ]
 
 export default function ZonaNorteCart() {
