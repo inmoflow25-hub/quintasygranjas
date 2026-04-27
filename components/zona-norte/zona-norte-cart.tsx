@@ -268,7 +268,8 @@ const PRODUCTS: Product[] = [
     // -------------------
   // CONGELADOS
   // -------------------
-  {
+  },
+{
     id: "medallones",
     name: "Medallones de pollo",
     description: "prácticos, ideales para una comida rápida",
