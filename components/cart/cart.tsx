@@ -310,45 +310,45 @@ const PRODUCTS: Product[] = [
   // -------------------
   {
     id: "nueces",
-    name: "Nueces peladas",
+    name: "Nueces peladas Pecan",
     description: "sin cáscara, listas para consumir",
-    price: 5200,
+    price: 13500,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nueces.jpg",
     category: "frutos_secos"
   },
   {
     id: "almendras",
-    name: "Almendras naturales",
+    name: "Almendras naturales Felicia",
     description: "crudas, sin sal",
-    price: 2900,
+    price: 12375,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/almendras.jpg",
     category: "frutos_secos"
   },
   {
     id: "pasas",
-    name: "Pasas de uva",
+    name: "Pasas de uva Flame",
     description: "dulces, ideales para snacks o cocina",
-    price: 1700,
+    price: 3000,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pasas%20de%20uva.jpg",
     category: "frutos_secos"
   },
   {
     id: "caju",
-    name: "Castañas de cajú",
+    name: "Castañas de cajú Vietnam",
     description: "suaves y crocantes",
-    price: 4800,
+    price: 9975,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/castan%CC%83as%20de%20caju.jpg",
     category: "frutos_secos"
   },
   {
     id: "mix",
-    name: "Mix frutos secos",
+    name: "Mix frutos secos Econo Tropi",
     description: "mezcla de nuez, almendra, pasas y maní",
-    price: 3200,
+    price: 5775,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mix%20frutos%20secos.jpg",
     category: "frutos_secos"
@@ -366,7 +366,7 @@ const PRODUCTS: Product[] = [
     id: "mani_salado",
     name: "Maní salado",
     description: "tostado con sal",
-    price: 1800,
+    price: 1900,
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20salado.jpg",
     category: "frutos_secos"
