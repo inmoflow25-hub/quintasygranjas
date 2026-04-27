@@ -264,11 +264,11 @@ const PRODUCTS: Product[] = [
     type: "weight_1kg",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cuarto%20trasero.jpg",
     category: "pollo"
-  }
+  },
     // -------------------
   // CONGELADOS
   // -------------------
-  },
+  
 {
     id: "medallones",
     name: "Medallones de pollo",
