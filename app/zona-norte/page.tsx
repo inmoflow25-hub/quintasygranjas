@@ -21,7 +21,7 @@ export default function ZonaNortePage() {
      <ZonaNorteHero onWhatsAppClick={onWhatsAppClick} />
 
       <div id="cart" className="scroll-mt-32">
-        <ZonaNorteCart />
+        <Cart />
       </div>
 
       <DeliveryZones />
