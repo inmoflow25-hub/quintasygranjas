@@ -6,7 +6,7 @@ import { ZonaNorteHero } from "@/components/landing/zona-norte-hero"
 import { DeliveryZones } from "@/components/landing/delivery-zones"
 import { FinalCTA } from "@/components/landing/final-cta"
 import { Footer } from "@/components/landing/footer"
-import Cart from "@/components/cart/cart"
+import ZonaNorteCart from "@/components/zona-norte/zona-norte-cart"
 
 export default function ZonaNortePage() {
   const router = useRouter()
@@ -21,7 +21,7 @@ export default function ZonaNortePage() {
      <ZonaNorteHero onWhatsAppClick={onWhatsAppClick} />
 
       <div id="cart" className="scroll-mt-32">
-        <Cart />
+      <ZonaNorteCart />
       </div>
 
       <DeliveryZones />
