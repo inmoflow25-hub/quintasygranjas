@@ -6,7 +6,7 @@ import { ZonaNorteHero } from "@/components/landing/zona-norte-hero"
 import { DeliveryZones } from "@/components/landing/delivery-zones"
 import { FinalCTA } from "@/components/landing/final-cta"
 import { Footer } from "@/components/landing/footer"
-import ZonaNorteCart from "@/components/zona-norte/zona-norte-cart"
+import Cart from "@/components/cart/cart"
 
 export default function ZonaNortePage() {
   const router = useRouter()
