@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       .from("orders")
       .select("id, source, neighborhood_id, created_at")
       .eq("customer_email", email)
-      .eq("status", "confirmed")
+      .in("status", ["confirmed", "pending_payment", "paid"])
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle()
