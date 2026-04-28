@@ -14,7 +14,7 @@ type CheckoutItem = {
 const ZONA_NORTE_CONTEXT_KEY = "qyg_zona_norte_context"
 const ZONA_NORTE_CART_KEY = "qyg_zona_norte_cart"
 
-const BARRIOS: Barrio[] = [
+const BARRIOS = [
   { slug: "belgrano", name: "Belgrano", delivery_day: "Lunes y Viernes" },
   { slug: "nunez", name: "Núñez", delivery_day: "Lunes y Viernes" },
   { slug: "saavedra", name: "Saavedra", delivery_day: "Lunes y Viernes" },
