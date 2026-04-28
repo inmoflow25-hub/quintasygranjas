@@ -24,13 +24,13 @@ const ZONA_NORTE_CONTEXT_KEY = "qyg_zona_norte_context"
 const ZONA_NORTE_CART_KEY = "qyg_zona_norte_cart"
 
 const BARRIOS: Barrio[] = [
-  { slug: "belgrano", name: "Belgrano", delivery_day: "Lunes" },
-  { slug: "nunez", name: "Núñez", delivery_day: "Lunes" },
-  { slug: "saavedra", name: "Saavedra", delivery_day: "Lunes" },
-  { slug: "partido-vicente-lopez", name: "Partido de Vicente López", delivery_day: "Lunes" },
-  { slug: "partido-san-isidro", name: "Partido de San Isidro", delivery_day: "Martes" },
-  { slug: "partido-san-fernando", name: "Partido de San Fernando", delivery_day: "Martes" },
-  { slug: "partido-tigre", name: "Partido de Tigre", delivery_day: "Martes" }
+  { slug: "belgrano", name: "Belgrano", delivery_day: "Lunes y Viernes" },
+  { slug: "nunez", name: "Núñez", delivery_day: "Lunes y Viernes" },
+  { slug: "saavedra", name: "Saavedra", delivery_day: "Lunes y Viernes" },
+  { slug: "partido-vicente-lopez", name: "Partido de Vicente López", delivery_day: "Lunes y Viernes" },
+  { slug: "partido-san-isidro", name: "Partido de San Isidro", delivery_day: "Martes y Sábado" },
+  { slug: "partido-san-fernando", name: "Partido de San Fernando", delivery_day: "Martes y Sábado" },
+  { slug: "partido-tigre", name: "Partido de Tigre", delivery_day: "Martes y Sábado" }
 ]
 
 const PRODUCTS: Product[] = [
