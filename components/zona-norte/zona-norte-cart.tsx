@@ -536,6 +536,22 @@ async function repeatLastOrder() {
       return
     }
 
+    const lastNeighborhood = data.last_neighborhood
+
+if (
+  lastNeighborhood?.slug &&
+  neighborhoodSlug &&
+  lastNeighborhood.slug !== neighborhoodSlug
+) {
+  const changeToLastNeighborhood = window.confirm(
+    `Tu último pedido fue en ${lastNeighborhood.name}.\nAhora tenés seleccionado ${neighborhoodName}.\n\n¿Querés cambiar a ${lastNeighborhood.name}?`
+  )
+
+  if (changeToLastNeighborhood) {
+    handleNeighborhoodChange(lastNeighborhood.slug)
+  }
+}
+    
     const repeatedItems = data.items.map((item: any) => ({
       id: item.product_name,
       name: item.product_name,
