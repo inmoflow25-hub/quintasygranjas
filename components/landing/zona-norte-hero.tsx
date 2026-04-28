@@ -49,7 +49,7 @@ export function ZonaNorteHero({ onWhatsAppClick }: ZonaNorteHeroProps) {
         <div className="max-w-2xl">
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-            Comprá con tu barrio y pagá menos en tu próxima compra
+            Comprá desde tu barrio y conseguí 10% OFF en tu próxima compra
           </h1>
 
           <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
@@ -57,7 +57,8 @@ export function ZonaNorteHero({ onWhatsAppClick }: ZonaNorteHeroProps) {
           </p>
 
           <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
-            Si tu barrio llega al 100%, todos los compradores reciben 10% OFF para la próxima compra.
+            Elegí tu barrio, hacé tu pedido y sumá puntos al objetivo semanal.
+            Si entre todos llegan al 100%, todos los que compraron reciben 10% OFF en la próxima compra.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
