@@ -7,9 +7,14 @@ import { DeliveryZones } from "@/components/landing/delivery-zones"
 import { FinalCTA } from "@/components/landing/final-cta"
 import { Footer } from "@/components/landing/footer"
 import ZonaNorteCart from "@/components/zona-norte/zona-norte-cart"
+import { useEffect } from "react"
 
 export default function ZonaNortePage() {
-  const router = useRouter()
+  useEffect(() => {
+    if (typeof window !== "undefined" && (window as any).fbq) {
+      ;(window as any).fbq("trackCustom", "ZonaNorteView")
+    }
+  }, [])
 
   function onWhatsAppClick() {
     window.open("https://wa.me/5491168303596", "_blank")
