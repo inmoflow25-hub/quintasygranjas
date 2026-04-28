@@ -24,7 +24,17 @@ export async function POST(req: Request) {
 
     const { data: order, error: orderError } = await supabase
       .from("orders")
-      .select("id, source, neighborhood_id, created_at")
+      .select(`
+  id,
+  source,
+  neighborhood_id,
+  created_at,
+  neighborhoods (
+    slug,
+    name,
+    delivery_day
+  )
+`)
       .eq("customer_email", email)
       .in("status", ["confirmed", "pending_payment", "paid"])
       .order("created_at", { ascending: false })
@@ -59,13 +69,14 @@ export async function POST(req: Request) {
       )
     }
 
-    return NextResponse.json({
-      ok: true,
-      order_id: order.id,
-      source: order.source,
-      neighborhood_id: order.neighborhood_id,
-      items: orderItems || []
-    })
+   return NextResponse.json({
+  ok: true,
+  order_id: order.id,
+  source: order.source,
+  neighborhood_id: order.neighborhood_id,
+  last_neighborhood: order.neighborhoods || null,
+  items: orderItems || []
+})
   } catch (error) {
     console.error("last order endpoint error", error)
     return NextResponse.json(
