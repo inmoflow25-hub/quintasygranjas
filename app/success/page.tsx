@@ -1,9 +1,11 @@
 "use client"
 
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import Link from "next/link"
 
 export default function SuccessPage() {
+  const purchaseTrackedRef = useRef(false)
+
   const orderId = useMemo(() => {
     if (typeof window === "undefined") return null
     const params = new URLSearchParams(window.location.search)
@@ -18,7 +20,26 @@ export default function SuccessPage() {
 
   useEffect(() => {
     localStorage.removeItem("qyg_checkout_cart")
+    localStorage.removeItem("qyg_zona_norte_cart")
   }, [])
+
+  useEffect(() => {
+    if (purchaseTrackedRef.current) return
+    if (payment === "failure" || payment === "pending") return
+    if (typeof window === "undefined") return
+
+    const fbq = (window as any).fbq
+    if (!fbq) return
+
+    purchaseTrackedRef.current = true
+
+    fbq("track", "Purchase", {
+      value: 0,
+      currency: "ARS",
+      content_ids: orderId ? [orderId] : [],
+      content_type: "order"
+    })
+  }, [orderId, payment])
 
   const title =
     payment === "failure"
