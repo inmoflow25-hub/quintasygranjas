@@ -378,6 +378,8 @@ export default function Cart() {
   const [paymentMethod, setPaymentMethod] = useState<"mp" | "cash">("mp")
   const [loading, setLoading] = useState(false)
   const [expandedBoxId, setExpandedBoxId] = useState<string | null>(null)
+  const [repeatEmail, setRepeatEmail] = useState("")
+  const [repeatLoading, setRepeatLoading] = useState(false)
 
   function addItem(product: Product) {
     setCart((prev) => {
@@ -455,7 +457,52 @@ export default function Cart() {
   function toggleBoxDetails(productId: string) {
     setExpandedBoxId((prev) => (prev === productId ? null : productId))
   }
+async function repeatLastOrder() {
+  const email = repeatEmail.trim().toLowerCase()
 
+  if (!email) {
+    alert("Ingresá el email con el que hiciste tu compra anterior")
+    return
+  }
+
+  setRepeatLoading(true)
+
+  try {
+    const res = await fetch("/api/orders/last", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email })
+    })
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      alert(data?.error || "No pudimos encontrar tu último pedido")
+      setRepeatLoading(false)
+      return
+    }
+
+    const repeatedItems = data.items.map((item: any) => ({
+      id: item.product_name,
+      name: item.product_name,
+      product_name: item.product_name,
+      quantity: Number(item.quantity || 1),
+      price: Number(item.price || 0),
+      type: "unit",
+      category: "repetido",
+      image: ""
+    }))
+
+    setCart(repeatedItems)
+  } catch (error) {
+    console.error(error)
+    alert("Error buscando tu último pedido")
+  } finally {
+    setRepeatLoading(false)
+  }
+}
   async function handleCheckout() {
     if (cart.length === 0) {
       alert("El carrito está vacío")
@@ -617,10 +664,32 @@ export default function Cart() {
 
         {/* 🔥 CARRITO VERDE */}
         <div className="md:col-span-1">
-          <div className="sticky top-24 rounded-xl p-5 bg-green-600 text-white shadow-lg">
-            <h3 className="text-xl font-bold mb-4">
-              Mi pedido
-            </h3>
+         <div className="sticky top-24 rounded-xl p-5 bg-green-600 text-white shadow-lg">
+  <div className="mb-4 rounded-xl bg-white/15 p-3">
+    <p className="mb-2 text-sm font-semibold">
+      ¿Ya compraste antes?
+    </p>
+
+    <input
+      className="mb-2 w-full rounded-lg px-3 py-2 text-sm text-black"
+      placeholder="Tu email"
+      value={repeatEmail}
+      onChange={(e) => setRepeatEmail(e.target.value)}
+    />
+
+    <button
+      type="button"
+      onClick={repeatLastOrder}
+      disabled={repeatLoading}
+      className="w-full rounded-lg bg-black px-3 py-2 text-sm font-semibold text-white"
+    >
+      {repeatLoading ? "Buscando..." : "Repetir último pedido"}
+    </button>
+  </div>
+
+  <h3 className="text-xl font-bold mb-4">
+    Mi pedido
+  </h3>
 
             {cart.length === 0 && (
               <p className="text-sm text-green-100">
