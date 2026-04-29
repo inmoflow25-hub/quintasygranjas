@@ -10,12 +10,24 @@ import ZonaNorteCart from "@/components/zona-norte/zona-norte-cart"
 import { useEffect } from "react"
 
 export default function ZonaNortePage() {
-  useEffect(() => {
-    if (typeof window !== "undefined" && (window as any).fbq) {
-      ;(window as any).fbq("trackCustom", "ZonaNorteView")
-    }
-  }, [])
+useEffect(() => {
+  const fireZonaNorteTracking = () => {
+    const fbq = (window as any).fbq
 
+    if (!fbq) {
+      setTimeout(fireZonaNorteTracking, 500)
+      return
+    }
+
+    fbq("track", "ViewContent", {
+      content_name: "Zona Norte",
+      content_category: "zona_norte",
+      page_path: "/zona-norte"
+    })
+  }
+
+  fireZonaNorteTracking()
+}, [])
   function onWhatsAppClick() {
     window.open("https://wa.me/5491168303596", "_blank")
   }
