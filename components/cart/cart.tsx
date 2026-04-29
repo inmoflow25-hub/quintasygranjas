@@ -305,7 +305,7 @@ const PRODUCTS: Product[] = [
     category: "congelados"
   },
 
-  // -------------------
+  {/* // -------------------
   // FRUTOS SECOS
   // -------------------
   {
@@ -370,7 +370,7 @@ const PRODUCTS: Product[] = [
     type: "weight_500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20salado.jpg",
     category: "frutos_secos"
-  }
+  }*/}
 ]
 
 export default function Cart() {
