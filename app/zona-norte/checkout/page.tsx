@@ -101,11 +101,15 @@ function trackInitiateCheckout() {
   const fbq = (window as any).fbq
   if (!fbq) return
 
+  localStorage.setItem("qyg_last_checkout_source", "zona_norte")
+
   fbq("track", "InitiateCheckout", {
     value: total,
     currency: "ARS",
     num_items: items.reduce((acc, item) => acc + Number(item.quantity || 1), 0),
-    content_type: "product"
+    content_type: "product",
+    content_category: "zona_norte",
+    page_path: "/zona-norte/checkout"
   })
 }
 
