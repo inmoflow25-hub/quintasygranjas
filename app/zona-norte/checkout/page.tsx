@@ -97,6 +97,19 @@ function ZonaNorteCheckoutContent() {
     )
   }
 
+function trackInitiateCheckout() {
+  const fbq = (window as any).fbq
+  if (!fbq) return
+
+  fbq("track", "InitiateCheckout", {
+    value: total,
+    currency: "ARS",
+    num_items: items.reduce((acc, item) => acc + Number(item.quantity || 1), 0),
+    content_type: "product"
+  })
+}
+
+  
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
@@ -115,6 +128,8 @@ function ZonaNorteCheckoutContent() {
       return
     }
 
+    trackInitiateCheckout()
+    
     setLoading(true)
 
     try {
