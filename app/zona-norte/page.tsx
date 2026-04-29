@@ -42,7 +42,7 @@ useEffect(() => {
       </div>
 
       <DeliveryZones />
-      <FinalCTA onWhatsAppClick={onWhatsAppClick} />
+      {/*<FinalCTA onWhatsAppClick={onWhatsAppClick} />*/}
       <Footer onWhatsAppClick={onWhatsAppClick} />
     </main>
   )
