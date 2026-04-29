@@ -39,12 +39,14 @@ export default function SuccessPage() {
     if (purchaseTrackedRef.current) return
     purchaseTrackedRef.current = true
 
-    fbq("track", "Purchase", {
-      value: 1,
-      currency: "ARS",
-      content_ids: orderId ? [orderId] : [],
-      content_type: "order"
-    })
+   fbq("track", "Purchase", {
+  value: 1,
+  currency: "ARS",
+  content_ids: orderId ? [orderId] : [],
+  content_type: "order"
+}, {
+  eventID: orderId || Date.now().toString()
+})
 
     console.log("Purchase disparado", orderId)
   }
