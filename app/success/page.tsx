@@ -23,23 +23,34 @@ export default function SuccessPage() {
     localStorage.removeItem("qyg_zona_norte_cart")
   }, [])
 
-  useEffect(() => {
-    if (purchaseTrackedRef.current) return
-    if (payment === "failure" || payment === "pending") return
-    if (typeof window === "undefined") return
+ useEffect(() => {
+  if (purchaseTrackedRef.current) return
+  if (payment === "failure" || payment === "pending") return
+  if (typeof window === "undefined") return
 
+  const firePurchase = () => {
     const fbq = (window as any).fbq
-    if (!fbq) return
 
+    if (!fbq) {
+      setTimeout(firePurchase, 500)
+      return
+    }
+
+    if (purchaseTrackedRef.current) return
     purchaseTrackedRef.current = true
 
     fbq("track", "Purchase", {
-      value: 0,
+      value: 1,
       currency: "ARS",
       content_ids: orderId ? [orderId] : [],
       content_type: "order"
     })
-  }, [orderId, payment])
+
+    console.log("Purchase disparado", orderId)
+  }
+
+  firePurchase()
+}, [orderId, payment])
 
   const title =
     payment === "failure"
