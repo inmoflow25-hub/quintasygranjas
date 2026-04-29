@@ -43,7 +43,7 @@ export default function Home() {
       {/*<BoxesSection onSelectBox={onSelectBox} />*/}
       {/*<SocialProof />*/}
       <DeliveryZones />
-      <FinalCTA onWhatsAppClick={onWhatsAppClick} />
+      {/*<FinalCTA onWhatsAppClick={onWhatsAppClick} />*/}
       <Footer onWhatsAppClick={onWhatsAppClick} />
     </main>
   )
