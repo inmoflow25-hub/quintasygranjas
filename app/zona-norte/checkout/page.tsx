@@ -19,6 +19,8 @@ const BARRIOS = [
   { slug: "nunez", name: "Núñez", delivery_day: "Lunes y Viernes" },
   { slug: "saavedra", name: "Saavedra", delivery_day: "Lunes y Viernes" },
   { slug: "partido-vicente-lopez", name: "Partido de Vicente López", delivery_day: "Lunes y Viernes" },
+  { slug: "villa-urquiza", name: "Villa Urquiza", delivery_day: "Lunes y Viernes" },
+  { slug: "partido-san-martin", name: "Partido de San Martín", delivery_day: "Lunes y Viernes" },
   { slug: "partido-san-isidro", name: "Partido de San Isidro", delivery_day: "Martes y Sábado" },
   { slug: "partido-san-fernando", name: "Partido de San Fernando", delivery_day: "Martes y Sábado" },
   { slug: "partido-tigre", name: "Partido de Tigre", delivery_day: "Martes y Sábado" }
