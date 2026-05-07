@@ -135,22 +135,26 @@ export default async function SuperAdminCustomersPage() {
     customerMap.set(key, current)
   }
 
-  const customers = Array.from(customerMap.values())
+   const customers = Array.from(customerMap.values())
     .map((customer) => {
+      const sourceEntries =
+        Array.from(customer.sources.entries()) as [string, number][]
+
       const mainSource =
-const sourceEntries = Array.from(customer.sources.entries()) as [string, number][]
+        sourceEntries.sort((a, b) => b[1] - a[1])[0]?.[0] || "-"
 
-const mainSource =
-  sourceEntries.sort((a, b) => b[1] - a[1])[0]?.[0] || "-"
+      const paymentEntries =
+        Array.from(customer.paymentMethods.entries()) as [string, number][]
 
-const paymentEntries = Array.from(customer.paymentMethods.entries()) as [string, number][]
-
-const mainPaymentMethod =
-  paymentEntries.sort((a, b) => b[1] - a[1])[0]?.[0] || "-"
+      const mainPaymentMethod =
+        paymentEntries.sort((a, b) => b[1] - a[1])[0]?.[0] || "-"
 
       return {
         ...customer,
-        averageTicket: customer.orders > 0 ? Math.round(customer.total / customer.orders) : 0,
+        averageTicket:
+          customer.orders > 0
+            ? Math.round(customer.total / customer.orders)
+            : 0,
         mainSource,
         mainPaymentMethod,
         isRepeat: customer.orders >= 2
