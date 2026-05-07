@@ -15,6 +15,11 @@ type CustomerPoint = {
   geocoding_status: string | null
 }
 
+const AnyMapContainer = MapContainer as any
+const AnyTileLayer = TileLayer as any
+const AnyMarker = Marker as any
+const AnyPopup = Popup as any
+
 const customerIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
@@ -37,24 +42,24 @@ export default function CustomerMap({
 
   return (
     <div className="h-[620px] overflow-hidden rounded-3xl border border-[#e3e1dc] bg-white shadow-sm">
-      <MapContainer
+      <AnyMapContainer
         center={center}
         zoom={11}
-        scrollWheelZoom
+        scrollWheelZoom={true}
         className="h-full w-full"
       >
-        <TileLayer
+        <AnyTileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
         {points.map((point) => (
-          <Marker
+          <AnyMarker
             key={point.id}
             position={[point.lat, point.lng]}
             icon={customerIcon}
           >
-            <Popup>
+            <AnyPopup>
               <div className="space-y-1 text-sm">
                 <p className="font-bold">
                   {point.customer_name || "Cliente"}
@@ -69,10 +74,10 @@ export default function CustomerMap({
                   {point.city || "-"}
                 </p>
               </div>
-            </Popup>
-          </Marker>
+            </AnyPopup>
+          </AnyMarker>
         ))}
-      </MapContainer>
+      </AnyMapContainer>
     </div>
   )
 }
