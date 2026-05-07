@@ -138,10 +138,15 @@ export default async function SuperAdminCustomersPage() {
   const customers = Array.from(customerMap.values())
     .map((customer) => {
       const mainSource =
-        Array.from(customer.sources.entries()).sort((a: any, b: any) => b[1] - a[1])[0]?.[0] || "-"
+const sourceEntries = Array.from(customer.sources.entries()) as [string, number][]
 
-      const mainPaymentMethod =
-        Array.from(customer.paymentMethods.entries()).sort((a: any, b: any) => b[1] - a[1])[0]?.[0] || "-"
+const mainSource =
+  sourceEntries.sort((a, b) => b[1] - a[1])[0]?.[0] || "-"
+
+const paymentEntries = Array.from(customer.paymentMethods.entries()) as [string, number][]
+
+const mainPaymentMethod =
+  paymentEntries.sort((a, b) => b[1] - a[1])[0]?.[0] || "-"
 
       return {
         ...customer,
