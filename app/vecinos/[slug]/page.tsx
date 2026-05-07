@@ -3,6 +3,8 @@ export const revalidate = 0
 
 import { notFound } from "next/navigation"
 import { createClient } from "@supabase/supabase-js"
+import { Header } from "@/components/landing/header"
+import { Footer } from "@/components/landing/footer"
 import VecinosCart from "@/components/vecinos/vecinos-cart"
 
 const supabase = createClient(
@@ -37,36 +39,39 @@ export default async function VecinosPage({
     notFound()
   }
 
-  const { data: products, error: productsError } = await supabase
-    .from("products")
-    .select(`
-      id,
-      name,
-      price,
-      type,
-      image,
-      category,
-      description
-    `)
-    .order("category", { ascending: true })
-    .order("name", { ascending: true })
+  return (
+    <main>
+      <Header />
 
-  if (productsError) {
-    return (
-      <main className="min-h-screen bg-green-50 p-8">
-        <div className="mx-auto max-w-3xl rounded-3xl bg-white p-8 shadow">
-          <p className="text-red-600">
-            Error cargando productos: {productsError.message}
+      <section className="bg-green-50 px-6 py-10">
+        <div className="mx-auto max-w-7xl rounded-3xl bg-white p-6 shadow">
+          <p className="text-sm font-bold uppercase tracking-wide text-green-700">
+            Compra comunitaria
+          </p>
+
+          <h1 className="mt-2 text-4xl font-serif font-bold">
+            {location.name}
+          </h1>
+
+          <p className="mt-2 text-gray-600">
+            Entrega: <strong>{location.delivery_day || "A definir"}</strong>
+            {location.next_delivery_date ? ` · ${location.next_delivery_date}` : ""}
+          </p>
+
+          <p className="mt-1 text-gray-600">
+            {location.address || "Dirección a definir"}
+            {location.city ? ` · ${location.city}` : ""}
+          </p>
+
+          <p className="mt-3 text-sm text-gray-500">
+            Cada vecino compra separado. En el checkout cargás piso y departamento.
           </p>
         </div>
-      </main>
-    )
-  }
+      </section>
 
-  return (
-    <VecinosCart
-      location={location}
-      products={products || []}
-    />
+      <VecinosCart location={location} />
+
+      <Footer onWhatsAppClick={() => {}} />
+    </main>
   )
 }
