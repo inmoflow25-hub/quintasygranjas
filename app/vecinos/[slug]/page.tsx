@@ -3,8 +3,6 @@ export const revalidate = 0
 
 import { notFound } from "next/navigation"
 import { createClient } from "@supabase/supabase-js"
-import { Header } from "@/components/landing/header"
-import { Footer } from "@/components/landing/footer"
 import VecinosCart from "@/components/vecinos/vecinos-cart"
 
 const supabase = createClient(
@@ -40,10 +38,8 @@ export default async function VecinosPage({
   }
 
   return (
-    <main>
-      <Header />
-
-      <section className="bg-green-50 px-6 py-10">
+    <main className="min-h-screen bg-green-50">
+      <section className="px-6 py-6">
         <div className="mx-auto max-w-7xl rounded-3xl bg-white p-6 shadow">
           <p className="text-sm font-bold uppercase tracking-wide text-green-700">
             Compra comunitaria
@@ -70,8 +66,6 @@ export default async function VecinosPage({
       </section>
 
       <VecinosCart location={location} />
-
-      <Footer onWhatsAppClick={() => {}} />
     </main>
   )
 }
