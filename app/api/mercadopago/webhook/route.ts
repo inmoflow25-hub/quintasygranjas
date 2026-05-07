@@ -38,17 +38,22 @@ async function processWebhook(request: NextRequest) {
 
     const mpStatus = String(paymentData?.status || "").toLowerCase()
 
-    let nextStatus = "pending_payment"
-    let nextPaymentStatus = "pending"
+    let nextStatus = "confirmed"
+    let nextPaymentStatus = mpStatus || "pending"
 
     if (mpStatus === "approved") {
       nextStatus = "confirmed"
       nextPaymentStatus = "approved"
-    } else if (mpStatus === "rejected" || mpStatus === "cancelled") {
+    } else if (
+      mpStatus === "rejected" ||
+      mpStatus === "cancelled" ||
+      mpStatus === "refunded" ||
+      mpStatus === "charged_back"
+    ) {
       nextStatus = "cancelled"
       nextPaymentStatus = mpStatus
     } else {
-      nextStatus = "pending_payment"
+      nextStatus = "confirmed"
       nextPaymentStatus = mpStatus || "pending"
     }
 
