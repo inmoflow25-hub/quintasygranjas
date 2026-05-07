@@ -202,11 +202,10 @@ export async function POST(req: Request) {
 
     const discountedItems = applyDiscountToItems(normalizedItems, discountPercent)
 
-    const initialStatus =
-      payment_method === "cash" ? "confirmed" : "pending_payment"
+   const initialStatus = "confirmed"
 
-    const initialPaymentStatus =
-      payment_method === "cash" ? "pending_cash" : "pending"
+const initialPaymentStatus =
+  payment_method === "cash" ? "pending_cash" : "pending"
 
     const { data: order, error: orderError } = await supabase
       .from("orders")
