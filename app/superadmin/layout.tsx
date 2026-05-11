@@ -4,6 +4,7 @@ const navItems = [
   { href: "/superadmin", label: "Resumen" },
   { href: "/superadmin/orders", label: "Pedidos" },
   { href: "/superadmin/customers", label: "Clientes" },
+  { href: "/superadmin/torres", label: "Torres" },
   { href: "/superadmin/expenses", label: "Gastos" },
   { href: "/superadmin/suppliers", label: "Proveedores" },
   { href: "/superadmin/map", label: "Mapa" }
