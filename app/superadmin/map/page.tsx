@@ -31,10 +31,31 @@ export default async function SuperAdminMapPage() {
     `)
     .order("customer_name", { ascending: true })
 
-  if (error) {
+  const { data: commercialLocations, error: commercialError } = await supabase
+    .from("commercial_locations")
+    .select(`
+      id,
+      slug,
+      name,
+      type,
+      address,
+      city,
+      lat,
+      lng,
+      polygon,
+      parent_location_id,
+      is_active
+    `)
+    .eq("is_active", true)
+    .in("type", ["cluster", "tower"])
+    .order("type", { ascending: true })
+    .order("slug", { ascending: true })
+
+  if (error || commercialError) {
     return (
       <div className="rounded-3xl bg-white p-8 shadow-sm">
-        <p className="text-red-600">Error cargando mapa: {error.message}</p>
+        {error && <p className="text-red-600">Error cargando clientes: {error.message}</p>}
+        {commercialError && <p className="text-red-600">Error cargando torres: {commercialError.message}</p>}
       </div>
     )
   }
@@ -53,98 +74,60 @@ export default async function SuperAdminMapPage() {
     (location: any) => location.lat === null || location.lng === null
   )
 
-  const okCount = points.length
-  const pendingCount = pending.length
+  const commercial = commercialLocations || []
+  const towers = commercial.filter((location: any) => location.type === "tower")
+  const clusters = commercial.filter((location: any) => location.type === "cluster")
 
   return (
     <div className="space-y-6">
       <section className="flex flex-col gap-4 rounded-3xl border border-[#e3e1dc] bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="text-3xl font-serif font-bold">
-            Mapa de clientes
+            Mapa comercial
           </h2>
 
           <p className="mt-2 text-sm text-gray-600">
-            Primero mostramos clientes. Después sumamos proveedores, zonas y cuadrículas.
+            Clientes, torres y manzanas comerciales.
           </p>
         </div>
 
         <GeocodeCustomersButton />
       </section>
 
-      <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <section className="grid grid-cols-2 gap-3 md:grid-cols-5">
         <Metric title="Clientes cargados" value={safeLocations.length} />
-        <Metric title="Con coordenadas" value={okCount} />
-        <Metric title="Pendientes" value={pendingCount} />
-        <Metric
-          title="% geocodificado"
-          value={`${safeLocations.length ? Math.round((okCount / safeLocations.length) * 100) : 0}%`}
-        />
+        <Metric title="Clientes con coordenadas" value={points.length} />
+        <Metric title="Clientes pendientes" value={pending.length} />
+        <Metric title="Manzanas" value={clusters.length} />
+        <Metric title="Torres" value={towers.length} />
       </section>
 
-      <CustomerMap points={points} />
+      <CustomerMap
+        points={points}
+        commercialLocations={commercial as any}
+      />
 
       <section className="rounded-3xl border border-[#e3e1dc] bg-white p-5 shadow-sm">
         <h3 className="mb-4 text-xl font-serif font-bold">
-          Clientes pendientes de coordenadas
+          Torres comerciales
         </h3>
 
-        {pending.length === 0 ? (
-          <p className="text-sm text-gray-500">
-            Todos los clientes tienen coordenadas.
-          </p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-left text-sm">
-              <thead className="bg-[#efefed] text-xs uppercase text-gray-600">
-                <tr>
-                  <th className="px-4 py-3">Cliente</th>
-                  <th className="px-4 py-3">Contacto</th>
-                  <th className="px-4 py-3">Dirección</th>
-                  <th className="px-4 py-3">Estado</th>
-                  <th className="px-4 py-3">Notas</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {pending.map((location: any) => (
-                  <tr key={location.id} className="border-b border-[#eee] align-top">
-                    <td className="px-4 py-4">
-                      <div className="font-medium">
-                        {location.customer_name || "-"}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {location.customer_key}
-                      </div>
-                    </td>
-
-                    <td className="px-4 py-4">
-                      <div>{location.customer_phone || "-"}</div>
-                      <div className="text-xs text-gray-500">
-                        {location.customer_email || "-"}
-                      </div>
-                    </td>
-
-                    <td className="px-4 py-4">
-                      <div>{location.address || "-"}</div>
-                      <div className="text-xs text-gray-500">
-                        {location.city || "-"}
-                      </div>
-                    </td>
-
-                    <td className="px-4 py-4">
-                      {location.geocoding_status || "-"}
-                    </td>
-
-                    <td className="px-4 py-4 max-w-[320px] text-xs text-gray-500">
-                      {location.notes || "-"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <div className="grid gap-3 md:grid-cols-3">
+          {towers.map((tower: any) => (
+            <a
+              key={tower.id}
+              href={`/vecinos/${tower.slug}`}
+              target="_blank"
+              className="rounded-2xl bg-[#f5f5f3] p-4 hover:bg-[#ece8df]"
+            >
+              <p className="font-bold">{tower.name}</p>
+              <p className="text-sm text-gray-500">/vecinos/{tower.slug}</p>
+              <p className="mt-2 text-sm">
+                {tower.address || "Domicilio pendiente"}
+              </p>
+            </a>
+          ))}
+        </div>
       </section>
     </div>
   )
