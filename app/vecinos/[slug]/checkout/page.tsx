@@ -11,12 +11,17 @@ type CheckoutItem = {
   price: number
 }
 
+function money(value: number) {
+  return `$${Math.round(value || 0).toLocaleString("es-AR")}`
+}
+
 function CheckoutContent() {
   const router = useRouter()
   const params = useParams()
   const slug = String(params?.slug || "")
 
   const [loading, setLoading] = useState(false)
+  const [previewLoading, setPreviewLoading] = useState(false)
   const [items, setItems] = useState<CheckoutItem[]>([])
   const [location, setLocation] = useState<any>(null)
   const [paymentMethod, setPaymentMethod] = useState<"mercadopago" | "cash">("mercadopago")
@@ -28,6 +33,17 @@ function CheckoutContent() {
     apartment_floor: "",
     apartment_unit: "",
     delivery_notes: ""
+  })
+
+  const [propina, setPropina] = useState(0)
+  const [customPropina, setCustomPropina] = useState("")
+
+  const [preview, setPreview] = useState({
+    subtotal: 0,
+    discount_percent: 0,
+    discount_amount: 0,
+    propina: 0,
+    final_price: 0
   })
 
   useEffect(() => {
@@ -53,18 +69,87 @@ function CheckoutContent() {
     if (slug) loadLocation()
   }, [slug, router])
 
-  const total = useMemo(() => {
+  const subtotal = useMemo(() => {
     return items.reduce(
       (acc, item) => acc + Number(item.price || 0) * Number(item.quantity || 1),
       0
     )
   }, [items])
 
+  useEffect(() => {
+    async function loadPreview() {
+      if (!location?.id || !items.length) {
+        setPreview({
+          subtotal,
+          discount_percent: 0,
+          discount_amount: 0,
+          propina,
+          final_price: subtotal + propina
+        })
+        return
+      }
+
+      setPreviewLoading(true)
+
+      try {
+        const res = await fetch("/api/vecinos/checkout/preview", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            commercial_location_id: location.id,
+            customer_email: form.customer_email,
+            items,
+            propina
+          })
+        })
+
+        const data = await res.json()
+
+        if (res.ok) {
+          setPreview({
+            subtotal: Number(data.subtotal || 0),
+            discount_percent: Number(data.discount_percent || 0),
+            discount_amount: Number(data.discount_amount || 0),
+            propina: Number(data.propina || 0),
+            final_price: Number(data.final_price || 0)
+          })
+        }
+      } catch (error) {
+        console.error("preview error", error)
+      } finally {
+        setPreviewLoading(false)
+      }
+    }
+
+    const timeout = setTimeout(loadPreview, 350)
+    return () => clearTimeout(timeout)
+  }, [location?.id, items, form.customer_email, propina, subtotal])
+
   function updateField(field: string, value: string) {
     setForm((prev) => ({
       ...prev,
       [field]: value
     }))
+  }
+
+  function selectPropina(value: number) {
+    setPropina(value)
+    setCustomPropina("")
+  }
+
+  function updateCustomPropina(value: string) {
+    setCustomPropina(value)
+
+    const cleanValue = Number(value || 0)
+
+    if (!Number.isFinite(cleanValue) || cleanValue < 0) {
+      setPropina(0)
+      return
+    }
+
+    setPropina(Math.round(cleanValue))
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -80,8 +165,19 @@ function CheckoutContent() {
       return
     }
 
-    if (total < 20000) {
+    if (subtotal < 20000) {
       alert("El pedido mínimo es de $20.000")
+      return
+    }
+
+    if (
+      !form.customer_name ||
+      !form.customer_email ||
+      !form.customer_phone ||
+      !form.apartment_floor ||
+      !form.apartment_unit
+    ) {
+      alert("Completá nombre, email, teléfono, piso y departamento")
       return
     }
 
@@ -97,6 +193,7 @@ function CheckoutContent() {
           commercial_location_id: location.id,
           items,
           payment_method: paymentMethod,
+          propina,
           ...form
         })
       })
@@ -199,6 +296,41 @@ function CheckoutContent() {
             />
 
             <div className="rounded-xl border p-4">
+              <p className="mb-2 font-semibold">
+                Propina para el equipo
+              </p>
+
+              <p className="mb-3 text-sm text-gray-500">
+                Sumá una propina para quienes preparan y entregan tu pedido.
+              </p>
+
+              <div className="grid grid-cols-4 gap-2">
+                {[0, 1000, 2000, 5000].map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => selectPropina(value)}
+                    className={`rounded-xl border px-3 py-2 text-sm font-semibold ${
+                      propina === value && !customPropina
+                        ? "border-green-700 bg-green-700 text-white"
+                        : "bg-white"
+                    }`}
+                  >
+                    {value === 0 ? "Sin propina" : money(value)}
+                  </button>
+                ))}
+              </div>
+
+              <input
+                className="mt-3 w-full rounded-xl border px-4 py-3"
+                placeholder="Otro monto"
+                inputMode="numeric"
+                value={customPropina}
+                onChange={(e) => updateCustomPropina(e.target.value)}
+              />
+            </div>
+
+            <div className="rounded-xl border p-4">
               <p className="mb-3 font-semibold">Método de pago</p>
 
               <label className="mb-2 flex items-center gap-2">
@@ -238,6 +370,12 @@ function CheckoutContent() {
           <h2 className="mb-6 text-2xl font-bold">Tu pedido</h2>
 
           <div className="space-y-3">
+            {items.length === 0 && (
+              <p className="text-sm text-gray-500">
+                No hay productos cargados.
+              </p>
+            )}
+
             {items.map((item, index) => (
               <div
                 key={`${item.id || item.name}-${index}`}
@@ -249,20 +387,59 @@ function CheckoutContent() {
                 </div>
 
                 <p className="font-semibold">
-                  ${(Number(item.price || 0) * Number(item.quantity || 1)).toLocaleString("es-AR")}
+                  {money(Number(item.price || 0) * Number(item.quantity || 1))}
                 </p>
               </div>
             ))}
           </div>
 
-          <div className="mt-6 border-t pt-4">
-            <p className="text-xl font-bold">
-              Total: ${total.toLocaleString("es-AR")}
-            </p>
+          <div className="mt-6 space-y-3 border-t pt-4">
+            <Row label="Subtotal" value={money(preview.subtotal || subtotal)} />
+
+            {preview.discount_percent > 0 && (
+              <Row
+                label={`Descuento ${preview.discount_percent}%`}
+                value={`- ${money(preview.discount_amount)}`}
+              />
+            )}
+
+            <Row label="Propina" value={money(preview.propina || propina)} />
+
+            <div className="border-t pt-4">
+              <div className="flex items-center justify-between text-xl font-bold">
+                <span>Total final</span>
+                <span>{money(preview.final_price || subtotal + propina)}</span>
+              </div>
+
+              {previewLoading && (
+                <p className="mt-2 text-xs text-gray-500">
+                  Actualizando total...
+                </p>
+              )}
+            </div>
+          </div>
+
+          {preview.discount_percent > 0 && (
+            <div className="mt-5 rounded-2xl bg-green-100 p-4 text-sm text-green-900">
+              Tenés un beneficio activo. Se aplica sobre los productos, no sobre la propina.
+            </div>
+          )}
+
+          <div className="mt-5 rounded-2xl bg-[#f5f5f3] p-4 text-sm text-gray-600">
+            Tu compra suma al progreso comunitario de la manzana. Si se activa el beneficio al cierre, vas a poder usarlo en una próxima compra.
           </div>
         </div>
       </div>
     </main>
+  )
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between text-sm">
+      <span className="text-gray-500">{label}</span>
+      <span className="font-semibold">{value}</span>
+    </div>
   )
 }
 
@@ -273,3 +450,4 @@ export default function VecinosCheckoutPage() {
     </Suspense>
   )
 }
+
