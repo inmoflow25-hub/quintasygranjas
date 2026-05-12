@@ -15,6 +15,20 @@ type CheckoutItem = {
   price: number
 }
 
+function normalizeEmail(email: string) {
+  return String(email || "").trim().toLowerCase()
+}
+
+function normalizeMoney(value: unknown) {
+  const numberValue = Number(value || 0)
+
+  if (!Number.isFinite(numberValue) || numberValue < 0) {
+    return 0
+  }
+
+  return Math.round(numberValue)
+}
+
 function normalizeCartItems(items: CheckoutItem[]) {
   return items.map((item) => ({
     id: String(item.id || item.product_name || item.name || crypto.randomUUID()),
@@ -22,6 +36,67 @@ function normalizeCartItems(items: CheckoutItem[]) {
     quantity: Number(item.quantity || 1),
     unit_price: Number(item.price || 0)
   }))
+}
+
+async function getOrCreateCommercialUser({
+  customer_email,
+  customer_name,
+  customer_phone
+}: {
+  customer_email: string
+  customer_name: string
+  customer_phone: string
+}) {
+  const email = normalizeEmail(customer_email)
+
+  const { data: existingUser } = await supabase
+    .from("users")
+    .select("id, email")
+    .eq("email", email)
+    .maybeSingle()
+
+  if (existingUser?.id) {
+    await supabase
+      .from("profiles")
+      .upsert({
+        id: existingUser.id,
+        name: customer_name,
+        full_name: customer_name,
+        email,
+        phone: customer_phone
+      })
+
+    return existingUser.id as string
+  }
+
+  const newUserId = crypto.randomUUID()
+
+  const { data: createdUser, error: createUserError } = await supabase
+    .from("users")
+    .insert({
+      id: newUserId,
+      email,
+      name: customer_name
+    })
+    .select("id")
+    .single()
+
+  if (createUserError || !createdUser?.id) {
+    console.error("create user error", createUserError)
+    throw new Error("No se pudo crear el usuario comercial")
+  }
+
+  await supabase
+    .from("profiles")
+    .upsert({
+      id: createdUser.id,
+      name: customer_name,
+      full_name: customer_name,
+      email,
+      phone: customer_phone
+    })
+
+  return createdUser.id as string
 }
 
 export async function POST(req: Request) {
@@ -39,6 +114,8 @@ export async function POST(req: Request) {
       apartment_unit,
       delivery_notes
     } = body
+
+    const propina = normalizeMoney(body.propina)
 
     if (
       !commercial_location_id ||
@@ -68,16 +145,28 @@ export async function POST(req: Request) {
       )
     }
 
-    const { data: location } = await supabase
+    const { data: location, error: locationError } = await supabase
       .from("commercial_locations")
-      .select("id, slug, name, address, city, is_active")
+      .select("id, slug, name, type, parent_location_id, address, city, is_active")
       .eq("id", commercial_location_id)
       .eq("is_active", true)
       .single()
 
-    if (!location) {
+    if (locationError || !location) {
       return NextResponse.json(
         { error: "Edificio inválido" },
+        { status: 400 }
+      )
+    }
+
+    const clusterLocationId =
+      location.type === "cluster"
+        ? location.id
+        : location.parent_location_id
+
+    if (!clusterLocationId) {
+      return NextResponse.json(
+        { error: "La torre no tiene manzana/complejo asociado" },
         { status: 400 }
       )
     }
@@ -86,63 +175,98 @@ export async function POST(req: Request) {
       (item) => item.quantity > 0 && item.unit_price >= 0
     )
 
-    const total = normalizedItems.reduce(
+    if (!normalizedItems.length) {
+      return NextResponse.json(
+        { error: "Carrito vacío" },
+        { status: 400 }
+      )
+    }
+
+    const subtotal = normalizedItems.reduce(
       (acc, item) => acc + item.unit_price * item.quantity,
       0
     )
 
-    if (total < 20000) {
+    if (subtotal < 20000) {
       return NextResponse.json(
         { error: "El pedido mínimo es de $20.000" },
         { status: 400 }
       )
     }
 
-    let userId: string | null = null
+    const userId = await getOrCreateCommercialUser({
+      customer_email,
+      customer_name,
+      customer_phone
+    })
 
-    const { data: existingUser } = await supabase
-      .from("users")
-      .select("id, email")
-      .eq("email", customer_email)
-      .maybeSingle()
+    const { data: activeCycleId, error: cycleError } = await supabase
+      .rpc("ensure_active_commercial_cycle", {
+        p_cluster_id: clusterLocationId
+      })
 
-    if (existingUser?.id) {
-      userId = existingUser.id
-    } else {
-      const newUserId = crypto.randomUUID()
-
-      const { data: createdUser, error: createUserError } = await supabase
-        .from("users")
-        .insert({
-          id: newUserId,
-          email: customer_email
-        })
-        .select("id")
-        .single()
-
-      if (createUserError || !createdUser?.id) {
-        console.error("create user error", createUserError)
-        return NextResponse.json(
-          { error: "No se pudo crear el usuario comercial" },
-          { status: 500 }
-        )
-      }
-
-      userId = createdUser.id
+    if (cycleError || !activeCycleId) {
+      console.error("active cycle error", cycleError)
+      return NextResponse.json(
+        { error: "No se pudo asignar el ciclo comercial" },
+        { status: 500 }
+      )
     }
 
-    await supabase
-      .from("profiles")
-      .upsert({
-        id: userId,
-        name: customer_name,
-        phone: customer_phone
+    const { data: loyaltyDiscountRaw, error: loyaltyError } = await supabase
+      .rpc("get_customer_commercial_discount", {
+        p_user_id: userId,
+        p_cluster_location_id: clusterLocationId
       })
+
+    if (loyaltyError) {
+      console.error("loyalty discount error", loyaltyError)
+    }
+
+    const loyaltyDiscountPercent = Math.max(
+      0,
+      Math.min(100, Number(loyaltyDiscountRaw || 0))
+    )
+
+    const { data: availableBenefits, error: benefitError } = await supabase
+      .from("commercial_user_benefits")
+      .select("id, discount_percent, created_at")
+      .eq("user_id", userId)
+      .eq("cluster_location_id", clusterLocationId)
+      .eq("status", "available")
+      .order("created_at", { ascending: true })
+      .limit(1)
+
+    if (benefitError) {
+      console.error("available benefit error", benefitError)
+    }
+
+    const availableBenefit = availableBenefits?.[0] || null
+    const benefitDiscountPercent = availableBenefit
+      ? Math.max(0, Math.min(100, Number(availableBenefit.discount_percent || 0)))
+      : 0
+
+    const appliedDiscountPercent = Math.max(
+      loyaltyDiscountPercent,
+      benefitDiscountPercent
+    )
+
+    const commercialBenefitId =
+      benefitDiscountPercent >= loyaltyDiscountPercent && availableBenefit?.id
+        ? availableBenefit.id
+        : null
+
+    const discountAmount = Math.round(
+      subtotal * (appliedDiscountPercent / 100)
+    )
+
+    const finalPrice = Math.max(0, subtotal - discountAmount + propina)
 
     const fullNotes = [
       `Edificio: ${location.name}`,
       `Piso: ${apartment_floor}`,
       `Depto: ${apartment_unit}`,
+      propina > 0 ? `Propina: $${propina.toLocaleString("es-AR")}` : "",
       delivery_notes ? `Notas: ${delivery_notes}` : ""
     ]
       .filter(Boolean)
@@ -173,14 +297,39 @@ export async function POST(req: Request) {
         status: initialStatus,
         payment_method,
         payment_status: initialPaymentStatus,
-        price: total,
+
+        subtotal_price: subtotal,
+        base_price: subtotal,
+        price: finalPrice,
+        final_price: finalPrice,
+
+        discount_percent: appliedDiscountPercent,
+        discount_amount: discountAmount,
+        loyalty_discount_percent: loyaltyDiscountPercent,
+        loyalty_discount_amount:
+          loyaltyDiscountPercent > 0
+            ? Math.round(subtotal * (loyaltyDiscountPercent / 100))
+            : 0,
+
+        benefit_status:
+          appliedDiscountPercent > 0
+            ? "applied"
+            : "none",
+
+        propina,
+
         customer_name,
-        customer_email,
+        customer_email: normalizeEmail(customer_email),
         customer_phone,
+
         delivery_address: location.address || location.name,
         delivery_city: location.city || "",
         delivery_notes: fullNotes,
+
         commercial_location_id,
+        commercial_cycle_id: activeCycleId,
+        commercial_benefit_id: commercialBenefitId,
+
         apartment_floor,
         apartment_unit
       })
@@ -214,10 +363,31 @@ export async function POST(req: Request) {
       )
     }
 
+    if (commercialBenefitId) {
+      const { error: markBenefitError } = await supabase
+        .from("commercial_user_benefits")
+        .update({
+          status: "used",
+          used_order_id: order.id,
+          used_at: new Date().toISOString()
+        })
+        .eq("id", commercialBenefitId)
+        .eq("status", "available")
+
+      if (markBenefitError) {
+        console.error("mark benefit used error", markBenefitError)
+      }
+    }
+
     if (payment_method === "cash") {
       return NextResponse.json({
         ok: true,
         order_id: order.id,
+        subtotal,
+        discount_percent: appliedDiscountPercent,
+        discount_amount: discountAmount,
+        propina,
+        final_price: finalPrice,
         redirect_to: `/success?order_id=${order.id}`
       })
     }
@@ -228,18 +398,22 @@ export async function POST(req: Request) {
 
     const preference = new Preference(client)
 
+    const mpItems = [
+      {
+        id: order.id,
+        title: "Pedido Quintas y Granjas",
+        quantity: 1,
+        currency_id: "ARS",
+        unit_price: finalPrice
+      }
+    ]
+
     const result = await preference.create({
       body: {
-        items: normalizedItems.map((item) => ({
-          id: item.id,
-          title: item.title,
-          quantity: item.quantity,
-          currency_id: "ARS",
-          unit_price: item.unit_price
-        })),
+        items: mpItems,
         payer: {
           name: customer_name,
-          email: customer_email
+          email: normalizeEmail(customer_email)
         },
         external_reference: order.id,
         notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mercadopago/webhook`,
@@ -262,12 +436,17 @@ export async function POST(req: Request) {
     return NextResponse.json({
       ok: true,
       order_id: order.id,
+      subtotal,
+      discount_percent: appliedDiscountPercent,
+      discount_amount: discountAmount,
+      propina,
+      final_price: finalPrice,
       init_point: result.init_point
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error("vecinos checkout create error", error)
     return NextResponse.json(
-      { error: "Error interno del servidor" },
+      { error: error?.message || "Error interno del servidor" },
       { status: 500 }
     )
   }
