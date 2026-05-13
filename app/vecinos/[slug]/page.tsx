@@ -56,7 +56,10 @@ export default async function VecinosPage({
       city,
       delivery_day,
       next_delivery_date,
-      is_active
+      is_active,
+      benefit_threshold_amount,
+      benefit_threshold_orders,
+      benefit_discount_percent
     `)
     .eq("slug", slug)
     .eq("is_active", true)
@@ -101,8 +104,7 @@ export default async function VecinosPage({
           closes_at,
           threshold_amount,
           threshold_orders,
-          discount_percent,
-          force_benefit_granted
+          discount_percent
         `)
         .eq("cluster_location_id", clusterId)
         .eq("status", "active")
@@ -114,7 +116,7 @@ export default async function VecinosPage({
   const { data: cycleOrders } = activeCycle?.id
     ? await supabase
         .from("orders")
-        .select("id, price, final_price, customer_email")
+        .select("id, price, final_price")
         .eq("commercial_cycle_id", activeCycle.id)
         .eq("source", "vecinos")
         .eq("status", "confirmed")
@@ -132,18 +134,21 @@ export default async function VecinosPage({
   const thresholdAmount = Number(
     activeCycle?.threshold_amount ||
       cluster?.benefit_threshold_amount ||
+      location.benefit_threshold_amount ||
       300000
   )
 
   const thresholdOrders = Number(
     activeCycle?.threshold_orders ||
       cluster?.benefit_threshold_orders ||
+      location.benefit_threshold_orders ||
       10
   )
 
   const discountPercent = Number(
     activeCycle?.discount_percent ||
       cluster?.benefit_discount_percent ||
+      location.benefit_discount_percent ||
       5
   )
 
@@ -158,138 +163,126 @@ export default async function VecinosPage({
   const communityProgress = Math.max(revenueProgress, ordersProgress)
 
   return (
-    <main className="min-h-screen bg-[#f3f7ed] text-[#1f2a1f]">
-      <section className="px-4 py-6 md:px-6 md:py-10">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-white shadow-xl">
-          <div className="grid gap-0 lg:grid-cols-[1.15fr_0.85fr]">
-            <div className="p-6 md:p-10">
-              <p className="mb-3 inline-flex rounded-full bg-green-100 px-4 py-2 text-xs font-bold uppercase tracking-wide text-green-800">
-                Compra comunitaria de vecinos
-              </p>
+    <main className="min-h-screen bg-[#eef8ef] text-[#172317]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#e9f8e9] via-[#f7fff7] to-[#d8f2df] px-5 py-12 md:px-10 md:py-16">
+        <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-green-300/30 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-32 -left-24 h-96 w-96 rounded-full bg-lime-200/40 blur-3xl" />
 
-              <h1 className="max-w-3xl text-4xl font-serif font-black leading-tight md:text-6xl">
-                Comprá junto a tus vecinos y recibí en tu edificio.
-              </h1>
+        <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+          <div>
+            <div className="mb-5 flex flex-wrap gap-2">
+              <span className="rounded-full bg-green-700 px-4 py-2 text-xs font-black uppercase tracking-wide text-white">
+                Compra comunitaria
+              </span>
 
-              <p className="mt-5 max-w-2xl text-lg text-gray-700">
-                Cada vecino compra y paga por separado. Todos los pedidos de la manzana
-                suman al progreso comunitario para desbloquear beneficios en próximas compras.
-              </p>
-
-              <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                <InfoCard
-                  title="Tu ubicación"
-                  value={location.name}
-                  subtitle={cluster?.commercial_code || location.commercial_code || "Compra comunitaria"}
-                />
-
-                <InfoCard
-                  title="Cierre de pedidos"
-                  value={formatDateTime(activeCycle?.closes_at)}
-                  subtitle="Después se prepara la entrega"
-                />
-
-                <InfoCard
-                  title="Entrega"
-                  value={formatDate(activeCycle?.delivery_date)}
-                  subtitle="Coordinada para la manzana"
-                />
-              </div>
+              <span className="rounded-full bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-wide text-green-800 shadow-sm">
+                {cluster?.commercial_code || location.commercial_code || "Vecinos"}
+              </span>
             </div>
 
-            <div className="bg-[#1f2a1f] p-6 text-white md:p-10">
-              <p className="text-sm font-bold uppercase tracking-wide text-green-200">
-                Progreso comunitario
+            <h1 className="max-w-4xl text-5xl font-black leading-[0.95] tracking-tight md:text-7xl">
+              Comprá junto a tus vecinos y recibí en tu edificio.
+            </h1>
+
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[#455245] md:text-xl">
+              Frutas, verduras, huevos, pollo y productos de granja con entrega comunitaria semanal.
+              Cada vecino compra y paga por separado. Nosotros coordinamos la entrega.
+            </p>
+
+            <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <HeroPill
+                title="Ubicación"
+                value={location.name}
+              />
+
+              <HeroPill
+                title="Cierre"
+                value={formatDateTime(activeCycle?.closes_at)}
+              />
+
+              <HeroPill
+                title="Entrega"
+                value={formatDate(activeCycle?.delivery_date)}
+              />
+
+              <HeroPill
+                title="Pedido mínimo"
+                value="$20.000"
+              />
+            </div>
+
+            <p className="mt-6 text-sm font-medium text-[#5e6b5e]">
+              En el checkout cargás piso, departamento, teléfono y método de pago.
+            </p>
+          </div>
+
+          <div className="rounded-[2rem] bg-[#122214] p-6 text-white shadow-2xl md:p-8">
+            <p className="text-sm font-black uppercase tracking-wide text-green-300">
+              Progreso comunitario
+            </p>
+
+            <div className="mt-5 flex items-end gap-3">
+              <span className="text-7xl font-black leading-none">
+                {communityProgress}%
+              </span>
+
+              <span className="pb-2 text-sm font-semibold text-white/60">
+                hacia el beneficio
+              </span>
+            </div>
+
+            <div className="mt-6 h-5 overflow-hidden rounded-full bg-white/15">
+              <div
+                className="h-full rounded-full bg-green-400"
+                style={{ width: `${communityProgress}%` }}
+              />
+            </div>
+
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <DarkBox
+                title="Pedidos"
+                value={confirmedOrders}
+              />
+
+              <DarkBox
+                title="Comunidad"
+                value={money(confirmedRevenue)}
+              />
+            </div>
+
+            <div className="mt-5 rounded-3xl bg-white/10 p-5">
+              <p className="text-xl font-black">
+                Hasta {discountPercent}% para próximas compras
               </p>
 
-              <div className="mt-4 flex items-end gap-3">
-                <span className="text-6xl font-black">
-                  {communityProgress}%
-                </span>
-                <span className="pb-2 text-sm text-white/70">
-                  hacia el beneficio
-                </span>
-              </div>
-
-              <div className="mt-5 h-5 overflow-hidden rounded-full bg-white/20">
-                <div
-                  className="h-full rounded-full bg-green-400"
-                  style={{ width: `${communityProgress}%` }}
-                />
-              </div>
-
-              <div className="mt-6 grid grid-cols-2 gap-3">
-                <DarkMetric
-                  title="Pedidos confirmados"
-                  value={confirmedOrders}
-                />
-
-                <DarkMetric
-                  title="Facturado comunidad"
-                  value={money(confirmedRevenue)}
-                />
-              </div>
-
-              <div className="mt-6 rounded-3xl bg-white/10 p-5">
-                <p className="text-lg font-bold">
-                  Beneficio posible: {discountPercent}% para la próxima compra
-                </p>
-
-                <p className="mt-2 text-sm leading-relaxed text-white/75">
-                  Si la compra comunitaria se activa al cierre, quienes participaron
-                  reciben el beneficio individualmente para una próxima compra.
-                </p>
-              </div>
+              <p className="mt-2 text-sm leading-relaxed text-white/70">
+                Tu compra suma al progreso comunitario. Los beneficios se aplican individualmente
+                en próximas compras.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="px-4 pb-4 md:px-6">
+      <section className="px-5 py-8 md:px-10">
         <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-3">
           <Step
             number="1"
             title="Elegís productos"
-            text="Armás tu pedido con cajas, frutas, verduras, pollo, huevos y productos de granja."
+            text="Armás tu pedido con cajas o productos individuales."
           />
 
           <Step
             number="2"
-            title="Cargás tus datos"
-            text="En el checkout indicás tu torre, piso, departamento, teléfono y método de pago."
+            title="Cargás tu depto"
+            text="Indicás piso, departamento y datos de contacto."
           />
 
           <Step
             number="3"
-            title="Recibís con tus vecinos"
-            text="La entrega se organiza para la manzana y tu compra suma al progreso comunitario."
+            title="Recibís en tu edificio"
+            text="La entrega se organiza junto con la comunidad."
           />
-        </div>
-      </section>
-
-      <section className="px-4 pb-4 md:px-6">
-        <div className="mx-auto max-w-7xl rounded-3xl bg-white p-5 shadow">
-          <h2 className="text-2xl font-serif font-bold">
-            Detalle de entrega
-          </h2>
-
-          <div className="mt-3 grid gap-3 text-sm text-gray-700 md:grid-cols-3">
-            <p>
-              <strong>Manzana:</strong>{" "}
-              {cluster?.name || "Compra comunitaria"}
-            </p>
-
-            <p>
-              <strong>Edificio/Torre:</strong>{" "}
-              {location.name}
-            </p>
-
-            <p>
-              <strong>Dirección:</strong>{" "}
-              {location.address || cluster?.address || "A confirmar"}
-              {location.city || cluster?.city ? ` · ${location.city || cluster?.city}` : ""}
-            </p>
-          </div>
         </div>
       </section>
 
@@ -298,36 +291,33 @@ export default async function VecinosPage({
   )
 }
 
-function InfoCard({
+function HeroPill({
   title,
-  value,
-  subtitle
+  value
 }: {
   title: string
   value: string
-  subtitle: string
 }) {
   return (
-    <div className="rounded-3xl border border-green-100 bg-green-50 p-4">
-      <p className="text-xs font-bold uppercase tracking-wide text-green-700">
+    <div className="rounded-2xl bg-white/85 p-4 shadow-sm backdrop-blur">
+      <p className="text-xs font-black uppercase tracking-wide text-green-700">
         {title}
       </p>
-      <p className="mt-2 text-lg font-black">
+
+      <p className="mt-2 text-base font-black text-[#172317]">
         {value}
-      </p>
-      <p className="mt-1 text-xs text-gray-500">
-        {subtitle}
       </p>
     </div>
   )
 }
 
-function DarkMetric({ title, value }: { title: string; value: any }) {
+function DarkBox({ title, value }: { title: string; value: any }) {
   return (
     <div className="rounded-2xl bg-white/10 p-4">
-      <p className="text-xs uppercase tracking-wide text-white/60">
+      <p className="text-xs font-bold uppercase tracking-wide text-white/50">
         {title}
       </p>
+
       <p className="mt-2 text-2xl font-black">
         {value}
       </p>
@@ -345,12 +335,12 @@ function Step({
   text: string
 }) {
   return (
-    <div className="rounded-3xl bg-white p-5 shadow">
-      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-green-700 text-lg font-black text-white">
+    <div className="rounded-3xl bg-white p-5 shadow-sm">
+      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-green-700 text-lg font-black text-white">
         {number}
       </div>
 
-      <h3 className="text-xl font-bold">
+      <h3 className="text-xl font-black">
         {title}
       </h3>
 
