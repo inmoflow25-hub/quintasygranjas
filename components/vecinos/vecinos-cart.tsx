@@ -670,7 +670,7 @@ export default function VecinosCart({
               </p>
             </div>
 
-            <div className="mb-4 rounded-2xl bg-white/15 p-4">
+            <div className="mb-3 rounded-2xl bg-white/15 p-3">
               <p className="mb-2 font-bold">¿Ya compraste antes?</p>
 
               <input
@@ -678,14 +678,14 @@ export default function VecinosCart({
                 onChange={(e) => setRepeatEmail(e.target.value)}
                 placeholder="Tu email"
                 type="email"
-                className="mb-2 w-full rounded-xl bg-white px-3 py-3 text-black placeholder:text-gray-500"
+                className="mb-2 w-full rounded-xl bg-white px-3 py-2 text-sm text-black placeholder:text-gray-500"
               />
 
               <button
                 type="button"
                 onClick={repeatLastOrder}
                 disabled={repeatLoading}
-                className="w-full rounded-xl bg-black py-3 font-bold text-white"
+                className="w-full rounded-xl bg-black py-2 text-sm font-bold text-white"
               >
                 {repeatLoading ? "Buscando..." : "Repetir último pedido"}
               </button>
