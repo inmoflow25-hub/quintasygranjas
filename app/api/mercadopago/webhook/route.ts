@@ -7,6 +7,53 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
+async function markUsedBenefits(orderId: string) {
+  const { data: order, error: orderError } = await supabase
+    .from("orders")
+    .select("id, benefit_status, commercial_benefit_id")
+    .eq("id", orderId)
+    .maybeSingle()
+
+  if (orderError || !order) {
+    console.error("benefit order lookup error", orderError)
+    return
+  }
+
+  await supabase
+    .from("user_benefits")
+    .update({
+      status: "used",
+      used_order_id: orderId,
+      used_at: new Date().toISOString()
+    })
+    .eq("used_order_id", orderId)
+    .neq("status", "used")
+
+  if (order.commercial_benefit_id) {
+    await supabase
+      .from("commercial_user_benefits")
+      .update({
+        status: "used",
+        used_order_id: orderId,
+        used_at: new Date().toISOString()
+      })
+      .eq("id", order.commercial_benefit_id)
+      .eq("status", "available")
+  }
+
+  if (order.benefit_status === "used" || order.benefit_status === "applied") {
+    await supabase
+      .from("user_benefits")
+      .update({
+        status: "used",
+        used_order_id: orderId,
+        used_at: new Date().toISOString()
+      })
+      .eq("used_order_id", orderId)
+      .eq("status", "available")
+  }
+}
+
 async function processWebhook(request: NextRequest) {
   try {
     const url = new URL(request.url)
@@ -38,7 +85,7 @@ async function processWebhook(request: NextRequest) {
 
     const mpStatus = String(paymentData?.status || "").toLowerCase()
 
-    let nextStatus = "confirmed"
+    let nextStatus = "pending_payment"
     let nextPaymentStatus = mpStatus || "pending"
 
     if (mpStatus === "approved") {
@@ -53,7 +100,7 @@ async function processWebhook(request: NextRequest) {
       nextStatus = "cancelled"
       nextPaymentStatus = mpStatus
     } else {
-      nextStatus = "confirmed"
+      nextStatus = "pending_payment"
       nextPaymentStatus = mpStatus || "pending"
     }
 
@@ -70,6 +117,10 @@ async function processWebhook(request: NextRequest) {
     if (error) {
       console.error("webhook update error", error)
       return NextResponse.json({ error: "db error" }, { status: 500 })
+    }
+
+    if (mpStatus === "approved") {
+      await markUsedBenefits(orderId)
     }
 
     return NextResponse.json({ ok: true })
