@@ -4,6 +4,7 @@ export const revalidate = 0
 import { notFound } from "next/navigation"
 import { createClient } from "@supabase/supabase-js"
 import VecinosCart from "@/components/vecinos/vecinos-cart"
+import { Header } from "@/components/landing/header"
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -111,7 +112,6 @@ export default async function VecinosPage({
           .order("name", { ascending: true })
       : { data: [] }
 
-  
   const { data: activeCycle } = clusterId
     ? await supabase
         .from("commercial_location_cycles")
@@ -143,7 +143,6 @@ export default async function VecinosPage({
     : { data: [] }
 
   const orders = cycleOrders || []
-
   const confirmedOrders = orders.length
 
   const confirmedRevenue = orders.reduce((acc: number, order: any) => {
@@ -183,7 +182,9 @@ export default async function VecinosPage({
 
   return (
     <main className="min-h-screen bg-[#eef8ef] text-[#172317]">
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#e9f8e9] via-[#f7fff7] to-[#d8f2df] px-5 py-12 md:px-10 md:py-16">
+      <Header />
+
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#e9f8e9] via-[#f7fff7] to-[#d8f2df] px-5 pb-12 pt-28 md:px-10 md:pb-16 md:pt-32">
         <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-green-300/30 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 -left-24 h-96 w-96 rounded-full bg-lime-200/40 blur-3xl" />
 
@@ -199,13 +200,13 @@ export default async function VecinosPage({
               </span>
             </div>
 
-            <h1 className="max-w-4xl text-5xl font-black leading-[0.95] tracking-tight md:text-7xl">
-              Comprá junto a tus vecinos y recibí en tu edificio.
+            <h1 className="max-w-4xl text-5xl font-serif font-black leading-[1.02] tracking-tight md:text-7xl">
+              Alimentos frescos para recibir en tu edificio
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[#455245] md:text-xl">
-              Frutas, verduras, huevos, pollo y productos de granja con entrega comunitaria semanal.
-              Cada vecino compra y paga por separado. Nosotros coordinamos la entrega.
+              Comprá junto a tus vecinos. Cada persona paga su pedido por separado
+              y la entrega se organiza para la comunidad.
             </p>
 
             <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -231,7 +232,7 @@ export default async function VecinosPage({
             </div>
 
             <p className="mt-6 text-sm font-medium text-[#5e6b5e]">
-              En el checkout cargás piso, departamento, teléfono y método de pago.
+              En el checkout cargás torre, piso, departamento, teléfono, método de pago y propina si querés.
             </p>
           </div>
 
@@ -306,12 +307,74 @@ export default async function VecinosPage({
       </section>
 
       <VecinosCart
-  location={location}
-  towers={towers || []}
-  communityProgress={communityProgress}
-  confirmedOrders={confirmedOrders}
-  confirmedRevenue={confirmedRevenue}
-/>
+        location={location}
+        towers={towers || []}
+        communityProgress={communityProgress}
+        confirmedOrders={confirmedOrders}
+        confirmedRevenue={confirmedRevenue}
+      />
+
+      <footer className="bg-[#172317] px-6 py-14 text-white md:px-10">
+        <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-3">
+          <div>
+            <div className="flex items-center gap-3">
+              <img
+                src="/logho quintas nuevo.svg"
+                alt="Quintas y Granjas"
+                className="h-10 w-auto"
+              />
+
+              <span className="text-xl font-black">
+                Quintas y Granjas
+              </span>
+            </div>
+
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/70">
+              Alimentos frescos, productos de granja y entregas comunitarias para vecinos.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-black">
+              Compra comunitaria
+            </h4>
+
+            <p className="mt-4 text-sm leading-relaxed text-white/70">
+              Cada vecino compra y paga por separado. La entrega se coordina para el edificio o complejo.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-black">
+              Contacto
+            </h4>
+
+            <a
+              href="https://wa.me/5491168303596"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex rounded-xl bg-[#25D366] px-5 py-3 font-black text-white"
+            >
+              WhatsApp
+            </a>
+
+            <p className="mt-4 text-sm text-white/60">
+              hola@quintasygranjas.com
+            </p>
+          </div>
+        </div>
+
+        <div className="mx-auto mt-10 max-w-7xl border-t border-white/10 pt-6 text-center text-xs text-white/50">
+          © {new Date().getFullYear()} Quintas y Granjas. Todos los derechos reservados.{" "}
+          <a href="/privacy" className="underline hover:text-white">
+            Privacidad
+          </a>{" "}
+          |{" "}
+          <a href="/terms" className="underline hover:text-white">
+            Términos
+          </a>
+        </div>
+      </footer>
     </main>
   )
 }
@@ -375,4 +438,3 @@ function Step({
     </div>
   )
 }
-
