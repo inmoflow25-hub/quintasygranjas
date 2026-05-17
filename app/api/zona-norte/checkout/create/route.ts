@@ -262,16 +262,16 @@ const initialPaymentStatus =
       )
     }
 
-    if (benefit?.id) {
-      await supabase
-        .from("user_benefits")
-        .update({
-          status: "used",
-          used_order_id: order.id,
-          used_at: new Date().toISOString()
-        })
-        .eq("id", benefit.id)
-    }
+if (benefit?.id && payment_method === "cash") {
+  await supabase
+    .from("user_benefits")
+    .update({
+      status: "used",
+      used_order_id: order.id,
+      used_at: new Date().toISOString()
+    })
+    .eq("id", benefit.id)
+}
 
     if (payment_method === "cash") {
       return NextResponse.json({
