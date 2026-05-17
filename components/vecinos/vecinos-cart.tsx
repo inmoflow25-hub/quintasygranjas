@@ -284,16 +284,47 @@ const PRODUCTS: Product[] = [
   }
 ]
 
-export default function VecinosCart({ location }: { location: CommercialLocation }) {
+type VecinosCartProps = {
+  location: CommercialLocation
+  towers?: CommercialLocation[]
+  communityProgress?: number
+  confirmedOrders?: number
+  confirmedRevenue?: number
+}
+
+function money(value: number) {
+  return `$${Math.round(value || 0).toLocaleString("es-AR")}`
+}
+
+export default function VecinosCart({
+  location,
+  towers = [],
+  communityProgress = 0,
+  confirmedOrders = 0,
+  confirmedRevenue = 0
+}: VecinosCartProps) {
   const [cart, setCart] = useState<any[]>([])
   const [expandedBoxId, setExpandedBoxId] = useState<string | null>(null)
+  const [selectedLocation, setSelectedLocation] = useState<CommercialLocation | null>(
+    towers.length > 0 ? null : location
+  )
+  const [repeatEmail, setRepeatEmail] = useState("")
+  const [repeatLoading, setRepeatLoading] = useState(false)
+
+  const needsLocationChoice = towers.length > 0
 
   function addItem(product: Product) {
     setCart((prev) => {
       const existing = prev.find((p) => p.id === product.id)
+
       if (existing) {
-        return prev.map((p) => p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p)
+        return prev.map((p) =>
+          p.id === product.id
+            ? { ...p, quantity: p.quantity + 1 }
+            : p
+        )
       }
+
       return [...prev, { ...product, quantity: 1 }]
     })
   }
@@ -301,9 +332,18 @@ export default function VecinosCart({ location }: { location: CommercialLocation
   function removeItem(product: Product) {
     setCart((prev) => {
       const existing = prev.find((p) => p.id === product.id)
+
       if (!existing) return prev
-      if (existing.quantity === 1) return prev.filter((p) => p.id !== product.id)
-      return prev.map((p) => p.id === product.id ? { ...p, quantity: p.quantity - 1 } : p)
+
+      if (existing.quantity === 1) {
+        return prev.filter((p) => p.id !== product.id)
+      }
+
+      return prev.map((p) =>
+        p.id === product.id
+          ? { ...p, quantity: p.quantity - 1 }
+          : p
+      )
     })
   }
 
@@ -320,19 +360,87 @@ export default function VecinosCart({ location }: { location: CommercialLocation
     if (product.type === "unit") return "unidad"
     if (product.type === "weight_500g") return "500g"
     if (product.type === "weight_1kg") return "kg"
+    return "unidad"
   }
 
   function getDisplayQuantity(item: any) {
-    if (item.category === "cajas_armadas") return `${item.quantity} caja${item.quantity > 1 ? "s" : ""}`
+    if (item.category === "cajas_armadas") {
+      return `${item.quantity} caja${item.quantity > 1 ? "s" : ""}`
+    }
+
     if (item.type === "weight_500g") {
       const totalGrams = item.quantity * 500
       return totalGrams >= 1000 ? `${totalGrams / 1000} kg` : `${totalGrams} g`
     }
+
     if (item.type === "weight_1kg") return `${item.quantity} kg`
+
     return `x${item.quantity}`
   }
 
+  async function repeatLastOrder() {
+    const email = repeatEmail.trim().toLowerCase()
+
+    if (!email) {
+      alert("Ingresá tu email")
+      return
+    }
+
+    setRepeatLoading(true)
+
+    try {
+      const res = await fetch("/api/vecinos/orders/last", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        alert(data?.error || "No pudimos encontrar tu último pedido")
+        return
+      }
+
+      const repeatedItems = (data.items || [])
+        .map((item: any) => {
+          const product = PRODUCTS.find(
+            (p) =>
+              p.name.toLowerCase() === String(item.product_name || "").toLowerCase()
+          )
+
+          if (!product) return null
+
+          return {
+            ...product,
+            quantity: Number(item.quantity || 1)
+          }
+        })
+        .filter(Boolean)
+
+      if (!repeatedItems.length) {
+        alert("Encontramos tu pedido, pero no pudimos reconstruir los productos")
+        return
+      }
+
+      setCart(repeatedItems)
+      alert("Listo, cargamos tu último pedido")
+    } catch (error) {
+      console.error(error)
+      alert("Error buscando tu último pedido")
+    } finally {
+      setRepeatLoading(false)
+    }
+  }
+
   function handleCheckout() {
+    if (needsLocationChoice && !selectedLocation) {
+      alert("Elegí tu torre o edificio para continuar")
+      return
+    }
+
     if (cart.length === 0) {
       alert("El carrito está vacío")
       return
@@ -343,87 +451,137 @@ export default function VecinosCart({ location }: { location: CommercialLocation
       return
     }
 
+    const checkoutLocation = selectedLocation || location
+
     localStorage.setItem("qyg_vecinos_cart", JSON.stringify(cart))
-    window.location.href = `/vecinos/${location.slug}/checkout`
+    window.location.href = `/vecinos/${checkoutLocation.slug}/checkout`
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <h2 className="text-3xl font-bold mb-6 text-center">
+    <div className="mx-auto max-w-7xl p-6">
+      <h2 className="mb-4 text-center text-3xl font-bold">
         Elegí una caja, armá la tuya o sumá productos
       </h2>
 
-      <p className="text-lg font-medium mb-6 text-center">
-        Pedido mínimo de $20.000 - Entrega comunitaria en {location.name}
+      <p className="mb-6 text-center text-lg font-medium">
+        Pedido mínimo de $20.000 · Entrega comunitaria
+        {selectedLocation ? ` en ${selectedLocation.name}` : ""}
       </p>
 
-      <div className="flex gap-2 mb-6 overflow-x-auto">
+      <div className="mb-6 flex gap-2 overflow-x-auto">
         {Array.from(new Set(PRODUCTS.map((p) => p.category))).map((cat) => (
           <button
             key={cat}
-            onClick={() => document.getElementById(`cat-${cat}`)?.scrollIntoView({ behavior: "smooth" })}
-            className="px-4 py-1 rounded-full bg-gray-200 text-sm whitespace-nowrap hover:bg-green-600 hover:text-white transition"
+            onClick={() =>
+              document
+                .getElementById(`cat-${cat}`)
+                ?.scrollIntoView({ behavior: "smooth" })
+            }
+            className="whitespace-nowrap rounded-full bg-gray-200 px-4 py-1 text-sm transition hover:bg-green-600 hover:text-white"
           >
             {cat.replace("_", " ")}
           </button>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
         <div className="md:col-span-2">
           {Array.from(new Set(PRODUCTS.map((p) => p.category))).map((category) => {
             const items = PRODUCTS.filter((p) => p.category === category)
 
             return (
-              <div key={category} id={`cat-${category}`} className="mb-10 scroll-mt-32">
-                <h3 className="text-xl font-bold mb-3 capitalize">
+              <div
+                key={category}
+                id={`cat-${category}`}
+                className="mb-10 scroll-mt-32"
+              >
+                <h3 className="mb-3 text-xl font-bold capitalize">
                   {category.replace("_", " ")}
                 </h3>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
                   {items.map((p) => {
                     const quantity = getQuantity(p.id)
                     const isBox = p.category === "cajas_armadas"
                     const isExpanded = expandedBoxId === p.id
 
                     return (
-                      <div key={p.id} className="rounded-xl p-2 bg-[#e2e2e2] hover:bg-[#d8d8d8] transition">
-                        <div className="h-30 w-full mb-2 overflow-hidden rounded-lg">
-                          <img src={p.image} className="w-full h-full object-cover" />
+                      <div
+                        key={p.id}
+                        className="rounded-xl bg-[#e2e2e2] p-2 transition hover:bg-[#d8d8d8]"
+                      >
+                        <div className="mb-2 h-30 w-full overflow-hidden rounded-lg">
+                          <img
+                            src={p.image}
+                            className="h-full w-full object-cover"
+                            alt={p.name}
+                          />
                         </div>
 
-                        <p className="text-sm font-semibold text-black mb-1">{p.name}</p>
+                        <p className="mb-1 text-sm font-semibold text-black">
+                          {p.name}
+                        </p>
 
-                        {p.description && <p className="text-xs text-gray-600 mb-2">{p.description}</p>}
+                        {p.description && (
+                          <p className="mb-2 text-xs text-gray-600">
+                            {p.description}
+                          </p>
+                        )}
 
                         {isBox && (
                           <button
                             type="button"
-                            onClick={() => setExpandedBoxId((prev) => prev === p.id ? null : p.id)}
-                            className="text-xs font-medium text-black underline mb-2"
+                            onClick={() =>
+                              setExpandedBoxId((prev) =>
+                                prev === p.id ? null : p.id
+                              )
+                            }
+                            className="mb-2 text-xs font-medium text-black underline"
                           >
-                            {isExpanded ? "🔍 Ocultar qué trae" : "🔍 Qué trae"}
+                            {isExpanded ? "Ocultar qué trae" : "Qué trae"}
                           </button>
                         )}
 
                         {isBox && isExpanded && p.boxItems && (
-                          <div className="mb-3 rounded-xl bg-white p-4 shadow-lg border border-gray-300">
-                            <p className="text-sm font-bold mb-3">Esta caja trae:</p>
-                            <ul className="text-sm text-gray-700 space-y-2 leading-6">
+                          <div className="mb-3 rounded-xl border border-gray-300 bg-white p-4 shadow-lg">
+                            <p className="mb-3 text-sm font-bold">
+                              Esta caja trae:
+                            </p>
+
+                            <ul className="space-y-2 text-sm leading-6 text-gray-700">
                               {p.boxItems.map((item, index) => (
-                                <li key={`${p.id}-item-${index}`}>• {item}</li>
+                                <li key={`${p.id}-item-${index}`}>
+                                  • {item}
+                                </li>
                               ))}
                             </ul>
                           </div>
                         )}
 
-                        <p className="text-md font-bold">${p.price.toLocaleString()}</p>
-                        <p className="text-xs text-gray-600 mb-2">por {getLabel(p)}</p>
+                        <p className="text-md font-bold">
+                          ${p.price.toLocaleString()}
+                        </p>
 
-                        <div className="flex justify-center items-center gap-2">
-                          <button onClick={() => removeItem(p)} className="w-7 h-7 rounded-full bg-gray-400">-</button>
+                        <p className="mb-2 text-xs text-gray-600">
+                          por {getLabel(p)}
+                        </p>
+
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => removeItem(p)}
+                            className="h-7 w-7 rounded-full bg-gray-400"
+                          >
+                            -
+                          </button>
+
                           <span className="text-sm">{quantity}</span>
-                          <button onClick={() => addItem(p)} className="w-7 h-7 rounded-full bg-green-600 text-white">+</button>
+
+                          <button
+                            onClick={() => addItem(p)}
+                            className="h-7 w-7 rounded-full bg-green-600 text-white"
+                          >
+                            +
+                          </button>
                         </div>
                       </div>
                     )
@@ -435,36 +593,159 @@ export default function VecinosCart({ location }: { location: CommercialLocation
         </div>
 
         <div className="md:col-span-1">
-          <div className="sticky top-24 rounded-xl p-5 bg-green-600 text-white shadow-lg">
-            <h3 className="text-xl font-bold mb-4">Mi pedido</h3>
+          <div className="sticky top-24 rounded-3xl bg-green-600 p-5 text-white shadow-xl">
+            <h3 className="mb-4 text-2xl font-bold">Mi pedido</h3>
+
+            {needsLocationChoice && (
+              <div className="mb-4 rounded-2xl bg-white/15 p-4">
+                <p className="mb-2 text-sm font-bold uppercase text-green-100">
+                  Elegí tu torre
+                </p>
+
+                <select
+                  value={selectedLocation?.id || ""}
+                  onChange={(e) => {
+                    const tower = towers.find((t) => t.id === e.target.value) || null
+                    setSelectedLocation(tower)
+                  }}
+                  className="w-full rounded-xl bg-white px-3 py-3 text-black"
+                >
+                  <option value="">Seleccionar ubicación</option>
+                  {towers.map((tower) => (
+                    <option key={tower.id} value={tower.id}>
+                      {tower.name}
+                    </option>
+                  ))}
+                </select>
+
+                {!selectedLocation && (
+                  <p className="mt-2 text-xs text-green-100">
+                    Necesitamos saber dónde vivís para organizar la entrega.
+                  </p>
+                )}
+              </div>
+            )}
+
+            {selectedLocation && (
+              <div className="mb-4 rounded-2xl bg-white/15 p-4">
+                <p className="text-xs font-bold uppercase text-green-100">
+                  Entrega en
+                </p>
+                <p className="mt-1 text-lg font-black">
+                  {selectedLocation.name}
+                </p>
+                <p className="mt-1 text-xs text-green-100">
+                  En checkout cargás piso, departamento y propina si querés.
+                </p>
+              </div>
+            )}
+
+            <div className="mb-4 rounded-2xl bg-white/15 p-4">
+              <div className="flex items-end justify-between">
+                <div>
+                  <p className="text-xs font-bold uppercase text-green-100">
+                    Progreso comunitario
+                  </p>
+                  <p className="mt-1 text-3xl font-black">
+                    {communityProgress}%
+                  </p>
+                </div>
+
+                <p className="text-right text-xs text-green-100">
+                  {confirmedOrders} pedidos
+                  <br />
+                  {money(confirmedRevenue)}
+                </p>
+              </div>
+
+              <div className="mt-3 h-3 overflow-hidden rounded-full bg-white/20">
+                <div
+                  className="h-full rounded-full bg-white"
+                  style={{ width: `${Math.max(0, Math.min(100, communityProgress))}%` }}
+                />
+              </div>
+
+              <p className="mt-2 text-xs text-green-100">
+                Tu compra suma al beneficio de la comunidad.
+              </p>
+            </div>
+
+            <div className="mb-4 rounded-2xl bg-white/15 p-4">
+              <p className="mb-2 font-bold">¿Ya compraste antes?</p>
+
+              <input
+                value={repeatEmail}
+                onChange={(e) => setRepeatEmail(e.target.value)}
+                placeholder="Tu email"
+                type="email"
+                className="mb-2 w-full rounded-xl bg-white px-3 py-3 text-black placeholder:text-gray-500"
+              />
+
+              <button
+                type="button"
+                onClick={repeatLastOrder}
+                disabled={repeatLoading}
+                className="w-full rounded-xl bg-black py-3 font-bold text-white"
+              >
+                {repeatLoading ? "Buscando..." : "Repetir último pedido"}
+              </button>
+            </div>
 
             {cart.length === 0 && (
-              <p className="text-sm text-green-100">Todavía no agregaste productos</p>
+              <p className="text-sm text-green-100">
+                Todavía no agregaste productos
+              </p>
             )}
 
             {cart.map((item) => (
-              <div key={item.id} className="flex justify-between items-center mb-3 text-sm">
+              <div
+                key={item.id}
+                className="mb-3 flex items-center justify-between text-sm"
+              >
                 <div>
                   <p className="font-medium">{item.name}</p>
-                  <p className="text-xs text-green-200">{getDisplayQuantity(item)}</p>
+                  <p className="text-xs text-green-200">
+                    {getDisplayQuantity(item)}
+                  </p>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <button onClick={() => removeItem(item)} className="w-6 h-6 rounded-full bg-white text-black">-</button>
-                  <button onClick={() => addItem(item)} className="w-6 h-6 rounded-full bg-black text-white">+</button>
+                  <button
+                    onClick={() => removeItem(item)}
+                    className="h-6 w-6 rounded-full bg-white text-black"
+                  >
+                    -
+                  </button>
+
+                  <button
+                    onClick={() => addItem(item)}
+                    className="h-6 w-6 rounded-full bg-black text-white"
+                  >
+                    +
+                  </button>
                 </div>
               </div>
             ))}
 
             <div className="mt-4 border-t border-green-400 pt-3">
-              <p className="text-lg font-bold">
-                Total: ${Math.round(getTotal()).toLocaleString()}
+              <div className="flex items-center justify-between text-sm text-green-100">
+                <span>Subtotal</span>
+                <span>{money(getTotal())}</span>
+              </div>
+
+              <div className="mt-2 flex items-center justify-between text-sm text-green-100">
+                <span>Pedido mínimo</span>
+                <span>$20.000</span>
+              </div>
+
+              <p className="mt-4 text-xl font-bold">
+                Total: {money(getTotal())}
               </p>
             </div>
 
             <button
               onClick={handleCheckout}
-              className="mt-5 w-full bg-black text-white py-3 rounded-xl text-lg"
+              className="mt-5 w-full rounded-xl bg-black py-3 text-lg font-bold text-white"
             >
               Finalizar compra
             </button>
