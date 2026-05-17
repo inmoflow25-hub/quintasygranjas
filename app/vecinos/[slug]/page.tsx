@@ -182,7 +182,12 @@ export default async function VecinosPage({
 
   return (
     <main className="min-h-screen bg-[#eef8ef] text-[#172317]">
-      <Header />
+      <Header
+  tiendaHref="#comprar"
+  zonasHref="/zona-norte"
+  ctaHref="#comprar"
+  ctaLabel="Comprar"
+/>
 
       <section className="relative overflow-hidden bg-gradient-to-br from-[#e9f8e9] via-[#f7fff7] to-[#d8f2df] px-5 pb-12 pt-28 md:px-10 md:pb-16 md:pt-32">
         <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-green-300/30 blur-3xl" />
