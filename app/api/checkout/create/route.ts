@@ -165,7 +165,8 @@ export async function POST(req: Request) {
         { onConflict: "user_id" }
       )
 
-    const initialStatus = "confirmed"
+const initialStatus =
+  payment_method === "cash" ? "confirmed" : "pending_payment"
 
 const initialPaymentStatus =
   payment_method === "cash" ? "pending_cash" : "pending"
