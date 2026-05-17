@@ -311,13 +311,15 @@ export default async function VecinosPage({
         </div>
       </section>
 
-      <VecinosCart
-        location={location}
-        towers={towers || []}
-        communityProgress={communityProgress}
-        confirmedOrders={confirmedOrders}
-        confirmedRevenue={confirmedRevenue}
-      />
+    <section id="comprar" className="scroll-mt-24">
+  <VecinosCart
+    location={location}
+    towers={towers || []}
+    communityProgress={communityProgress}
+    confirmedOrders={confirmedOrders}
+    confirmedRevenue={confirmedRevenue}
+  />
+</section>
 
       <footer className="bg-[#172317] px-6 py-14 text-white md:px-10">
         <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-3">
