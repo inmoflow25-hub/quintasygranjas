@@ -285,9 +285,11 @@ export async function POST(req: Request) {
         { onConflict: "user_id" }
       )
 
-    const initialStatus = "confirmed"
-    const initialPaymentStatus =
-      payment_method === "cash" ? "pending_cash" : "pending"
+   const initialStatus =
+  payment_method === "cash" ? "confirmed" : "pending_payment"
+
+const initialPaymentStatus =
+  payment_method === "cash" ? "pending_cash" : "pending"
 
     const { data: order, error: orderError } = await supabase
       .from("orders")
@@ -363,21 +365,21 @@ export async function POST(req: Request) {
       )
     }
 
-    if (commercialBenefitId) {
-      const { error: markBenefitError } = await supabase
-        .from("commercial_user_benefits")
-        .update({
-          status: "used",
-          used_order_id: order.id,
-          used_at: new Date().toISOString()
-        })
-        .eq("id", commercialBenefitId)
-        .eq("status", "available")
+if (commercialBenefitId && payment_method === "cash") {
+  const { error: markBenefitError } = await supabase
+    .from("commercial_user_benefits")
+    .update({
+      status: "used",
+      used_order_id: order.id,
+      used_at: new Date().toISOString()
+    })
+    .eq("id", commercialBenefitId)
+    .eq("status", "available")
 
-      if (markBenefitError) {
-        console.error("mark benefit used error", markBenefitError)
-      }
-    }
+  if (markBenefitError) {
+    console.error("mark benefit used error", markBenefitError)
+  }
+}
 
     if (payment_method === "cash") {
       return NextResponse.json({
