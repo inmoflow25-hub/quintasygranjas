@@ -593,11 +593,11 @@ export default function VecinosCart({
         </div>
 
         <div className="md:col-span-1">
-          <div className="sticky top-24 rounded-3xl bg-green-600 p-5 text-white shadow-xl">
+          <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-3xl bg-green-600 p-5 text-white shadow-xl">
             <h3 className="mb-4 text-2xl font-bold">Mi pedido</h3>
 
             {needsLocationChoice && (
-              <div className="mb-4 rounded-2xl bg-white/15 p-4">
+              <div className="mb-3 rounded-2xl bg-white/15 p-3">
                 <p className="mb-2 text-sm font-bold uppercase text-green-100">
                   Elegí tu torre
                 </p>
@@ -608,7 +608,7 @@ export default function VecinosCart({
                     const tower = towers.find((t) => t.id === e.target.value) || null
                     setSelectedLocation(tower)
                   }}
-                  className="w-full rounded-xl bg-white px-3 py-3 text-black"
+                  className="w-full rounded-xl bg-white px-3 py-2 text-sm text-black"
                 >
                   <option value="">Seleccionar ubicación</option>
                   {towers.map((tower) => (
@@ -627,7 +627,7 @@ export default function VecinosCart({
             )}
 
             {selectedLocation && (
-              <div className="mb-4 rounded-2xl bg-white/15 p-4">
+              <div className="mb-3 rounded-2xl bg-white/15 p-3">
                 <p className="text-xs font-bold uppercase text-green-100">
                   Entrega en
                 </p>
@@ -640,13 +640,13 @@ export default function VecinosCart({
               </div>
             )}
 
-            <div className="mb-4 rounded-2xl bg-white/15 p-4">
+            <div className="mb-3 rounded-2xl bg-white/15 p-3">
               <div className="flex items-end justify-between">
                 <div>
                   <p className="text-xs font-bold uppercase text-green-100">
                     Progreso comunitario
                   </p>
-                  <p className="mt-1 text-3xl font-black">
+                  <p className="mt-1 text-2xl font-black">
                     {communityProgress}%
                   </p>
                 </div>
