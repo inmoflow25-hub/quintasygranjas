@@ -711,6 +711,7 @@ export default function VecinosCart({
 
                 <div className="flex items-center gap-2">
                   <button
+                    type="button"
                     onClick={() => removeItem(item)}
                     className="h-6 w-6 rounded-full bg-white text-black"
                   >
@@ -718,6 +719,7 @@ export default function VecinosCart({
                   </button>
 
                   <button
+                    type="button"
                     onClick={() => addItem(item)}
                     className="h-6 w-6 rounded-full bg-black text-white"
                   >
@@ -727,12 +729,7 @@ export default function VecinosCart({
               </div>
             ))}
 
-           <button
-  onClick={handleCheckout}
-  className="sticky bottom-0 mt-5 w-full rounded-xl bg-black py-3 text-lg font-bold text-white shadow-xl"
->
-  Finalizar compra
-</button>
+            <div className="mt-4 border-t border-green-400 pt-3">
               <div className="flex items-center justify-between text-sm text-green-100">
                 <span>Subtotal</span>
                 <span>{money(getTotal())}</span>
@@ -749,8 +746,9 @@ export default function VecinosCart({
             </div>
 
             <button
+              type="button"
               onClick={handleCheckout}
-              className="mt-5 w-full rounded-xl bg-black py-3 text-lg font-bold text-white"
+              className="sticky bottom-0 mt-5 w-full rounded-xl bg-black py-3 text-lg font-bold text-white shadow-xl"
             >
               Finalizar compra
             </button>
