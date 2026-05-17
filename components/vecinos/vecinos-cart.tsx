@@ -727,7 +727,12 @@ export default function VecinosCart({
               </div>
             ))}
 
-            <div className="mt-4 border-t border-green-400 pt-3">
+           <button
+  onClick={handleCheckout}
+  className="sticky bottom-0 mt-5 w-full rounded-xl bg-black py-3 text-lg font-bold text-white shadow-xl"
+>
+  Finalizar compra
+</button>
               <div className="flex items-center justify-between text-sm text-green-100">
                 <span>Subtotal</span>
                 <span>{money(getTotal())}</span>
