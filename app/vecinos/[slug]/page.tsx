@@ -4,7 +4,6 @@ export const revalidate = 0
 import { notFound } from "next/navigation"
 import { createClient } from "@supabase/supabase-js"
 import VecinosCart from "@/components/vecinos/vecinos-cart"
-import { Header } from "@/components/landing/header"
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -179,58 +178,53 @@ export default async function VecinosPage({
     : 0
 
   const communityProgress = Math.max(revenueProgress, ordersProgress)
-const pageHref = `/vecinos/${location.slug}`
+  const pageHref = `/vecinos/${location.slug}`
+
   return (
-  <main className="min-h-screen bg-[#eef8ef] text-[#172317]">
-    <header className="fixed left-0 right-0 top-0 z-50 border-b border-[#dfe8d9] bg-[#f5faf3]/95 backdrop-blur-sm">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-        <a
-          href={pageHref}
-          className="flex items-center gap-3"
-        >
-          <div className="flex h-10 w-10 items-center justify-center">
-            <img
-              src="/logho quintas nuevo.svg"
-              alt="Quintas y Granjas"
-              className="h-8 w-auto"
-            />
-          </div>
-
-          <span className="text-xl font-bold tracking-tight text-[#172317]">
-            Quintas y Granjas
-          </span>
-        </a>
-
-        <nav className="hidden items-center gap-8 md:flex">
+    <main className="min-h-screen bg-[#eef8ef] text-[#172317]">
+      <header className="fixed left-0 right-0 top-0 z-50 border-b border-[#dfe8d9] bg-[#f5faf3]/95 backdrop-blur-sm">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
           <a
-            href={`${pageHref}#comprar`}
-            className="text-[#5e6b5e] transition hover:text-[#172317]"
+            href={pageHref}
+            className="flex items-center gap-3"
           >
-            Tienda
+            <div className="flex h-10 w-10 items-center justify-center">
+              <img
+                src="/logho quintas nuevo.svg"
+                alt="Quintas y Granjas"
+                className="h-8 w-auto"
+              />
+            </div>
+
+            <span className="text-xl font-bold tracking-tight text-[#172317]">
+              Quintas y Granjas
+            </span>
           </a>
 
-          <a
-            href={`${pageHref}#entrega`}
-            className="text-[#5e6b5e] transition hover:text-[#172317]"
-          >
-            Entrega
-          </a>
+          <nav className="hidden items-center gap-8 md:flex">
+            <a
+              href={`${pageHref}#comprar`}
+              className="text-[#5e6b5e] transition hover:text-[#172317]"
+            >
+              Tienda
+            </a>
 
-          <a
-            href={`${pageHref}#comprar`}
-            className="text-[#5e6b5e] transition hover:text-[#172317]"
-          >
-            Pedí ahora
-          </a>
-        </nav>
-      </div>
-    </header>
-      <Header
-  tiendaHref="#comprar"
-  zonasHref="/zona-norte"
-  ctaHref="#comprar"
-  ctaLabel="Comprar"
-/>
+            <a
+              href={`${pageHref}#entrega`}
+              className="text-[#5e6b5e] transition hover:text-[#172317]"
+            >
+              Entrega
+            </a>
+
+            <a
+              href={`${pageHref}#comprar`}
+              className="text-[#5e6b5e] transition hover:text-[#172317]"
+            >
+              Pedí ahora
+            </a>
+          </nav>
+        </div>
+      </header>
 
       <section className="relative overflow-hidden bg-gradient-to-br from-[#e9f8e9] via-[#f7fff7] to-[#d8f2df] px-5 pb-12 pt-28 md:px-10 md:pb-16 md:pt-32">
         <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-green-300/30 blur-3xl" />
@@ -354,17 +348,15 @@ const pageHref = `/vecinos/${location.slug}`
         </div>
       </section>
 
-    <section id="comprar" className="scroll-mt-24">
-<section id="comprar" className="scroll-mt-24">
-  <VecinosCart
-    location={location}
-    towers={towers || []}
-    communityProgress={communityProgress}
-    confirmedOrders={confirmedOrders}
-    confirmedRevenue={confirmedRevenue}
-  />
-</section>
-</section>
+      <section id="comprar" className="scroll-mt-24">
+        <VecinosCart
+          location={location}
+          towers={towers || []}
+          communityProgress={communityProgress}
+          confirmedOrders={confirmedOrders}
+          confirmedRevenue={confirmedRevenue}
+        />
+      </section>
 
       <footer className="bg-[#172317] px-6 py-14 text-white md:px-10">
         <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-3">
@@ -490,3 +482,4 @@ function Step({
     </div>
   )
 }
+
