@@ -745,13 +745,13 @@ export default function VecinosCart({
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={handleCheckout}
-              className="sticky bottom-0 mt-5 w-full rounded-xl bg-black py-3 text-lg font-bold text-white shadow-xl"
-            >
-              Finalizar compra
-            </button>
+          <button
+  type="button"
+  onClick={handleCheckout}
+  className="mt-5 w-full rounded-xl bg-black py-3 text-lg font-bold text-white shadow-xl"
+>
+  Finalizar compra
+</button>
           </div>
         </div>
       </div>
