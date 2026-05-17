@@ -289,7 +289,7 @@ export default async function VecinosPage({
         </div>
       </section>
 
-      <section className="px-5 py-8 md:px-10">
+      <section id="entrega" className="scroll-mt-24 px-5 py-8 md:px-10">
         <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-3">
           <Step
             number="1"
@@ -312,6 +312,7 @@ export default async function VecinosPage({
       </section>
 
     <section id="comprar" className="scroll-mt-24">
+<section id="comprar" className="scroll-mt-24">
   <VecinosCart
     location={location}
     towers={towers || []}
@@ -319,6 +320,7 @@ export default async function VecinosPage({
     confirmedOrders={confirmedOrders}
     confirmedRevenue={confirmedRevenue}
   />
+</section>
 </section>
 
       <footer className="bg-[#172317] px-6 py-14 text-white md:px-10">
