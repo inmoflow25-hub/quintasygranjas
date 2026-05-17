@@ -179,7 +179,7 @@ export default async function VecinosPage({
     : 0
 
   const communityProgress = Math.max(revenueProgress, ordersProgress)
-
+const pageHref = `/vecinos/${location.slug}`
   return (
     <main className="min-h-screen bg-[#eef8ef] text-[#172317]">
       <Header
