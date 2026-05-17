@@ -286,7 +286,13 @@ export default async function VecinosPage({
         </div>
       </section>
 
-      <VecinosCart location={location} />
+      <VecinosCart
+  location={location}
+  towers={towers || []}
+  communityProgress={communityProgress}
+  confirmedOrders={confirmedOrders}
+  confirmedRevenue={confirmedRevenue}
+/>
     </main>
   )
 }
