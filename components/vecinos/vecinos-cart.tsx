@@ -593,7 +593,7 @@ export default function VecinosCart({
         </div>
 
         <div className="md:col-span-1">
-          <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-3xl bg-green-600 p-5 text-white shadow-xl">
+         <div className="sticky top-24 rounded-3xl bg-green-600 p-5 text-white shadow-xl">
             <h3 className="mb-4 text-2xl font-bold">Mi pedido</h3>
 
             {needsLocationChoice && (
