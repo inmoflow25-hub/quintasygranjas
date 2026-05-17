@@ -181,7 +181,50 @@ export default async function VecinosPage({
   const communityProgress = Math.max(revenueProgress, ordersProgress)
 const pageHref = `/vecinos/${location.slug}`
   return (
-    <main className="min-h-screen bg-[#eef8ef] text-[#172317]">
+  <main className="min-h-screen bg-[#eef8ef] text-[#172317]">
+    <header className="fixed left-0 right-0 top-0 z-50 border-b border-[#dfe8d9] bg-[#f5faf3]/95 backdrop-blur-sm">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+        <a
+          href={pageHref}
+          className="flex items-center gap-3"
+        >
+          <div className="flex h-10 w-10 items-center justify-center">
+            <img
+              src="/logho quintas nuevo.svg"
+              alt="Quintas y Granjas"
+              className="h-8 w-auto"
+            />
+          </div>
+
+          <span className="text-xl font-bold tracking-tight text-[#172317]">
+            Quintas y Granjas
+          </span>
+        </a>
+
+        <nav className="hidden items-center gap-8 md:flex">
+          <a
+            href={`${pageHref}#comprar`}
+            className="text-[#5e6b5e] transition hover:text-[#172317]"
+          >
+            Tienda
+          </a>
+
+          <a
+            href={`${pageHref}#entrega`}
+            className="text-[#5e6b5e] transition hover:text-[#172317]"
+          >
+            Entrega
+          </a>
+
+          <a
+            href={`${pageHref}#comprar`}
+            className="text-[#5e6b5e] transition hover:text-[#172317]"
+          >
+            Pedí ahora
+          </a>
+        </nav>
+      </div>
+    </header>
       <Header
   tiendaHref="#comprar"
   zonasHref="/zona-norte"
