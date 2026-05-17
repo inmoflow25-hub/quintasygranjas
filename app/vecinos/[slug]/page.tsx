@@ -93,6 +93,25 @@ export default async function VecinosPage({
         .single()
     : { data: null }
 
+  const { data: towers } =
+    location.type === "cluster"
+      ? await supabase
+          .from("commercial_locations")
+          .select(`
+            id,
+            slug,
+            name,
+            address,
+            city,
+            delivery_day,
+            next_delivery_date
+          `)
+          .eq("parent_location_id", location.id)
+          .eq("is_active", true)
+          .order("name", { ascending: true })
+      : { data: [] }
+
+  
   const { data: activeCycle } = clusterId
     ? await supabase
         .from("commercial_location_cycles")
