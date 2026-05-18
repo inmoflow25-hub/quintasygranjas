@@ -36,7 +36,7 @@ export default function Home() {
       <Hero onWhatsAppClick={onWhatsAppClick} />
       {/*<HowItWorks />*/}
       <div id="cart" className="scroll-mt-32">
-        <Cart />
+        <CartServer />
       </div>
       {/*<BoxesSection onSelectBox={onSelectBox} />*/}
       {/*<SocialProof />*/}
