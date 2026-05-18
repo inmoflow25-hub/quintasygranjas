@@ -9,9 +9,7 @@ import { DeliveryZones } from "@/components/landing/delivery-zones"
 import { FinalCTA } from "@/components/landing/final-cta"
 import { Footer } from "@/components/landing/footer"
 import { Header } from "@/components/landing/header"
-import Cart from "@/components/cart/cart"
-
-type BoxType = "veggie" | "campo" | "granja"
+import CartServer from "@/components/cart/cart-server"
 
 const BOX_DB_IDS: Record<BoxType, string> = {
   veggie: "dff394c8-6a17-45e8-ba3f-960c27f8d76c",
