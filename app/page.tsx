@@ -9,7 +9,7 @@ import { DeliveryZones } from "@/components/landing/delivery-zones"
 import { FinalCTA } from "@/components/landing/final-cta"
 import { Footer } from "@/components/landing/footer"
 import { Header } from "@/components/landing/header"
-import CartServer from "@/components/cart/cart-server"
+import Cart from "@/components/cart/cart"
 
 type BoxType = "veggie" | "campo" | "granja"
 
@@ -31,19 +31,25 @@ export default function Home() {
     window.open("https://wa.me/5491168303596", "_blank")
   }
 
-  
- return (
+  return (
     <main>
       <Header />
+
       <Hero onWhatsAppClick={onWhatsAppClick} />
+
       {/*<HowItWorks />*/}
+
       <div id="cart" className="scroll-mt-32">
-        <CartServer />
+        <Cart />
       </div>
+
       {/*<BoxesSection onSelectBox={onSelectBox} />*/}
       {/*<SocialProof />*/}
+
       <DeliveryZones />
+
       {/*<FinalCTA onWhatsAppClick={onWhatsAppClick} />*/}
+
       <Footer onWhatsAppClick={onWhatsAppClick} />
     </main>
   )
