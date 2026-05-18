@@ -16,7 +16,8 @@ export type Product = {
 }
 
 // 🔥 PRODUCTOS
-const PRODUCTS: Product[] = [
+
+  const FALLBACK_PRODUCTS: Product[] = [
 
 
 // -------------------
@@ -378,7 +379,11 @@ const PRODUCTS: Product[] = [
 ]
 
 export default function Cart({ products }: { products?: Product[] }) {
-  const PRODUCTS = products || []
+  const PRODUCTS =
+    products && products.length > 0
+      ? products
+      : FALLBACK_PRODUCTS
+  
 
   const [cart, setCart] = useState<any[]>([])
   const [paymentMethod, setPaymentMethod] = useState<"mp" | "cash">("mp")
