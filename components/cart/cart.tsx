@@ -16,88 +16,85 @@ export type Product = {
 }
 
 // 🔥 PRODUCTOS
-
-  const FALLBACK_PRODUCTS: Product[] = [
-
-
-// -------------------
-// CAJAS ARMADAS
-// -------------------
-{
-  id: "caja_veggie",
-  name: "Caja Veggie",
-  description: "Rica en fibra, vitaminas y antioxidantes. Mejora la digestión y fortalece tus defensas.",
-  price: 22820,
-  type: "unit",
-  image: "/images/caja-veggie.jpg",
-  category: "cajas_armadas",
-  boxItems: [
-    "1 zapallo anco",
-    "papa negra 2 kg",
-    "cebolla 1 kg y 1/2",
-    "tomate 1/2 kg",
-    "zanahoria 1/2 kg",
-    "manzana 1/2 kg",
-    "citricos (naranja + limon) 1 kg",
-    "banana 1 kg",
-    "lechuga 1 planta",
-    "espinaca 2 atados",
-    "ideal si compras solo para vos",
-    "rinde muy bien sin desperdicio"
-  ]
-},
-{
-  id: "caja_campo",
-  name: "Caja Campo",
-  description: "Equilibrio entre vegetales y proteínas. Más energía, saciedad y nutrición completa.",
-  price: 45320,
-  type: "unit",
-  image: "/images/caja-campo.jpg",
-  category: "cajas_armadas",
-  boxItems: [
-    "1 zapallo anco",
-    "papa negra 2 kg",
-    "cebolla 1 kg y 1/2",
-    "tomate 1/2 kg",
-    "zanahoria 1/2 kg",
-    "manzana 1/2 kg",
-    "citricos (naranja + limon) 1 kg",
-    "banana 1 kg",
-    "lechuga 1 planta",
-    "espinaca 2 atados",
-    "30 huevos de campo",
-    "1 pollo fresco entero organico",
-    "perfecta para dos personas",
-    "ideal si queres cocinar y tener stock"
-  ]
-},
-{
-  id: "caja_granja",
-  name: "Caja Granja",
-  description: "Nutrición completa para toda la familia. Proteínas, grasas saludables y alimentos reales.",
-  price: 55520,
-  type: "unit",
-  image: "/images/caja-granja.jpg",
-  category: "cajas_armadas",
-  boxItems: [
-    "1 zapallo anco",
-    "papa negra 2 kg",
-    "cebolla 1 kg y 1/2",
-    "tomate 1/2 kg",
-    "zanahoria 1/2 kg",
-    "manzana 1/2 kg",
-    "citricos (naranja + limon) 1 kg",
-    "banana 1 kg",
-    "lechuga 1 planta",
-    "espinaca 2 atados",
-    "30 huevos de campo",
-    "1 pollo fresco entero organico",
-    "1 kg de miel de abejas real pura",
-    "1 pan de campo grande",
-    "le agrega nutrientes a tus desayunos",
-    "pensada para toda la familia"
-  ]
-},
+const FALLBACK_PRODUCTS: Product[] = [
+  // -------------------
+  // CAJAS ARMADAS
+  // -------------------
+  {
+    id: "caja_veggie",
+    name: "Caja Veggie",
+    description: "Rica en fibra, vitaminas y antioxidantes. Mejora la digestión y fortalece tus defensas.",
+    price: 22820,
+    type: "unit",
+    image: "/images/caja-veggie.jpg",
+    category: "cajas_armadas",
+    boxItems: [
+      "1 zapallo anco",
+      "papa negra 2 kg",
+      "cebolla 1 kg y 1/2",
+      "tomate 1/2 kg",
+      "zanahoria 1/2 kg",
+      "manzana 1/2 kg",
+      "citricos (naranja + limon) 1 kg",
+      "banana 1 kg",
+      "lechuga 1 planta",
+      "espinaca 2 atados",
+      "ideal si compras solo para vos",
+      "rinde muy bien sin desperdicio"
+    ]
+  },
+  {
+    id: "caja_campo",
+    name: "Caja Campo",
+    description: "Equilibrio entre vegetales y proteínas. Más energía, saciedad y nutrición completa.",
+    price: 45320,
+    type: "unit",
+    image: "/images/caja-campo.jpg",
+    category: "cajas_armadas",
+    boxItems: [
+      "1 zapallo anco",
+      "papa negra 2 kg",
+      "cebolla 1 kg y 1/2",
+      "tomate 1/2 kg",
+      "zanahoria 1/2 kg",
+      "manzana 1/2 kg",
+      "citricos (naranja + limon) 1 kg",
+      "banana 1 kg",
+      "lechuga 1 planta",
+      "espinaca 2 atados",
+      "30 huevos de campo",
+      "1 pollo fresco entero organico",
+      "perfecta para dos personas",
+      "ideal si queres cocinar y tener stock"
+    ]
+  },
+  {
+    id: "caja_granja",
+    name: "Caja Granja",
+    description: "Nutrición completa para toda la familia. Proteínas, grasas saludables y alimentos reales.",
+    price: 55520,
+    type: "unit",
+    image: "/images/caja-granja.jpg",
+    category: "cajas_armadas",
+    boxItems: [
+      "1 zapallo anco",
+      "papa negra 2 kg",
+      "cebolla 1 kg y 1/2",
+      "tomate 1/2 kg",
+      "zanahoria 1/2 kg",
+      "manzana 1/2 kg",
+      "citricos (naranja + limon) 1 kg",
+      "banana 1 kg",
+      "lechuga 1 planta",
+      "espinaca 2 atados",
+      "30 huevos de campo",
+      "1 pollo fresco entero organico",
+      "1 kg de miel de abejas real pura",
+      "1 pan de campo grande",
+      "le agrega nutrientes a tus desayunos",
+      "pensada para toda la familia"
+    ]
+  },
 
   // -------------------
   // VERDURAS
@@ -306,9 +303,9 @@ export type Product = {
     type: "weight_1kg",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nuggets.jpeg",
     category: "congelados"
-  },
+  }
 
-  /* 
+  /*
   // -------------------
   // FRUTOS SECOS
   // -------------------
@@ -378,12 +375,36 @@ export type Product = {
   */
 ]
 
+function mergeProductWithFallback(product: Product): Product {
+  const fallback = FALLBACK_PRODUCTS.find((item) => {
+    return (
+      item.id === product.id ||
+      item.slug === product.slug ||
+      item.name.toLowerCase() === product.name.toLowerCase()
+    )
+  })
+
+  return {
+    ...fallback,
+    ...product,
+    id: product.slug || product.id || fallback?.id || product.name,
+    image: product.image || fallback?.image || "",
+    description: product.description || fallback?.description || "",
+    category: product.category || fallback?.category || "otros",
+    type: product.type || fallback?.type || "unit",
+    unit_label: product.unit_label || fallback?.unit_label,
+    boxItems: product.boxItems || fallback?.boxItems
+  }
+}
+
 export default function Cart({ products }: { products?: Product[] }) {
+  const [dbProducts, setDbProducts] = useState<Product[]>(products || [])
+  const [productsLoading, setProductsLoading] = useState(false)
+
   const PRODUCTS =
-    products && products.length > 0
-      ? products
+    dbProducts && dbProducts.length > 0
+      ? dbProducts.map(mergeProductWithFallback)
       : FALLBACK_PRODUCTS
-  
 
   const [cart, setCart] = useState<any[]>([])
   const [paymentMethod, setPaymentMethod] = useState<"mp" | "cash">("mp")
@@ -391,6 +412,35 @@ export default function Cart({ products }: { products?: Product[] }) {
   const [expandedBoxId, setExpandedBoxId] = useState<string | null>(null)
   const [repeatEmail, setRepeatEmail] = useState("")
   const [repeatLoading, setRepeatLoading] = useState(false)
+
+  useEffect(() => {
+    if (products && products.length > 0) {
+      setDbProducts(products)
+      return
+    }
+
+    async function loadProducts() {
+      setProductsLoading(true)
+
+      try {
+        const res = await fetch("/api/products", {
+          cache: "no-store"
+        })
+
+        const data = await res.json()
+
+        if (res.ok && Array.isArray(data.products) && data.products.length > 0) {
+          setDbProducts(data.products)
+        }
+      } catch (error) {
+        console.error("load products error", error)
+      } finally {
+        setProductsLoading(false)
+      }
+    }
+
+    loadProducts()
+  }, [products])
 
   function addItem(product: Product) {
     setCart((prev) => {
@@ -438,9 +488,11 @@ export default function Cart({ products }: { products?: Product[] }) {
 
   function getLabel(product: Product) {
     if (product.category === "cajas_armadas") return "caja"
+    if (product.unit_label) return product.unit_label
     if (product.type === "unit") return "unidad"
     if (product.type === "weight_500g") return "500g"
     if (product.type === "weight_1kg") return "kg"
+    return "unidad"
   }
 
   function getDisplayQuantity(item: any) {
@@ -468,52 +520,54 @@ export default function Cart({ products }: { products?: Product[] }) {
   function toggleBoxDetails(productId: string) {
     setExpandedBoxId((prev) => (prev === productId ? null : productId))
   }
-async function repeatLastOrder() {
-  const email = repeatEmail.trim().toLowerCase()
 
-  if (!email) {
-    alert("Ingresá el email con el que hiciste tu compra anterior")
-    return
-  }
+  async function repeatLastOrder() {
+    const email = repeatEmail.trim().toLowerCase()
 
-  setRepeatLoading(true)
-
-  try {
-    const res = await fetch("/api/orders/last", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email })
-    })
-
-    const data = await res.json()
-
-    if (!res.ok) {
-      alert(data?.error || "No pudimos encontrar tu último pedido")
-      setRepeatLoading(false)
+    if (!email) {
+      alert("Ingresá el email con el que hiciste tu compra anterior")
       return
     }
 
-    const repeatedItems = data.items.map((item: any) => ({
-      id: item.product_name,
-      name: item.product_name,
-      product_name: item.product_name,
-      quantity: Number(item.quantity || 1),
-      price: Number(item.price || 0),
-      type: "unit",
-      category: "repetido",
-      image: ""
-    }))
+    setRepeatLoading(true)
 
-    setCart(repeatedItems)
-  } catch (error) {
-    console.error(error)
-    alert("Error buscando tu último pedido")
-  } finally {
-    setRepeatLoading(false)
+    try {
+      const res = await fetch("/api/orders/last", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        alert(data?.error || "No pudimos encontrar tu último pedido")
+        setRepeatLoading(false)
+        return
+      }
+
+      const repeatedItems = data.items.map((item: any) => ({
+        id: item.product_name,
+        name: item.product_name,
+        product_name: item.product_name,
+        quantity: Number(item.quantity || 1),
+        price: Number(item.price || 0),
+        type: "unit",
+        category: "repetido",
+        image: ""
+      }))
+
+      setCart(repeatedItems)
+    } catch (error) {
+      console.error(error)
+      alert("Error buscando tu último pedido")
+    } finally {
+      setRepeatLoading(false)
+    }
   }
-}
+
   async function handleCheckout() {
     if (cart.length === 0) {
       alert("El carrito está vacío")
@@ -539,7 +593,6 @@ async function repeatLastOrder() {
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-
       <h2 className="text-3xl font-bold mb-6 text-center">
         Elegí una caja, armá la tuya o sumá productos
       </h2>
@@ -547,6 +600,12 @@ async function repeatLastOrder() {
       <p className="text-lg font-medium mb-6 text-center">
         Pedido mínimo de $20.000 - Recibís en tu casa
       </p>
+
+      {productsLoading && (
+        <p className="mb-6 text-center text-sm text-gray-500">
+          Actualizando productos...
+        </p>
+      )}
 
       {/* 🟢 PILLS DE CATEGORÍAS */}
       <div className="flex gap-2 mb-6 overflow-x-auto">
@@ -568,10 +627,8 @@ async function repeatLastOrder() {
 
       {/* 🔥 LAYOUT */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-
         {/* IZQUIERDA */}
         <div className="md:col-span-2">
-
           {Array.from(new Set(PRODUCTS.map((p) => p.category))).map((category) => {
             const items = PRODUCTS.filter((p) => p.category === category)
 
@@ -600,6 +657,7 @@ async function repeatLastOrder() {
                           <img
                             src={p.image}
                             className="w-full h-full object-cover"
+                            alt={p.name}
                           />
                         </div>
 
@@ -624,17 +682,18 @@ async function repeatLastOrder() {
                         )}
 
                         {isBox && isExpanded && p.boxItems && (
-  <div className="mb-3 rounded-xl bg-white p-4 shadow-lg border border-gray-300">
-    <p className="text-sm font-bold mb-3">
-      Esta caja trae:
-    </p>
-    <ul className="text-sm text-gray-700 space-y-2 leading-6">
-      {p.boxItems.map((item, index) => (
-        <li key={`${p.id}-item-${index}`}>• {item}</li>
-      ))}
-    </ul>
-  </div>
-)}
+                          <div className="mb-3 rounded-xl bg-white p-4 shadow-lg border border-gray-300">
+                            <p className="text-sm font-bold mb-3">
+                              Esta caja trae:
+                            </p>
+
+                            <ul className="text-sm text-gray-700 space-y-2 leading-6">
+                              {p.boxItems.map((item, index) => (
+                                <li key={`${p.id}-item-${index}`}>• {item}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
 
                         <p className="text-md font-bold">
                           ${p.price.toLocaleString()}
@@ -647,6 +706,7 @@ async function repeatLastOrder() {
                         {/* CONTROLES */}
                         <div className="flex justify-center items-center gap-2">
                           <button
+                            type="button"
                             onClick={() => removeItem(p)}
                             className="w-7 h-7 rounded-full bg-gray-400"
                           >
@@ -658,6 +718,7 @@ async function repeatLastOrder() {
                           </span>
 
                           <button
+                            type="button"
                             onClick={() => addItem(p)}
                             className="w-7 h-7 rounded-full bg-green-600 text-white"
                           >
@@ -675,32 +736,32 @@ async function repeatLastOrder() {
 
         {/* 🔥 CARRITO VERDE */}
         <div className="md:col-span-1">
-         <div className="sticky top-24 rounded-xl p-5 bg-green-600 text-white shadow-lg">
-  <div className="mb-4 rounded-xl bg-white/15 p-3">
-    <p className="mb-2 text-sm font-semibold">
-      ¿Ya compraste antes?
-    </p>
+          <div className="sticky top-24 rounded-xl p-5 bg-green-600 text-white shadow-lg">
+            <div className="mb-4 rounded-xl bg-white/15 p-3">
+              <p className="mb-2 text-sm font-semibold">
+                ¿Ya compraste antes?
+              </p>
 
-    <input
-      className="mb-2 w-full rounded-lg px-3 py-2 text-sm text-black"
-      placeholder="Tu email"
-      value={repeatEmail}
-      onChange={(e) => setRepeatEmail(e.target.value)}
-    />
+              <input
+                className="mb-2 w-full rounded-lg px-3 py-2 text-sm text-black"
+                placeholder="Tu email"
+                value={repeatEmail}
+                onChange={(e) => setRepeatEmail(e.target.value)}
+              />
 
-    <button
-      type="button"
-      onClick={repeatLastOrder}
-      disabled={repeatLoading}
-      className="w-full rounded-lg bg-black px-3 py-2 text-sm font-semibold text-white"
-    >
-      {repeatLoading ? "Buscando..." : "Repetir último pedido"}
-    </button>
-  </div>
+              <button
+                type="button"
+                onClick={repeatLastOrder}
+                disabled={repeatLoading}
+                className="w-full rounded-lg bg-black px-3 py-2 text-sm font-semibold text-white"
+              >
+                {repeatLoading ? "Buscando..." : "Repetir último pedido"}
+              </button>
+            </div>
 
-  <h3 className="text-xl font-bold mb-4">
-    Mi pedido
-  </h3>
+            <h3 className="text-xl font-bold mb-4">
+              Mi pedido
+            </h3>
 
             {cart.length === 0 && (
               <p className="text-sm text-green-100">
@@ -709,7 +770,10 @@ async function repeatLastOrder() {
             )}
 
             {cart.map((item) => (
-              <div key={item.id} className="flex justify-between items-center mb-3 text-sm">
+              <div
+                key={item.id}
+                className="flex justify-between items-center mb-3 text-sm"
+              >
                 <div>
                   <p className="font-medium">{item.name}</p>
                   <p className="text-xs text-green-200">
@@ -719,12 +783,15 @@ async function repeatLastOrder() {
 
                 <div className="flex items-center gap-2">
                   <button
+                    type="button"
                     onClick={() => removeItem(item)}
                     className="w-6 h-6 rounded-full bg-white text-black"
                   >
                     -
                   </button>
+
                   <button
+                    type="button"
                     onClick={() => addItem(item)}
                     className="w-6 h-6 rounded-full bg-black text-white"
                   >
@@ -764,6 +831,7 @@ async function repeatLastOrder() {
 
             {/* CTA */}
             <button
+              type="button"
               onClick={handleCheckout}
               disabled={loading}
               className="mt-5 w-full bg-black text-white py-3 rounded-xl text-lg"
@@ -772,9 +840,7 @@ async function repeatLastOrder() {
             </button>
           </div>
         </div>
-
       </div>
-
     </div>
   )
 }
