@@ -11,6 +11,8 @@ import { Footer } from "@/components/landing/footer"
 import { Header } from "@/components/landing/header"
 import CartServer from "@/components/cart/cart-server"
 
+type BoxType = "veggie" | "campo" | "granja"
+
 const BOX_DB_IDS: Record<BoxType, string> = {
   veggie: "dff394c8-6a17-45e8-ba3f-960c27f8d76c",
   campo: "d9c75e5b-3e8b-4d3d-9776-d65ad9afae1d",
