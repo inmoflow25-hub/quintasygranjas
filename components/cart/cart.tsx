@@ -378,13 +378,14 @@ const PRODUCTS: Product[] = [
 ]
 
 export default function Cart({ products }: { products?: Product[] }) { 
-  const PRODUCTS = products && products.length > 0 ? products : []
+  const PRODUCTS = products && products.length > 0 ? products : FALLBACK_PRODUCTS
+
+  const [cart, setCart] = useState<any[]>([])
   const [paymentMethod, setPaymentMethod] = useState<"mp" | "cash">("mp")
   const [loading, setLoading] = useState(false)
   const [expandedBoxId, setExpandedBoxId] = useState<string | null>(null)
   const [repeatEmail, setRepeatEmail] = useState("")
   const [repeatLoading, setRepeatLoading] = useState(false)
-
   function addItem(product: Product) {
     setCart((prev) => {
       const existing = prev.find((p) => p.id === product.id)
