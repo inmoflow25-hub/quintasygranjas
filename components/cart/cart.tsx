@@ -7,8 +7,7 @@ export type Product = {
   slug?: string
   name: string
   price: number
-  type: "unit" | "weight_500g" | "weight_1kg"
-  unit_label?: string
+  type: "unit" | "weight_100g" | "weight_500g" | "weight_1kg"  unit_label?: string
   image: string
   category: string
   description?: string | null
