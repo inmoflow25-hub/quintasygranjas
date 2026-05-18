@@ -499,6 +499,16 @@ export default function Cart({ products }: { products?: Product[] }) {
       return `${item.quantity} caja${item.quantity > 1 ? "s" : ""}`
     }
 
+    if (item.type === "weight_100g") {
+  const totalGrams = item.quantity * 100
+
+  if (totalGrams >= 1000) {
+    return `${totalGrams / 1000} kg`
+  }
+
+  return `${totalGrams} g`
+}
+
     if (item.type === "weight_500g") {
       const totalGrams = item.quantity * 500
 
