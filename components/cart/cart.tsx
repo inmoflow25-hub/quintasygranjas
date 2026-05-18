@@ -2,14 +2,16 @@
 
 import { useState } from "react"
 
-type Product = {
+export type Product = {
   id: string
+  slug?: string
   name: string
   price: number
   type: "unit" | "weight_500g" | "weight_1kg"
+  unit_label?: string
   image: string
   category: string
-  description?: string
+  description?: string | null
   boxItems?: string[]
 }
 
@@ -375,8 +377,8 @@ const PRODUCTS: Product[] = [
   */
 ]
 
-export default function Cart() {
-  const [cart, setCart] = useState<any[]>([])
+export default function Cart({ products }: { products?: Product[] }) { 
+  const PRODUCTS = products && products.length > 0 ? products : []
   const [paymentMethod, setPaymentMethod] = useState<"mp" | "cash">("mp")
   const [loading, setLoading] = useState(false)
   const [expandedBoxId, setExpandedBoxId] = useState<string | null>(null)
