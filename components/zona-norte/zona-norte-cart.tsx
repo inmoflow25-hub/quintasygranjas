@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation"
 
 type Product = {
   id: string
+  slug?: string
   name: string
   price: number
-  type: "unit" | "weight_500g" | "weight_1kg"
+  type: "unit" | "weight_100g" | "weight_500g" | "weight_1kg"
+  unit_label?: string
   image: string
   category: string
-  description?: string
+  description?: string | null
   boxItems?: string[]
 }
 
@@ -35,13 +37,15 @@ const BARRIOS: Barrio[] = [
   { slug: "partido-tigre", name: "Partido de Tigre", delivery_day: "Martes y Sábado" }
 ]
 
-const PRODUCTS: Product[] = [
+const FALLBACK_PRODUCTS: Product[] = [
   {
     id: "caja_veggie",
+    slug: "caja-veggie",
     name: "Caja Veggie",
     description: "Rica en fibra, vitaminas y antioxidantes. Mejora la digestión y fortalece tus defensas.",
-    price: 22820,
+    price: 29000,
     type: "unit",
+    unit_label: "caja",
     image: "/images/caja-veggie.jpg",
     category: "cajas_armadas",
     boxItems: [
@@ -58,317 +62,336 @@ const PRODUCTS: Product[] = [
     ]
   },
   {
-    id: "caja_campo",
-    name: "Caja Campo",
-    description: "Equilibrio entre vegetales y proteínas. Más energía, saciedad y nutrición completa.",
-    price: 45320,
-    type: "unit",
-    image: "/images/caja-campo.jpg",
-    category: "cajas_armadas",
-    boxItems: [
-      "1 zapallo anco",
-      "papa negra 2 kg",
-      "cebolla 1 kg y 1/2",
-      "tomate 1/2 kg",
-      "zanahoria 1/2 kg",
-      "manzana 1/2 kg",
-      "citricos (naranja + limon) 1 kg",
-      "banana 1 kg",
-      "lechuga 1 planta",
-      "espinaca 2 atados",
-      "30 huevos de campo",
-      "1 pollo fresco entero organico"
-    ]
-  },
-  {
-    id: "caja_granja",
-    name: "Caja Granja",
-    description: "Nutrición completa para toda la familia. Proteínas, grasas saludables y alimentos reales.",
-    price: 55520,
-    type: "unit",
-    image: "/images/caja-granja.jpg",
-    category: "cajas_armadas",
-    boxItems: [
-      "1 zapallo anco",
-      "papa negra 2 kg",
-      "cebolla 1 kg y 1/2",
-      "tomate 1/2 kg",
-      "zanahoria 1/2 kg",
-      "manzana 1/2 kg",
-      "citricos (naranja + limon) 1 kg",
-      "banana 1 kg",
-      "lechuga 1 planta",
-      "espinaca 2 atados",
-      "30 huevos de campo",
-      "1 pollo fresco entero organico",
-      "1 kg de miel de abejas real pura",
-      "1 pan de campo grande"
-    ]
-  },
-  {
-    id: "zapallo",
+    id: "zapallo-anco",
+    slug: "zapallo-anco",
     name: "Zapallo Anco",
-    description: "ideal para horno, puré o sopa",
-    price: 1700,
+    description: "Ideal para horno, puré o sopa.",
+    price: 1800,
     type: "unit",
+    unit_label: "unidad",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/WhatsApp%20Image%202026-04-12%20at%2014.21.43.jpeg",
     category: "verduras"
   },
   {
     id: "cebolla",
+    slug: "cebolla",
     name: "Cebolla",
-    description: "base para guisos, salsas y salteados",
-    price: 600,
+    description: "Base para guisos, salsas y salteados.",
+    price: 700,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cebollas.jpg",
     category: "verduras"
   },
   {
-    id: "papa",
-    name: "Papa negra",
-    description: "ideal para horno, puré o fritas",
-    price: 733,
+    id: "papa-negra-cepillada",
+    slug: "papa-negra-cepillada",
+    name: "Papa negra cepillada",
+    description: "Ideal para horno, puré o fritas.",
+    price: 800,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/papas%20negras.jpg",
     category: "verduras"
   },
   {
-    id: "tomate",
-    name: "Tomate",
-    description: "fresco, ideal para ensaladas o salsa",
-    price: 833,
+    id: "tomate-perita",
+    slug: "tomate-perita",
+    name: "Tomate perita",
+    description: "Fresco, ideal para ensaladas o salsa.",
+    price: 1000,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/tomates.jpg",
     category: "verduras"
   },
   {
     id: "zanahoria",
+    slug: "zanahoria",
     name: "Zanahoria",
-    description: "dulce y crocante, ideal cruda o cocida",
-    price: 670,
+    description: "Dulce y crocante, ideal cruda o cocida.",
+    price: 800,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/zanahorias.jpg",
     category: "verduras"
   },
   {
     id: "lechuga",
+    slug: "lechuga",
     name: "Lechuga",
-    description: "fresca y crocante, ideal para ensaladas",
-    price: 390,
+    description: "Fresca y crocante, ideal para ensaladas.",
+    price: 800,
     type: "unit",
+    unit_label: "unidad",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/lechugas.jpg",
     category: "verduras"
   },
   {
     id: "espinaca",
+    slug: "espinaca",
     name: "Espinaca",
-    description: "hojas tiernas, ideal para tartas o salteados",
+    description: "Hojas tiernas, ideal para tartas o salteados.",
     price: 1750,
     type: "unit",
+    unit_label: "unidad",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/espinacas.jpg",
     category: "verduras"
   },
   {
-    id: "morron",
+    id: "apio",
+    slug: "apio",
+    name: "Apio",
+    description: "Fresco, ideal para ensaladas, caldos o jugos.",
+    price: 1800,
+    type: "unit",
+    unit_label: "unidad",
+    image: "",
+    category: "verduras"
+  },
+  {
+    id: "morrones",
+    slug: "morrones",
     name: "Morrones",
-    description: "ideal para rellenos, salteados o ensaladas",
+    description: "Ideal para rellenos, salteados o ensaladas.",
     price: 1800,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/morrones.jpg",
     category: "verduras"
   },
   {
-    id: "manzana",
-    name: "Manzana RED DELICIOUS",
-    description: "dulce y crocante, ideal para todo momento",
-    price: 2600,
+    id: "manzana-red-delicious",
+    slug: "manzana-red-delicious",
+    name: "Manzana red delicious",
+    description: "Dulce y crocante, ideal para todo momento.",
+    price: 2900,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/manzanas.jpg",
     category: "frutas"
   },
   {
-    id: "naranja",
+    id: "naranja-jugo",
+    slug: "naranja-jugo",
     name: "Naranja jugo",
-    description: "jugosa, ideal para exprimir",
-    price: 1400,
+    description: "Jugosa, ideal para exprimir.",
+    price: 1500,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/naranja%20jugo.jpg",
     category: "frutas"
   },
   {
     id: "limon",
+    slug: "limon",
     name: "Limón",
-    description: "ácido y fresco, ideal para comidas o bebidas",
-    price: 1300,
+    description: "Ácido y fresco, ideal para comidas o bebidas.",
+    price: 1100,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/limones.jpg",
     category: "frutas"
   },
   {
     id: "banana",
+    slug: "banana",
     name: "Banana",
-    description: "suave y energética, ideal para colaciones",
-    price: 1250,
+    description: "Suave y energética, ideal para colaciones.",
+    price: 1350,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/banana.jpg",
     category: "frutas"
   },
   {
-    id: "pan",
-    name: "Pan",
-    description: "pan de campo, ideal para acompañar comidas",
-    price: 1200,
-    type: "unit",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pan%20de%20campo.jpg",
-    category: "otros"
-  },
-  {
-    id: "miel",
-    name: "Miel",
-    description: "natural y dulce, ideal para infusiones o tostadas",
-    price: 4500,
+    id: "pera",
+    slug: "pera",
+    name: "Pera",
+    description: "Dulce y fresca, ideal para todos los días.",
+    price: 1900,
     type: "weight_500g",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/miel.jpg",
-    category: "otros"
+    unit_label: "500g",
+    image: "",
+    category: "frutas"
   },
   {
-    id: "huevos",
-    name: "Huevos (30 unidades)",
-    description: "maple completo, ideal para consumo diario",
-    price: 6000,
+    id: "mandarina",
+    slug: "mandarina",
+    name: "Mandarina",
+    description: "Fresca, dulce y fácil de pelar.",
+    price: 1000,
+    type: "weight_500g",
+    unit_label: "500g",
+    image: "",
+    category: "frutas"
+  },
+  {
+    id: "kiwi",
+    slug: "kiwi",
+    name: "Kiwi",
+    description: "Fresco, ácido y nutritivo.",
+    price: 1800,
+    type: "weight_500g",
+    unit_label: "500g",
+    image: "",
+    category: "frutas"
+  },
+  {
+    id: "palta",
+    slug: "palta",
+    name: "Palta",
+    description: "Cremosa, ideal para ensaladas, tostadas o comidas frescas.",
+    price: 1800,
     type: "unit",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/huevos.jpg",
-    category: "otros"
+    unit_label: "unidad",
+    image: "",
+    category: "frutas"
   },
-  {
-    id: "pollo_entero",
-    name: "Pollo entero Orgánico",
-    description: "ideal para horno, parrilla o cacerola",
-    price: 18500,
-    type: "unit",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pollo%20entero.jpg",
-    category: "pollo"
-  },
-  {
-    id: "suprema",
-    name: "Suprema deshuesada sin piel (Congelada)",
-    description: "Descongelar y cocinar, ideal para milanesas o plancha",
-    price: 11300,
-    type: "weight_1kg",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pechugas%20.jpg",
-    category: "pollo"
-  },
-  {
-    id: "cuartos",
-    name: "Pata y muslo de pollo (Congelado)",
-    description: "Desconglar y cocinar, ideal horno o parrilla",
-    price: 4500,
-    type: "weight_1kg",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cuarto%20trasero.jpg",
-    category: "pollo"
-  },
-    // -------------------
-  // CONGELADOS
-  // -------------------
-  
-{
-    id: "medallones",
-    name: "Medallones de pollo",
-    description: "prácticos, ideales para una comida rápida",
-    price: 9380,
-    type: "weight_1kg",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo%20sin%20espinaca.webp",
-    category: "congelados"
-  },
-  {
-    id: "medallones_espinaca",
-    name: "Medallones pollo con espinaca",
-    description: "opción práctica con relleno de espinaca",
-    price: 10250,
-    type: "weight_1kg",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo.jpg",
-    category: "congelados"
-  },
-  {
-    id: "nuggets",
-    name: "Nuggets de pollo",
-    description: "crocrantes y prácticos, ideales para chicos",
-    price: 12300,
-    type: "weight_1kg",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nuggets.jpeg",
-    category: "congelados"
-  },
-
-  /*
-  // -------------------
-  // FRUTOS SECOS
-  // -------------------
   {
     id: "nueces",
-    name: "Nueces peladas Pecan",
-    description: "sin cáscara, listas para consumir",
-    price: 13500,
-    type: "weight_500g",
+    slug: "nueces",
+    name: "Nueces",
+    description: "Nueces listas para consumir.",
+    price: 1600,
+    type: "weight_100g",
+    unit_label: "100g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nueces.jpg",
     category: "frutos_secos"
   },
   {
     id: "almendras",
-    name: "Almendras naturales Felicia",
-    description: "crudas, sin sal",
-    price: 12375,
-    type: "weight_500g",
+    slug: "almendras",
+    name: "Almendras",
+    description: "Almendras naturales.",
+    price: 3200,
+    type: "weight_100g",
+    unit_label: "100g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/almendras.jpg",
     category: "frutos_secos"
   },
   {
-    id: "pasas",
-    name: "Pasas de uva Flame",
-    description: "dulces, ideales para snacks o cocina",
-    price: 3000,
-    type: "weight_500g",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pasas%20de%20uva.jpg",
-    category: "frutos_secos"
-  },
-  {
-    id: "caju",
-    name: "Castañas de cajú Vietnam",
-    description: "suaves y crocantes",
-    price: 9975,
-    type: "weight_500g",
+    id: "castanas",
+    slug: "castanas",
+    name: "Castañas",
+    description: "Castañas listas para consumir.",
+    price: 2400,
+    type: "weight_100g",
+    unit_label: "100g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/castan%CC%83as%20de%20caju.jpg",
     category: "frutos_secos"
   },
   {
-    id: "mix",
-    name: "Mix frutos secos Econo Tropi",
-    description: "mezcla de nuez, almendra, pasas y maní",
-    price: 5775,
-    type: "weight_500g",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mix%20frutos%20secos.jpg",
-    category: "frutos_secos"
+    id: "pan",
+    slug: "pan",
+    name: "Pan",
+    description: "Pan de campo, ideal para acompañar comidas.",
+    price: 1300,
+    type: "unit",
+    unit_label: "unidad",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pan%20de%20campo.jpg",
+    category: "otros"
   },
   {
-    id: "mani_tostado",
-    name: "Maní tostado",
-    description: "tostado sin sal",
-    price: 1800,
-    type: "weight_500g",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20tostado%20comun.jpg",
-    category: "frutos_secos"
+    id: "miel",
+    slug: "miel",
+    name: "Miel",
+    description: "Natural y dulce, ideal para infusiones o tostadas.",
+    price: 6500,
+    type: "unit",
+    unit_label: "unidad",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/miel.jpg",
+    category: "otros"
   },
   {
-    id: "mani_salado",
-    name: "Maní salado",
-    description: "tostado con sal",
-    price: 1900,
-    type: "weight_500g",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20salado.jpg",
-    category: "frutos_secos"
+    id: "huevos",
+    slug: "huevos",
+    name: "Huevos",
+    description: "Maple completo, ideal para consumo diario.",
+    price: 6000,
+    type: "unit",
+    unit_label: "maple",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/huevos.jpg",
+    category: "otros"
+  },
+  {
+    id: "suprema",
+    slug: "suprema",
+    name: "Suprema",
+    description: "Descongelar y cocinar, ideal para milanesas o plancha.",
+    price: 11300,
+    type: "weight_1kg",
+    unit_label: "kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pechugas%20.jpg",
+    category: "pollo"
+  },
+  {
+    id: "pata-y-muslo",
+    slug: "pata-y-muslo",
+    name: "Pata y muslo",
+    description: "Descongelar y cocinar, ideal horno o parrilla.",
+    price: 4500,
+    type: "weight_1kg",
+    unit_label: "kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cuarto%20trasero.jpg",
+    category: "pollo"
+  },
+  {
+    id: "medallones-pollo",
+    slug: "medallones-pollo",
+    name: "Medallones pollo",
+    description: "Prácticos, ideales para una comida rápida.",
+    price: 9380,
+    type: "weight_1kg",
+    unit_label: "kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo%20sin%20espinaca.webp",
+    category: "congelados"
+  },
+  {
+    id: "medallones-pollo-con-espinaca",
+    slug: "medallones-pollo-con-espinaca",
+    name: "Medallones pollo con espinaca",
+    description: "Opción práctica con relleno de espinaca.",
+    price: 10250,
+    type: "weight_1kg",
+    unit_label: "kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo.jpg",
+    category: "congelados"
+  },
+  {
+    id: "nuggets-pollo",
+    slug: "nuggets-pollo",
+    name: "Nuggets pollo",
+    description: "Crocantes y prácticos, ideales para chicos.",
+    price: 12300,
+    type: "weight_1kg",
+    unit_label: "kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nuggets.jpeg",
+    category: "congelados"
   }
-  */
-
 ]
+
+function mergeProductWithFallback(product: Product): Product {
+  const fallback = FALLBACK_PRODUCTS.find((item) => {
+    return (
+      item.id === product.id ||
+      item.slug === product.slug ||
+      item.name.toLowerCase() === product.name.toLowerCase()
+    )
+  })
+
+  return {
+    ...fallback,
+    ...product,
+    id: product.slug || product.id || fallback?.id || product.name,
+    image: product.image || fallback?.image || "",
+    description: product.description || fallback?.description || "",
+    category: product.category || fallback?.category || "otros",
+    type: product.type || fallback?.type || "unit",
+    unit_label: product.unit_label || fallback?.unit_label,
+    boxItems: product.boxItems || fallback?.boxItems
+  }
+}
 
 export default function ZonaNorteCart() {
   const router = useRouter()
@@ -381,7 +404,38 @@ export default function ZonaNorteCart() {
   const [progressLoading, setProgressLoading] = useState(false)
   const [repeatEmail, setRepeatEmail] = useState("")
   const [repeatLoading, setRepeatLoading] = useState(false)
-  
+  const [dbProducts, setDbProducts] = useState<Product[]>([])
+  const [productsLoading, setProductsLoading] = useState(false)
+
+  const PRODUCTS =
+    dbProducts && dbProducts.length > 0
+      ? dbProducts.map(mergeProductWithFallback)
+      : FALLBACK_PRODUCTS
+
+  useEffect(() => {
+    async function loadProducts() {
+      setProductsLoading(true)
+
+      try {
+        const res = await fetch("/api/products", {
+          cache: "no-store"
+        })
+
+        const data = await res.json()
+
+        if (res.ok && Array.isArray(data.products) && data.products.length > 0) {
+          setDbProducts(data.products)
+        }
+      } catch (error) {
+        console.error("load products error", error)
+      } finally {
+        setProductsLoading(false)
+      }
+    }
+
+    loadProducts()
+  }, [])
+
   useEffect(() => {
     const raw = localStorage.getItem(ZONA_NORTE_CONTEXT_KEY)
 
@@ -489,7 +543,9 @@ export default function ZonaNorteCart() {
 
   function getLabel(product: Product) {
     if (product.category === "cajas_armadas") return "caja"
+    if (product.unit_label) return product.unit_label
     if (product.type === "unit") return "unidad"
+    if (product.type === "weight_100g") return "100g"
     if (product.type === "weight_500g") return "500g"
     if (product.type === "weight_1kg") return "kg"
     return ""
@@ -498,6 +554,11 @@ export default function ZonaNorteCart() {
   function getDisplayQuantity(item: any) {
     if (item.category === "cajas_armadas") {
       return `${item.quantity} caja${item.quantity > 1 ? "s" : ""}`
+    }
+
+    if (item.type === "weight_100g") {
+      const totalGrams = item.quantity * 100
+      return totalGrams >= 1000 ? `${totalGrams / 1000} kg` : `${totalGrams} g`
     }
 
     if (item.type === "weight_500g") {
@@ -513,68 +574,70 @@ export default function ZonaNorteCart() {
   function toggleBoxDetails(productId: string) {
     setExpandedBoxId((prev) => (prev === productId ? null : productId))
   }
-async function repeatLastOrder() {
-  const email = repeatEmail.trim().toLowerCase()
 
-  if (!email) {
-    alert("Ingresá el email con el que hiciste tu compra anterior")
-    return
-  }
+  async function repeatLastOrder() {
+    const email = repeatEmail.trim().toLowerCase()
 
-  setRepeatLoading(true)
-
-  try {
-    const res = await fetch("/api/orders/last", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email })
-    })
-
-    const data = await res.json()
-
-    if (!res.ok) {
-      alert(data?.error || "No pudimos encontrar tu último pedido")
-      setRepeatLoading(false)
+    if (!email) {
+      alert("Ingresá el email con el que hiciste tu compra anterior")
       return
     }
 
-    const lastNeighborhood = data.last_neighborhood
+    setRepeatLoading(true)
 
-if (
-  lastNeighborhood?.slug &&
-  neighborhoodSlug &&
-  lastNeighborhood.slug !== neighborhoodSlug
-) {
-  const changeToLastNeighborhood = window.confirm(
-    `Tu último pedido fue en ${lastNeighborhood.name}.\nAhora tenés seleccionado ${neighborhoodName}.\n\n¿Querés cambiar a ${lastNeighborhood.name}?`
-  )
+    try {
+      const res = await fetch("/api/orders/last", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email })
+      })
 
-  if (changeToLastNeighborhood) {
-    handleNeighborhoodChange(lastNeighborhood.slug)
+      const data = await res.json()
+
+      if (!res.ok) {
+        alert(data?.error || "No pudimos encontrar tu último pedido")
+        setRepeatLoading(false)
+        return
+      }
+
+      const lastNeighborhood = data.last_neighborhood
+
+      if (
+        lastNeighborhood?.slug &&
+        neighborhoodSlug &&
+        lastNeighborhood.slug !== neighborhoodSlug
+      ) {
+        const changeToLastNeighborhood = window.confirm(
+          `Tu último pedido fue en ${lastNeighborhood.name}.\nAhora tenés seleccionado ${neighborhoodName}.\n\n¿Querés cambiar a ${lastNeighborhood.name}?`
+        )
+
+        if (changeToLastNeighborhood) {
+          handleNeighborhoodChange(lastNeighborhood.slug)
+        }
+      }
+
+      const repeatedItems = data.items.map((item: any) => ({
+        id: item.product_name,
+        name: item.product_name,
+        product_name: item.product_name,
+        quantity: Number(item.quantity || 1),
+        price: Number(item.price || 0),
+        type: "unit",
+        category: "repetido",
+        image: ""
+      }))
+
+      setCart(repeatedItems)
+    } catch (error) {
+      console.error(error)
+      alert("Error buscando tu último pedido")
+    } finally {
+      setRepeatLoading(false)
+    }
   }
-}
-    
-    const repeatedItems = data.items.map((item: any) => ({
-      id: item.product_name,
-      name: item.product_name,
-      product_name: item.product_name,
-      quantity: Number(item.quantity || 1),
-      price: Number(item.price || 0),
-      type: "unit",
-      category: "repetido",
-      image: ""
-    }))
 
-    setCart(repeatedItems)
-  } catch (error) {
-    console.error(error)
-    alert("Error buscando tu último pedido")
-  } finally {
-    setRepeatLoading(false)
-  }
-}
   function handleCheckout() {
     if (!neighborhoodSlug) {
       alert("Elegí tu barrio antes de finalizar la compra")
@@ -604,6 +667,12 @@ if (
       <p className="text-lg font-medium mb-6 text-center">
         Pedido mínimo de $20.000 - Recibís en Zona Norte
       </p>
+
+      {productsLoading && (
+        <p className="mb-6 text-center text-sm text-gray-500">
+          Actualizando productos...
+        </p>
+      )}
 
       <div className="flex gap-2 mb-6 overflow-x-auto">
         {Array.from(new Set(PRODUCTS.map((p) => p.category))).map((cat) => (
@@ -678,13 +747,21 @@ if (
                         <p className="text-xs text-gray-600 mb-2">por {getLabel(p)}</p>
 
                         <div className="flex justify-center items-center gap-2">
-                          <button onClick={() => removeItem(p)} className="w-7 h-7 rounded-full bg-gray-400">
+                          <button
+                            type="button"
+                            onClick={() => removeItem(p)}
+                            className="w-7 h-7 rounded-full bg-gray-400"
+                          >
                             -
                           </button>
 
                           <span className="text-sm">{quantity}</span>
 
-                          <button onClick={() => addItem(p)} className="w-7 h-7 rounded-full bg-green-600 text-white">
+                          <button
+                            type="button"
+                            onClick={() => addItem(p)}
+                            className="w-7 h-7 rounded-full bg-green-600 text-white"
+                          >
                             +
                           </button>
                         </div>
@@ -754,26 +831,26 @@ if (
             )}
 
             <div className="mb-4 rounded-xl bg-white/15 p-3">
-  <p className="mb-2 text-sm font-semibold">
-    ¿Ya compraste antes?
-  </p>
+              <p className="mb-2 text-sm font-semibold">
+                ¿Ya compraste antes?
+              </p>
 
-  <input
-    className="mb-2 w-full rounded-lg px-3 py-2 text-sm text-black"
-    placeholder="Tu email"
-    value={repeatEmail}
-    onChange={(e) => setRepeatEmail(e.target.value)}
-  />
+              <input
+                className="mb-2 w-full rounded-lg px-3 py-2 text-sm text-black"
+                placeholder="Tu email"
+                value={repeatEmail}
+                onChange={(e) => setRepeatEmail(e.target.value)}
+              />
 
-  <button
-    type="button"
-    onClick={repeatLastOrder}
-    disabled={repeatLoading}
-    className="w-full rounded-lg bg-black px-3 py-2 text-sm font-semibold text-white"
-  >
-    {repeatLoading ? "Buscando..." : "Repetir último pedido"}
-  </button>
-</div>
+              <button
+                type="button"
+                onClick={repeatLastOrder}
+                disabled={repeatLoading}
+                className="w-full rounded-lg bg-black px-3 py-2 text-sm font-semibold text-white"
+              >
+                {repeatLoading ? "Buscando..." : "Repetir último pedido"}
+              </button>
+            </div>
 
             {cart.length === 0 && (
               <p className="text-sm text-green-100">Todavía no agregaste productos</p>
@@ -787,10 +864,18 @@ if (
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <button onClick={() => removeItem(item)} className="w-6 h-6 rounded-full bg-white text-black">
+                  <button
+                    type="button"
+                    onClick={() => removeItem(item)}
+                    className="w-6 h-6 rounded-full bg-white text-black"
+                  >
                     -
                   </button>
-                  <button onClick={() => addItem(item)} className="w-6 h-6 rounded-full bg-black text-white">
+                  <button
+                    type="button"
+                    onClick={() => addItem(item)}
+                    className="w-6 h-6 rounded-full bg-black text-white"
+                  >
                     +
                   </button>
                 </div>
@@ -804,6 +889,7 @@ if (
             </div>
 
             <button
+              type="button"
               onClick={handleCheckout}
               className="mt-5 w-full bg-black text-white py-3 rounded-xl text-lg"
             >
