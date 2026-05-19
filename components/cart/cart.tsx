@@ -17,15 +17,14 @@ type Product = {
 
 // 🔥 PRODUCTOS
 const FALLBACK_PRODUCTS: Product[] = [
-  // -------------------
-  // CAJAS ARMADAS
-  // -------------------
   {
     id: "caja_veggie",
+    slug: "caja-veggie",
     name: "Caja Veggie",
     description: "Rica en fibra, vitaminas y antioxidantes. Mejora la digestión y fortalece tus defensas.",
-    price: 22820,
+    price: 29000,
     type: "unit",
+    unit_label: "caja",
     image: "/images/caja-veggie.jpg",
     category: "cajas_armadas",
     boxItems: [
@@ -38,17 +37,17 @@ const FALLBACK_PRODUCTS: Product[] = [
       "citricos (naranja + limon) 1 kg",
       "banana 1 kg",
       "lechuga 1 planta",
-      "espinaca 2 atados",
-      "ideal si compras solo para vos",
-      "rinde muy bien sin desperdicio"
+      "espinaca 2 atados"
     ]
   },
   {
     id: "caja_campo",
+    slug: "caja-campo",
     name: "Caja Campo",
     description: "Equilibrio entre vegetales y proteínas. Más energía, saciedad y nutrición completa.",
     price: 45320,
     type: "unit",
+    unit_label: "caja",
     image: "/images/caja-campo.jpg",
     category: "cajas_armadas",
     boxItems: [
@@ -70,10 +69,12 @@ const FALLBACK_PRODUCTS: Product[] = [
   },
   {
     id: "caja_granja",
+    slug: "caja-granja",
     name: "Caja Granja",
     description: "Nutrición completa para toda la familia. Proteínas, grasas saludables y alimentos reales.",
     price: 55520,
     type: "unit",
+    unit_label: "caja",
     image: "/images/caja-granja.jpg",
     category: "cajas_armadas",
     boxItems: [
@@ -95,286 +96,315 @@ const FALLBACK_PRODUCTS: Product[] = [
       "pensada para toda la familia"
     ]
   },
-
-  // -------------------
-  // VERDURAS
-  // -------------------
   {
-    id: "zapallo",
+    id: "zapallo-anco",
+    slug: "zapallo-anco",
     name: "Zapallo Anco",
-    description: "ideal para horno, puré o sopa",
-    price: 1700,
+    description: "Ideal para horno, puré o sopa.",
+    price: 1800,
     type: "unit",
+    unit_label: "unidad",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/WhatsApp%20Image%202026-04-12%20at%2014.21.43.jpeg",
     category: "verduras"
   },
   {
     id: "cebolla",
+    slug: "cebolla",
     name: "Cebolla",
-    description: "base para guisos, salsas y salteados",
-    price: 600,
+    description: "Base para guisos, salsas y salteados.",
+    price: 700,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cebollas.jpg",
     category: "verduras"
   },
   {
-    id: "papa",
-    name: "Papa negra",
-    description: "ideal para horno, puré o fritas",
-    price: 733,
+    id: "papa-negra-cepillada",
+    slug: "papa-negra-cepillada",
+    name: "Papa negra cepillada",
+    description: "Ideal para horno, puré o fritas.",
+    price: 800,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/papas%20negras.jpg",
     category: "verduras"
   },
   {
-    id: "tomate",
-    name: "Tomate",
-    description: "fresco, ideal para ensaladas o salsa",
-    price: 833,
+    id: "tomate-perita",
+    slug: "tomate-perita",
+    name: "Tomate perita",
+    description: "Fresco, ideal para ensaladas o salsa.",
+    price: 1000,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/tomates.jpg",
     category: "verduras"
   },
   {
     id: "zanahoria",
+    slug: "zanahoria",
     name: "Zanahoria",
-    description: "dulce y crocante, ideal cruda o cocida",
-    price: 670,
+    description: "Dulce y crocante, ideal cruda o cocida.",
+    price: 800,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/zanahorias.jpg",
     category: "verduras"
   },
   {
     id: "lechuga",
+    slug: "lechuga",
     name: "Lechuga",
-    description: "fresca y crocante, ideal para ensaladas",
-    price: 390,
+    description: "Fresca y crocante, ideal para ensaladas.",
+    price: 800,
     type: "unit",
+    unit_label: "unidad",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/lechugas.jpg",
     category: "verduras"
   },
   {
     id: "espinaca",
+    slug: "espinaca",
     name: "Espinaca",
-    description: "hojas tiernas, ideal para tartas o salteados",
+    description: "Hojas tiernas, ideal para tartas o salteados.",
     price: 1750,
     type: "unit",
+    unit_label: "unidad",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/espinacas.jpg",
     category: "verduras"
   },
   {
-    id: "morron",
+    id: "apio",
+    slug: "apio",
+    name: "Apio",
+    description: "Fresco, ideal para ensaladas, caldos o jugos.",
+    price: 1800,
+    type: "unit",
+    unit_label: "unidad",
+    image: "",
+    category: "verduras"
+  },
+  {
+    id: "morrones",
+    slug: "morrones",
     name: "Morrones",
-    description: "ideal para rellenos, salteados o ensaladas",
+    description: "Ideal para rellenos, salteados o ensaladas.",
     price: 1800,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/morrones.jpg",
     category: "verduras"
   },
-
-  // -------------------
-  // FRUTAS
-  // -------------------
   {
-    id: "manzana",
-    name: "Manzana RED DELICIOUS",
-    description: "dulce y crocante, ideal para todo momento",
-    price: 2600,
+    id: "manzana-red-delicious",
+    slug: "manzana-red-delicious",
+    name: "Manzana red delicious",
+    description: "Dulce y crocante, ideal para todo momento.",
+    price: 2900,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/manzanas.jpg",
     category: "frutas"
   },
   {
-    id: "naranja",
+    id: "naranja-jugo",
+    slug: "naranja-jugo",
     name: "Naranja jugo",
-    description: "jugosa, ideal para exprimir",
-    price: 1400,
+    description: "Jugosa, ideal para exprimir.",
+    price: 1500,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/naranja%20jugo.jpg",
     category: "frutas"
   },
   {
     id: "limon",
+    slug: "limon",
     name: "Limón",
-    description: "ácido y fresco, ideal para comidas o bebidas",
-    price: 1300,
+    description: "Ácido y fresco, ideal para comidas o bebidas.",
+    price: 1100,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/limones.jpg",
     category: "frutas"
   },
   {
     id: "banana",
+    slug: "banana",
     name: "Banana",
-    description: "suave y energética, ideal para colaciones",
-    price: 1250,
+    description: "Suave y energética, ideal para colaciones.",
+    price: 1350,
     type: "weight_500g",
+    unit_label: "500g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/banana.jpg",
     category: "frutas"
   },
-
-  // -------------------
-  // PAN / OTROS
-  // -------------------
   {
-    id: "pan",
-    name: "Pan",
-    description: "pan de campo, ideal para acompañar comidas",
-    price: 1200,
-    type: "unit",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pan%20de%20campo.jpg",
-    category: "otros"
-  },
-  {
-    id: "miel",
-    name: "Miel",
-    description: "natural y dulce, ideal para infusiones o tostadas",
-    price: 4500,
+    id: "pera",
+    slug: "pera",
+    name: "Pera",
+    description: "Dulce y fresca, ideal para todos los días.",
+    price: 1900,
     type: "weight_500g",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/miel.jpg",
-    category: "otros"
+    unit_label: "500g",
+    image: "",
+    category: "frutas"
   },
   {
-    id: "huevos",
-    name: "Huevos (30 unidades)",
-    description: "maple completo, ideal para consumo diario",
-    price: 6000,
+    id: "mandarina",
+    slug: "mandarina",
+    name: "Mandarina",
+    description: "Fresca, dulce y fácil de pelar.",
+    price: 1000,
+    type: "weight_500g",
+    unit_label: "500g",
+    image: "",
+    category: "frutas"
+  },
+  {
+    id: "kiwi",
+    slug: "kiwi",
+    name: "Kiwi",
+    description: "Fresco, ácido y nutritivo.",
+    price: 1800,
+    type: "weight_500g",
+    unit_label: "500g",
+    image: "",
+    category: "frutas"
+  },
+  {
+    id: "palta",
+    slug: "palta",
+    name: "Palta",
+    description: "Cremosa, ideal para ensaladas, tostadas o comidas frescas.",
+    price: 1800,
     type: "unit",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/huevos.jpg",
-    category: "otros"
+    unit_label: "unidad",
+    image: "",
+    category: "frutas"
   },
-
-  // -------------------
-  // POLLO
-  // -------------------
-  {
-    id: "pollo_entero",
-    name: "Pollo entero Orgánico",
-    description: "ideal para horno, parrilla o cacerola",
-    price: 18500,
-    type: "unit",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pollo%20entero.jpg",
-    category: "pollo"
-  },
-  {
-    id: "suprema",
-    name: "Suprema deshuesada sin piel (Congelada)",
-    description: "Descongelar y cocinar, ideal para milanesas o plancha",
-    price: 11300,
-    type: "weight_1kg",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pechugas%20.jpg",
-    category: "pollo"
-  },
-  {
-    id: "cuartos",
-    name: "Pata y muslo de pollo (Congelado)",
-    description: "Desconglar y cocinar, ideal horno o parrilla",
-    price: 4500,
-    type: "weight_1kg",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cuarto%20trasero.jpg",
-    category: "pollo"
-  },
-
-  // -------------------
-  // CONGELADOS
-  // -------------------
-  {
-    id: "medallones",
-    name: "Medallones de pollo",
-    description: "prácticos, ideales para una comida rápida",
-    price: 9380,
-    type: "weight_1kg",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo%20sin%20espinaca.webp",
-    category: "congelados"
-  },
-  {
-    id: "medallones_espinaca",
-    name: "Medallones pollo con espinaca",
-    description: "opción práctica con relleno de espinaca",
-    price: 10250,
-    type: "weight_1kg",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo.jpg",
-    category: "congelados"
-  },
-  {
-    id: "nuggets",
-    name: "Nuggets de pollo",
-    description: "crocrantes y prácticos, ideales para chicos",
-    price: 12300,
-    type: "weight_1kg",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nuggets.jpeg",
-    category: "congelados"
-  }
-
-  /*
-  // -------------------
-  // FRUTOS SECOS
-  // -------------------
   {
     id: "nueces",
-    name: "Nueces peladas Pecan",
-    description: "sin cáscara, listas para consumir",
-    price: 13500,
-    type: "weight_500g",
+    slug: "nueces",
+    name: "Nueces",
+    description: "Nueces listas para consumir.",
+    price: 1600,
+    type: "weight_100g",
+    unit_label: "100g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nueces.jpg",
     category: "frutos_secos"
   },
   {
     id: "almendras",
-    name: "Almendras naturales Felicia",
-    description: "crudas, sin sal",
-    price: 12375,
-    type: "weight_500g",
+    slug: "almendras",
+    name: "Almendras",
+    description: "Almendras naturales.",
+    price: 3200,
+    type: "weight_100g",
+    unit_label: "100g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/almendras.jpg",
     category: "frutos_secos"
   },
   {
-    id: "pasas",
-    name: "Pasas de uva Flame",
-    description: "dulces, ideales para snacks o cocina",
-    price: 3000,
-    type: "weight_500g",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pasas%20de%20uva.jpg",
-    category: "frutos_secos"
-  },
-  {
-    id: "caju",
-    name: "Castañas de cajú Vietnam",
-    description: "suaves y crocantes",
-    price: 9975,
-    type: "weight_500g",
+    id: "castanas",
+    slug: "castanas",
+    name: "Castañas",
+    description: "Castañas listas para consumir.",
+    price: 2400,
+    type: "weight_100g",
+    unit_label: "100g",
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/castan%CC%83as%20de%20caju.jpg",
     category: "frutos_secos"
   },
   {
-    id: "mix",
-    name: "Mix frutos secos Econo Tropi",
-    description: "mezcla de nuez, almendra, pasas y maní",
-    price: 5775,
-    type: "weight_500g",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mix%20frutos%20secos.jpg",
-    category: "frutos_secos"
+    id: "pan",
+    slug: "pan",
+    name: "Pan",
+    description: "Pan de campo, ideal para acompañar comidas.",
+    price: 1300,
+    type: "unit",
+    unit_label: "unidad",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pan%20de%20campo.jpg",
+    category: "otros"
   },
   {
-    id: "mani_tostado",
-    name: "Maní tostado",
-    description: "tostado sin sal",
-    price: 1800,
-    type: "weight_500g",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20tostado%20comun.jpg",
-    category: "frutos_secos"
+    id: "miel",
+    slug: "miel",
+    name: "Miel",
+    description: "Natural y dulce, ideal para infusiones o tostadas.",
+    price: 6500,
+    type: "unit",
+    unit_label: "unidad",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/miel.jpg",
+    category: "otros"
   },
   {
-    id: "mani_salado",
-    name: "Maní salado",
-    description: "tostado con sal",
-    price: 1900,
-    type: "weight_500g",
-    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mani%20salado.jpg",
-    category: "frutos_secos"
+    id: "huevos",
+    slug: "huevos",
+    name: "Huevos",
+    description: "Maple completo, ideal para consumo diario.",
+    price: 6000,
+    type: "unit",
+    unit_label: "maple",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/huevos.jpg",
+    category: "otros"
+  },
+  {
+    id: "suprema",
+    slug: "suprema",
+    name: "Suprema",
+    description: "Descongelar y cocinar, ideal para milanesas o plancha.",
+    price: 11300,
+    type: "weight_1kg",
+    unit_label: "kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pechugas%20.jpg",
+    category: "pollo"
+  },
+  {
+    id: "pata-y-muslo",
+    slug: "pata-y-muslo",
+    name: "Pata y muslo",
+    description: "Descongelar y cocinar, ideal horno o parrilla.",
+    price: 4500,
+    type: "weight_1kg",
+    unit_label: "kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cuarto%20trasero.jpg",
+    category: "pollo"
+  },
+  {
+    id: "medallones-pollo",
+    slug: "medallones-pollo",
+    name: "Medallones pollo",
+    description: "Prácticos, ideales para una comida rápida.",
+    price: 9380,
+    type: "weight_1kg",
+    unit_label: "kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo%20sin%20espinaca.webp",
+    category: "congelados"
+  },
+  {
+    id: "medallones-pollo-con-espinaca",
+    slug: "medallones-pollo-con-espinaca",
+    name: "Medallones pollo con espinaca",
+    description: "Opción práctica con relleno de espinaca.",
+    price: 10250,
+    type: "weight_1kg",
+    unit_label: "kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo.jpg",
+    category: "congelados"
+  },
+  {
+    id: "nuggets-pollo",
+    slug: "nuggets-pollo",
+    name: "Nuggets pollo",
+    description: "Crocantes y prácticos, ideales para chicos.",
+    price: 12300,
+    type: "weight_1kg",
+    unit_label: "kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nuggets.jpeg",
+    category: "congelados"
   }
-  */
 ]
-
 function mergeProductWithFallback(product: Product): Product {
   const fallback = FALLBACK_PRODUCTS.find((item) => {
     return (
