@@ -67,7 +67,10 @@ export async function POST(req: Request) {
       return acc + Number(item.price || 0) * Number(item.quantity || 1)
     }, 0)
 
-    let discountPercent = 0
+    let loyaltyDiscountPercent = 0
+    let benefitDiscountPercent = 0
+    let firstPurchaseDiscountPercent = 0
+    let benefitStatus = "none"
 
     if (customer_email && clusterLocationId) {
       const email = normalizeEmail(customer_email)
@@ -79,11 +82,26 @@ export async function POST(req: Request) {
         .maybeSingle()
 
       if (user?.id) {
+        const { data: loyaltyRow } = await supabase
+          .from("commercial_customer_loyalty")
+          .select("completed_purchases")
+          .eq("user_id", user.id)
+          .eq("cluster_location_id", clusterLocationId)
+          .maybeSingle()
+
+        const completedPurchases = Number(loyaltyRow?.completed_purchases || 0)
+
+        if (completedPurchases <= 0) {
+          firstPurchaseDiscountPercent = 10
+        }
+
         const { data: loyaltyDiscount } = await supabase
           .rpc("get_customer_commercial_discount", {
             p_user_id: user.id,
             p_cluster_location_id: clusterLocationId
           })
+
+        loyaltyDiscountPercent = Number(loyaltyDiscount || 0)
 
         const { data: benefits } = await supabase
           .from("commercial_user_benefits")
@@ -94,29 +112,44 @@ export async function POST(req: Request) {
           .order("created_at", { ascending: true })
           .limit(1)
 
-        const benefitDiscount = benefits?.[0]
+        benefitDiscountPercent = benefits?.[0]
           ? Number(benefits[0].discount_percent || 0)
           : 0
-
-        discountPercent = Math.max(
-          Number(loyaltyDiscount || 0),
-          benefitDiscount
-        )
+      } else {
+        firstPurchaseDiscountPercent = 10
       }
     }
 
-    discountPercent = Math.max(0, Math.min(100, discountPercent))
+    const discountPercent = Math.max(
+      firstPurchaseDiscountPercent,
+      loyaltyDiscountPercent,
+      benefitDiscountPercent
+    )
 
-    const discountAmount = Math.round(subtotal * (discountPercent / 100))
+    const normalizedDiscountPercent = Math.max(0, Math.min(100, discountPercent))
+
+    if (
+      firstPurchaseDiscountPercent > 0 &&
+      normalizedDiscountPercent === firstPurchaseDiscountPercent &&
+      firstPurchaseDiscountPercent >= loyaltyDiscountPercent &&
+      firstPurchaseDiscountPercent >= benefitDiscountPercent
+    ) {
+      benefitStatus = "first_purchase"
+    } else if (normalizedDiscountPercent > 0) {
+      benefitStatus = "applied"
+    }
+
+    const discountAmount = Math.round(subtotal * (normalizedDiscountPercent / 100))
     const finalPrice = Math.max(0, subtotal - discountAmount + propina)
 
     return NextResponse.json({
       ok: true,
       subtotal,
-      discount_percent: discountPercent,
+      discount_percent: normalizedDiscountPercent,
       discount_amount: discountAmount,
       propina,
-      final_price: finalPrice
+      final_price: finalPrice,
+      benefit_status: benefitStatus
     })
   } catch (error) {
     console.error("vecinos preview error", error)
@@ -127,3 +160,4 @@ export async function POST(req: Request) {
     )
   }
 }
+
