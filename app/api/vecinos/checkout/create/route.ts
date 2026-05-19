@@ -213,6 +213,20 @@ export async function POST(req: Request) {
       )
     }
 
+     const { data: loyaltyRow, error: loyaltyRowError } = await supabase
+      .from("commercial_customer_loyalty")
+      .select("completed_purchases")
+      .eq("user_id", userId)
+      .eq("cluster_location_id", clusterLocationId)
+      .maybeSingle()
+
+    if (loyaltyRowError) {
+      console.error("loyalty row error", loyaltyRowError)
+    }
+
+    const completedPurchases = Number(loyaltyRow?.completed_purchases || 0)
+    const firstPurchaseDiscountPercent = completedPurchases <= 0 ? 10 : 0
+
     const { data: loyaltyDiscountRaw, error: loyaltyError } = await supabase
       .rpc("get_customer_commercial_discount", {
         p_user_id: userId,
@@ -247,14 +261,29 @@ export async function POST(req: Request) {
       : 0
 
     const appliedDiscountPercent = Math.max(
+      firstPurchaseDiscountPercent,
       loyaltyDiscountPercent,
       benefitDiscountPercent
     )
 
     const commercialBenefitId =
-      benefitDiscountPercent >= loyaltyDiscountPercent && availableBenefit?.id
+      availableBenefit?.id &&
+      benefitDiscountPercent > firstPurchaseDiscountPercent &&
+      benefitDiscountPercent >= loyaltyDiscountPercent
         ? availableBenefit.id
         : null
+
+    const benefitStatus =
+      commercialBenefitId
+        ? "applied"
+        : firstPurchaseDiscountPercent > 0 &&
+            appliedDiscountPercent === firstPurchaseDiscountPercent &&
+            firstPurchaseDiscountPercent >= loyaltyDiscountPercent &&
+            firstPurchaseDiscountPercent >= benefitDiscountPercent
+          ? "first_purchase"
+          : appliedDiscountPercent > 0
+            ? "applied"
+            : "none"
 
     const discountAmount = Math.round(
       subtotal * (appliedDiscountPercent / 100)
