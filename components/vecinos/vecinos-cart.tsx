@@ -190,7 +190,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     price: 1800,
     type: "unit",
     unit_label: "unidad",
-    image: "",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/apio.jpg",
     category: "verduras"
   },
   {
@@ -256,7 +256,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     price: 1900,
     type: "weight_500g",
     unit_label: "500g",
-    image: "",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/peraok.jpg",
     category: "frutas"
   },
   {
@@ -267,7 +267,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     price: 1000,
     type: "weight_500g",
     unit_label: "500g",
-    image: "",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mandarina.jpg",
     category: "frutas"
   },
   {
@@ -278,7 +278,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     price: 1800,
     type: "weight_500g",
     unit_label: "500g",
-    image: "",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/kiwi.jpg",
     category: "frutas"
   },
   {
@@ -289,7 +289,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     price: 1800,
     type: "unit",
     unit_label: "unidad",
-    image: "",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/palta.jpg",
     category: "frutas"
   },
   {
