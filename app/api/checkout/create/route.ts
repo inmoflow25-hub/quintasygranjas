@@ -16,6 +16,16 @@ type CheckoutItem = {
   price: number
 }
 
+function normalizeMoney(value: unknown) {
+  const numberValue = Number(value || 0)
+
+  if (!Number.isFinite(numberValue) || numberValue < 0) {
+    return 0
+  }
+
+  return Math.round(numberValue)
+}
+
 function normalizeCartItems(items: CheckoutItem[]) {
   return items.map((item) => ({
     id: String(item.id || item.product_name || item.name || crypto.randomUUID()),
@@ -41,6 +51,8 @@ export async function POST(req: Request) {
       delivery_city,
       delivery_notes
     } = body
+
+    const propina = normalizeMoney(body.propina)
 
     if (!customer_name || !customer_email || !customer_phone || !delivery_address || !delivery_city) {
       return NextResponse.json(
@@ -99,17 +111,26 @@ export async function POST(req: Request) {
       )
     }
 
-    const total = normalizedItems.reduce(
+    const subtotal = normalizedItems.reduce(
       (acc, item) => acc + item.unit_price * item.quantity,
       0
     )
 
-    if (total <= 0) {
+    if (subtotal <= 0) {
       return NextResponse.json(
         { error: "Total inválido" },
         { status: 400 }
       )
     }
+
+    if (subtotal < 20000) {
+      return NextResponse.json(
+        { error: "El pedido mínimo es de $20.000" },
+        { status: 400 }
+      )
+    }
+
+    const finalPrice = subtotal + propina
 
     let userId: string | null = null
 
@@ -152,6 +173,13 @@ export async function POST(req: Request) {
         phone: customer_phone
       })
 
+    const fullNotes = [
+      delivery_notes || "",
+      propina > 0 ? `Propina: $${propina.toLocaleString("es-AR")}` : ""
+    ]
+      .filter(Boolean)
+      .join(" | ")
+
     await supabase
       .from("addresses")
       .upsert(
@@ -159,17 +187,17 @@ export async function POST(req: Request) {
           user_id: userId,
           address: delivery_address,
           city: delivery_city,
-          notes: delivery_notes || "",
+          notes: fullNotes,
           phone: customer_phone
         },
         { onConflict: "user_id" }
       )
 
-const initialStatus =
-  payment_method === "cash" ? "confirmed" : "pending_payment"
+    const initialStatus =
+      payment_method === "cash" ? "confirmed" : "pending_payment"
 
-const initialPaymentStatus =
-  payment_method === "cash" ? "pending_cash" : "pending"
+    const initialPaymentStatus =
+      payment_method === "cash" ? "pending_cash" : "pending"
 
     const { data: order, error: orderError } = await supabase
       .from("orders")
@@ -180,13 +208,19 @@ const initialPaymentStatus =
         status: initialStatus,
         payment_method,
         payment_status: initialPaymentStatus,
-        price: total,
+
+        subtotal_price: subtotal,
+        base_price: subtotal,
+        price: finalPrice,
+        final_price: finalPrice,
+        propina,
+
         customer_name,
         customer_email,
         customer_phone,
         delivery_address,
         delivery_city,
-        delivery_notes: delivery_notes || ""
+        delivery_notes: fullNotes
       })
       .select()
       .single()
@@ -222,6 +256,9 @@ const initialPaymentStatus =
       return NextResponse.json({
         ok: true,
         order_id: order.id,
+        subtotal,
+        propina,
+        final_price: finalPrice,
         redirect_to: `/success?order_id=${order.id}`
       })
     }
@@ -232,15 +269,30 @@ const initialPaymentStatus =
 
     const preference = new Preference(client)
 
+    const mpItems = [
+      ...normalizedItems.map((item) => ({
+        id: item.id,
+        title: item.title,
+        quantity: item.quantity,
+        currency_id: "ARS",
+        unit_price: item.unit_price
+      })),
+      ...(propina > 0
+        ? [
+            {
+              id: "propina",
+              title: "Propina",
+              quantity: 1,
+              currency_id: "ARS",
+              unit_price: propina
+            }
+          ]
+        : [])
+    ]
+
     const result = await preference.create({
       body: {
-        items: normalizedItems.map((item) => ({
-          id: item.id,
-          title: item.title,
-          quantity: item.quantity,
-          currency_id: "ARS",
-          unit_price: item.unit_price
-        })),
+        items: mpItems,
         payer: {
           name: customer_name,
           email: customer_email
@@ -266,6 +318,9 @@ const initialPaymentStatus =
     return NextResponse.json({
       ok: true,
       order_id: order.id,
+      subtotal,
+      propina,
+      final_price: finalPrice,
       init_point: result.init_point
     })
   } catch (error) {
@@ -276,3 +331,4 @@ const initialPaymentStatus =
     )
   }
 }
+
