@@ -342,10 +342,7 @@ const initialPaymentStatus =
             ? Math.round(subtotal * (loyaltyDiscountPercent / 100))
             : 0,
 
-        benefit_status:
-          appliedDiscountPercent > 0
-            ? "applied"
-            : "none",
+               benefit_status: benefitStatus,
 
         propina,
 
