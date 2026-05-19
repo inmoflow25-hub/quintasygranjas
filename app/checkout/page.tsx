@@ -12,6 +12,10 @@ type CheckoutItem = {
   price: number
 }
 
+function money(value: number) {
+  return `$${Math.round(value || 0).toLocaleString("es-AR")}`
+}
+
 function CheckoutContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -22,6 +26,8 @@ function CheckoutContent() {
   const [loading, setLoading] = useState(false)
   const [items, setItems] = useState<CheckoutItem[]>([])
   const [paymentMethod, setPaymentMethod] = useState<"mercadopago" | "cash">("mercadopago")
+  const [propina, setPropina] = useState(0)
+  const [customPropina, setCustomPropina] = useState("")
 
   const [form, setForm] = useState({
     customer_name: "",
@@ -56,12 +62,14 @@ function CheckoutContent() {
     setItems([])
   }, [source, boxId])
 
-  const total = useMemo(() => {
+  const subtotal = useMemo(() => {
     return items.reduce(
       (acc, item) => acc + Number(item.price || 0) * Number(item.quantity || 1),
       0
     )
   }, [items])
+
+  const finalTotal = subtotal + propina
 
   function updateField(field: string, value: string) {
     setForm((prev) => ({
@@ -70,17 +78,35 @@ function CheckoutContent() {
     }))
   }
 
-  function trackInitiateCheckout() {
-  const fbq = (window as any).fbq
-  if (!fbq) return
+  function selectPropina(value: number) {
+    setPropina(value)
+    setCustomPropina("")
+  }
 
-  fbq("track", "InitiateCheckout", {
-    value: total,
-    currency: "ARS",
-    num_items: items.reduce((acc, item) => acc + Number(item.quantity || 1), 0),
-    content_type: "product"
-  })
-}
+  function updateCustomPropina(value: string) {
+    setCustomPropina(value)
+
+    const cleanValue = Number(value || 0)
+
+    if (!Number.isFinite(cleanValue) || cleanValue < 0) {
+      setPropina(0)
+      return
+    }
+
+    setPropina(Math.round(cleanValue))
+  }
+
+  function trackInitiateCheckout() {
+    const fbq = (window as any).fbq
+    if (!fbq) return
+
+    fbq("track", "InitiateCheckout", {
+      value: finalTotal,
+      currency: "ARS",
+      num_items: items.reduce((acc, item) => acc + Number(item.quantity || 1), 0),
+      content_type: "product"
+    })
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -95,8 +121,13 @@ function CheckoutContent() {
       return
     }
 
-  trackInitiateCheckout()
-    
+    if (subtotal < 20000) {
+      alert("El pedido mínimo es de $20.000")
+      return
+    }
+
+    trackInitiateCheckout()
+
     setLoading(true)
 
     try {
@@ -110,6 +141,7 @@ function CheckoutContent() {
           box_id: boxId,
           items,
           payment_method: paymentMethod,
+          propina,
           ...form
         })
       })
@@ -134,6 +166,7 @@ function CheckoutContent() {
         return
       }
 
+      localStorage.removeItem("qyg_checkout_cart")
       window.location.href = data.init_point
     } catch (error) {
       console.error(error)
@@ -199,16 +232,51 @@ function CheckoutContent() {
             />
 
             <div className="rounded-xl border p-4">
+              <p className="mb-2 font-semibold">
+                Propina para el equipo
+              </p>
+
+              <p className="mb-3 text-sm text-gray-500">
+                Sumá una propina para quienes preparan y entregan tu pedido.
+              </p>
+
+              <div className="grid grid-cols-4 gap-2">
+                {[0, 1000, 2000, 5000].map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => selectPropina(value)}
+                    className={`rounded-xl border px-3 py-2 text-sm font-semibold ${
+                      propina === value && !customPropina
+                        ? "border-green-700 bg-green-700 text-white"
+                        : "bg-white"
+                    }`}
+                  >
+                    {value === 0 ? "Sin propina" : money(value)}
+                  </button>
+                ))}
+              </div>
+
+              <input
+                className="mt-3 w-full rounded-xl border px-4 py-3"
+                placeholder="Otro monto"
+                inputMode="numeric"
+                value={customPropina}
+                onChange={(e) => updateCustomPropina(e.target.value)}
+              />
+            </div>
+
+            <div className="rounded-xl border p-4">
               <p className="mb-3 font-semibold">Método de pago</p>
 
               <label className="mb-2 flex items-center gap-2">
-  <input
-    type="radio"
-    checked={paymentMethod === "mercadopago"}
-    onChange={() => setPaymentMethod("mercadopago")}
-  />
-  Tarjetas débito / crédito
-</label>
+                <input
+                  type="radio"
+                  checked={paymentMethod === "mercadopago"}
+                  onChange={() => setPaymentMethod("mercadopago")}
+                />
+                Tarjetas débito / crédito
+              </label>
 
               <label className="flex items-center gap-2">
                 <input
@@ -249,20 +317,35 @@ function CheckoutContent() {
                 </div>
 
                 <p className="font-semibold">
-                  ${(Number(item.price || 0) * Number(item.quantity || 1)).toLocaleString("es-AR")}
+                  {money(Number(item.price || 0) * Number(item.quantity || 1))}
                 </p>
               </div>
             ))}
           </div>
 
-          <div className="mt-6 border-t pt-4">
-            <p className="text-xl font-bold">
-              Total: ${total.toLocaleString("es-AR")}
-            </p>
+          <div className="mt-6 space-y-3 border-t pt-4">
+            <Row label="Subtotal" value={money(subtotal)} />
+            <Row label="Propina" value={money(propina)} />
+
+            <div className="border-t pt-4">
+              <div className="flex items-center justify-between text-xl font-bold">
+                <span>Total final</span>
+                <span>{money(finalTotal)}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </main>
+  )
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between text-sm">
+      <span className="text-gray-500">{label}</span>
+      <span className="font-semibold">{value}</span>
+    </div>
   )
 }
 
@@ -273,3 +356,5 @@ export default function CheckoutPage() {
     </Suspense>
   )
 }
+
+
