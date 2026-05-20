@@ -66,7 +66,7 @@ export default function SuccessPage() {
       ? "Tu orden quedó registrada, pero el pago no fue aprobado."
       : payment === "pending"
         ? "Tu orden quedó registrada. Cuando Mercado Pago confirme, la actualizamos."
-        : "Recibimos tu pedido. En breve seguimos por WhatsApp."
+        : "Recibimos tu pedido. Por favor, andanos un WhatsApp para confirmar."
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-green-50 px-6">
@@ -80,9 +80,7 @@ export default function SuccessPage() {
         <p className="text-gray-600 mb-4">{message}</p>
 
         {orderId && (
-          <p className="text-sm text-gray-500 mb-8">
-            Número de pedido: <span className="font-semibold">{orderId}</span>
-          </p>
+        
         )}
 
         <div className="flex flex-col gap-3">
