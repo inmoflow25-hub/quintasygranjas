@@ -798,7 +798,7 @@ export default function VecinosCart({
             {needsLocationChoice && (
               <div className="mb-3 rounded-2xl bg-white/15 p-3">
                 <p className="mb-2 text-sm font-bold uppercase text-green-100">
-                  Elegí tu torre
+                  Elegí tu domicilio.
                 </p>
 
                 <select
@@ -850,11 +850,7 @@ export default function VecinosCart({
                   </p>
                 </div>
 
-                <p className="text-right text-xs text-green-100">
-                  {confirmedOrders} pedidos
-                  <br />
-                  {money(confirmedRevenue)}
-                </p>
+            
               </div>
 
               <div className="mt-3 h-3 overflow-hidden rounded-full bg-white/20">
