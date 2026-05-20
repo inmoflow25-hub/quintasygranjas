@@ -790,8 +790,9 @@ export default function VecinosCart({
             )
           })}
         </div>
+
         <div className="md:col-span-1 self-start">
-  <div className="sticky top-24 rounded-3xl bg-green-600 p-4 text-white shadow-xl">
+  <div className="rounded-3xl bg-green-600 p-4 text-white shadow-xl">
     <h3 className="mb-3 text-2xl font-bold leading-none">Mi pedido</h3>
 
     {needsLocationChoice && (
@@ -841,23 +842,13 @@ export default function VecinosCart({
     )}
 
     <div className="mb-2 rounded-2xl bg-white/15 p-3">
-      <div className="flex items-end justify-between">
-        <div>
-          <p className="text-xs font-bold uppercase text-green-100">
-            Progreso comunitario
-          </p>
+      <p className="text-xs font-bold uppercase text-green-100">
+        Progreso comunitario
+      </p>
 
-          <p className="mt-1 text-2xl font-black leading-none">
-            {communityProgress}%
-          </p>
-        </div>
-
-        <p className="text-right text-xs leading-tight text-green-100">
-          {confirmedOrders} pedidos
-          <br />
-          {money(confirmedRevenue)}
-        </p>
-      </div>
+      <p className="mt-1 text-2xl font-black leading-none">
+        {communityProgress}%
+      </p>
 
       <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/20">
         <div
@@ -955,6 +946,7 @@ export default function VecinosCart({
     </button>
   </div>
 </div>
+        
       </div>
     </div>
   )
