@@ -268,28 +268,6 @@ export default async function VecinosPage({
   </div>
 </section>
 
-      <section id="entrega" className="scroll-mt-24 px-5 py-8 md:px-10">
-        <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-3">
-          <Step
-            number="1"
-            title="Elegís productos"
-            text="Armás tu pedido con cajas o productos individuales."
-          />
-
-          <Step
-            number="2"
-            title="Cargás tu depto"
-            text="Indicás piso, departamento y datos de contacto."
-          />
-
-          <Step
-            number="3"
-            title="Recibís en tu edificio"
-            text="La entrega se organiza junto con la comunidad."
-          />
-        </div>
-      </section>
-
       <section id="comprar" className="scroll-mt-24">
         <VecinosCart
           location={location}
