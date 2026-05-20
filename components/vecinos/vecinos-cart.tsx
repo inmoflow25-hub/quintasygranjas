@@ -791,7 +791,7 @@ export default function VecinosCart({
           })}
         </div>
 
-        <div className="md:col-span-1">
+        <div className="md:col-span-1 self-start">
           <div className="rounded-3xl bg-green-600 p-5 text-white shadow-xl">
             <h3 className="mb-4 text-2xl font-bold">Mi pedido</h3>
 
