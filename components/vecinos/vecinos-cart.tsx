@@ -790,10 +790,9 @@ export default function VecinosCart({
             )
           })}
         </div>
-
-  <div className="md:col-span-1 self-start">
-  <div className="rounded-3xl bg-green-600 p-4 text-white shadow-xl">
-    <h3 className="mb-3 text-2xl font-bold">Mi pedido</h3>
+        <div className="md:col-span-1 self-start">
+  <div className="sticky top-24 rounded-3xl bg-green-600 p-4 text-white shadow-xl">
+    <h3 className="mb-3 text-2xl font-bold leading-none">Mi pedido</h3>
 
     {needsLocationChoice && (
       <div className="mb-2 rounded-2xl bg-white/15 p-3">
