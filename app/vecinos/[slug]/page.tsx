@@ -226,105 +226,50 @@ export default async function VecinosPage({
         </div>
       </header>
 
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#e9f8e9] via-[#f7fff7] to-[#d8f2df] px-5 pb-12 pt-28 md:px-10 md:pb-16 md:pt-32">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-green-300/30 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 -left-24 h-96 w-96 rounded-full bg-lime-200/40 blur-3xl" />
+   <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+  <div className="absolute top-0 left-0 w-full z-20 bg-green-600 text-white text-sm text-center py-2">
+    🚚 Compra comunitaria · 🧺 Pedido mínimo $20.000 · 🎁 Sumá al beneficio de tu edificio
+  </div>
 
-        <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-          <div>
-            <div className="mb-5 flex flex-wrap gap-2">
-              <span className="rounded-full bg-green-700 px-4 py-2 text-xs font-black uppercase tracking-wide text-white">
-                Compra comunitaria
-              </span>
+  <div className="absolute inset-0 z-0">
+    <img
+      src="https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/CAJA%20CAMPO.png"
+      alt="Caja de verduras"
+      className="w-full h-full object-cover"
+    />
 
-              <span className="rounded-full bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-wide text-green-800 shadow-sm">
-                {cluster?.commercial_code || location.commercial_code || "Vecinos"}
-              </span>
-            </div>
+    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+  </div>
 
-            <h1 className="max-w-4xl text-5xl font-serif font-black leading-[1.02] tracking-tight md:text-7xl">
-              Alimentos frescos para recibir en tu edificio
-            </h1>
+  <div className="container mx-auto px-4 relative z-10">
+    <div className="max-w-2xl">
+      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
+        Comprá junto a tus vecinos y recibí en tu edificio
+      </h1>
 
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[#455245] md:text-xl">
-              Comprá junto a tus vecinos. Cada persona paga su pedido por separado
-              y la entrega se organiza para la comunidad.
-            </p>
+      <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
+        Elegí tu domicilio, armá tu pedido y sumá al objetivo semanal de la comunidad.
+      </p>
 
-            <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <HeroPill
-                title="Ubicación"
-                value={location.name}
-              />
+      <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
+        Cada vecino paga su pedido por separado. La entrega se organiza para el edificio o complejo.
+      </p>
 
-              <HeroPill
-                title="Cierre"
-                value={formatDateTime(activeCycle?.closes_at)}
-              />
-
-              <HeroPill
-                title="Entrega"
-                value={formatDate(activeCycle?.delivery_date)}
-              />
-
-              <HeroPill
-                title="Pedido mínimo"
-                value="$20.000"
-              />
-            </div>
-
-            <p className="mt-6 text-sm font-medium text-[#5e6b5e]">
-              En el checkout cargás torre, piso, departamento, teléfono, método de pago y propina si querés.
-            </p>
-          </div>
-
-          <div className="rounded-[2rem] bg-[#122214] p-6 text-white shadow-2xl md:p-8">
-            <p className="text-sm font-black uppercase tracking-wide text-green-300">
-              Progreso comunitario
-            </p>
-
-            <div className="mt-5 flex items-end gap-3">
-              <span className="text-7xl font-black leading-none">
-                {communityProgress}%
-              </span>
-
-              <span className="pb-2 text-sm font-semibold text-white/60">
-                hacia el beneficio
-              </span>
-            </div>
-
-            <div className="mt-6 h-5 overflow-hidden rounded-full bg-white/15">
-              <div
-                className="h-full rounded-full bg-green-400"
-                style={{ width: `${communityProgress}%` }}
-              />
-            </div>
-
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <DarkBox
-                title="Pedidos"
-                value={confirmedOrders}
-              />
-
-              <DarkBox
-                title="Comunidad"
-                value={money(confirmedRevenue)}
-              />
-            </div>
-
-            <div className="mt-5 rounded-3xl bg-white/10 p-5">
-              <p className="text-xl font-black">
-                Hasta {discountPercent}% para próximas compras
-              </p>
-
-              <p className="mt-2 text-sm leading-relaxed text-white/70">
-                Tu compra suma al progreso comunitario. Los beneficios se aplican individualmente
-                en próximas compras.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <div className="mt-8 flex flex-col sm:flex-row gap-4">
+        <button
+          type="button"
+          className="inline-flex items-center justify-center rounded-md bg-green-600 px-8 py-6 text-lg font-semibold text-white transition hover:bg-green-700"
+          onClick={() => {
+            document.getElementById("comprar")?.scrollIntoView({ behavior: "smooth" })
+          }}
+        >
+          Elegir domicilio y comprar
+          <span className="ml-2">→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
 
       <section id="entrega" className="scroll-mt-24 px-5 py-8 md:px-10">
         <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-3">
