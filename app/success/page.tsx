@@ -6,11 +6,11 @@ import Link from "next/link"
 export default function SuccessPage() {
   const purchaseTrackedRef = useRef(false)
 
-  const orderId = useMemo(() => {
-    if (typeof window === "undefined") return null
-    const params = new URLSearchParams(window.location.search)
-    return params.get("order_id")
-  }, [])
+ const orderNumber = useMemo(() => {
+  if (typeof window === "undefined") return null
+  const params = new URLSearchParams(window.location.search)
+  return params.get("order_number")
+}, [])
 
   const payment = useMemo(() => {
     if (typeof window === "undefined") return null
@@ -79,7 +79,12 @@ export default function SuccessPage() {
 
         <p className="text-gray-600 mb-4">{message}</p>
         
-        
+        {orderNumber && (
+  <div className="mb-6 rounded-xl bg-green-50 px-4 py-3 text-green-800">
+    <p className="text-sm text-green-700">Número de pedido</p>
+    <p className="text-2xl font-bold">#{orderNumber}</p>
+  </div>
+)}
 
         <div className="flex flex-col gap-3">
           <a
