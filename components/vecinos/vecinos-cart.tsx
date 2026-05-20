@@ -681,7 +681,7 @@ export default function VecinosCart({
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:items-start overflow-visible">
         <div className="md:col-span-2">
           {Array.from(new Set(PRODUCTS.map((p) => p.category))).map((category) => {
             const items = PRODUCTS.filter((p) => p.category === category)
@@ -791,8 +791,8 @@ export default function VecinosCart({
           })}
         </div>
 
-        <div className="md:col-span-1 self-start">
-  <div className="rounded-3xl bg-green-600 p-4 text-white shadow-xl">
+  <div className="md:col-span-1 self-start">
+  <div className="sticky top-24 rounded-3xl bg-green-600 p-4 text-white shadow-xl">
     <h3 className="mb-3 text-2xl font-bold leading-none">Mi pedido</h3>
 
     {needsLocationChoice && (
