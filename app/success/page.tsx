@@ -78,10 +78,8 @@ export default function SuccessPage() {
         </h1>
 
         <p className="text-gray-600 mb-4">{message}</p>
-
-        {orderId && (
         
-        )}
+        
 
         <div className="flex flex-col gap-3">
           <a
