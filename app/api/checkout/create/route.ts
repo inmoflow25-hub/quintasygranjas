@@ -259,7 +259,7 @@ export async function POST(req: Request) {
         subtotal,
         propina,
         final_price: finalPrice,
-        redirect_to: `/success?order_id=${order.id}`
+        redirect_to: `/success?order_id=${order.id}&order_number=${order.order_number}`
       })
     }
 
@@ -300,9 +300,9 @@ export async function POST(req: Request) {
         external_reference: order.id,
         notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mercadopago/webhook`,
         back_urls: {
-          success: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}`,
-          failure: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&payment=failure`,
-          pending: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&payment=pending`
+        success: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}`,
+        failure: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&payment=failure`,
+        pending: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&payment=pending`
         },
         auto_return: "approved"
       }
