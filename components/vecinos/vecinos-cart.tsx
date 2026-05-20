@@ -791,8 +791,164 @@ export default function VecinosCart({
           })}
         </div>
 
-  <div className="md:col-span-1 self-start">
-  <div className="sticky top-24 rounded-3xl bg-green-600 p-4 text-white shadow-xl">
+ <div className="md:col-span-1 self-start">
+  <div className="hidden md:block">
+    <div className="fixed top-24 right-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))] z-40 w-[25rem] max-w-[calc(100vw-3rem)] rounded-3xl bg-green-600 p-4 text-white shadow-xl">
+      <h3 className="mb-3 text-2xl font-bold leading-none">Mi pedido</h3>
+
+      {needsLocationChoice && (
+        <div className="mb-2 rounded-2xl bg-white/15 p-3">
+          <p className="mb-2 text-xs font-bold uppercase text-green-100">
+            Elegí tu domicilio
+          </p>
+
+          <select
+            value={selectedLocation?.id || ""}
+            onChange={(e) => {
+              const tower = towers.find((t) => t.id === e.target.value) || null
+              setSelectedLocation(tower)
+            }}
+            className="w-full rounded-xl bg-white px-3 py-2 text-sm text-black"
+          >
+            <option value="">Seleccionar ubicación</option>
+            {towers.map((tower) => (
+              <option key={tower.id} value={tower.id}>
+                {tower.name}
+              </option>
+            ))}
+          </select>
+
+          {!selectedLocation && (
+            <p className="mt-1 text-xs leading-tight text-green-100">
+              Necesitamos saber dónde vivís para organizar la entrega.
+            </p>
+          )}
+        </div>
+      )}
+
+      {selectedLocation && (
+        <div className="mb-2 rounded-2xl bg-white/15 p-3">
+          <p className="text-xs font-bold uppercase text-green-100">
+            Entrega en
+          </p>
+
+          <p className="mt-1 text-base font-black leading-tight">
+            {selectedLocation.name}
+          </p>
+
+          <p className="mt-1 text-xs leading-tight text-green-100">
+            En checkout cargás piso, departamento y propina si querés.
+          </p>
+        </div>
+      )}
+
+      <div className="mb-2 rounded-2xl bg-white/15 p-3">
+        <p className="text-xs font-bold uppercase text-green-100">
+          Progreso comunitario
+        </p>
+
+        <p className="mt-1 text-2xl font-black leading-none">
+          {communityProgress}%
+        </p>
+
+        <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/20">
+          <div
+            className="h-full rounded-full bg-white"
+            style={{ width: `${Math.max(0, Math.min(100, communityProgress))}%` }}
+          />
+        </div>
+
+        <p className="mt-1 text-xs leading-tight text-green-100">
+          Tu compra suma al beneficio de la comunidad.
+        </p>
+      </div>
+
+      <div className="mb-2 rounded-2xl bg-white/15 p-3">
+        <p className="mb-2 text-sm font-bold">¿Ya compraste antes?</p>
+
+        <input
+          value={repeatEmail}
+          onChange={(e) => setRepeatEmail(e.target.value)}
+          placeholder="Tu email"
+          type="email"
+          className="mb-2 w-full rounded-xl bg-white px-3 py-2 text-sm text-black placeholder:text-gray-500"
+        />
+
+        <button
+          type="button"
+          onClick={repeatLastOrder}
+          disabled={repeatLoading}
+          className="w-full rounded-xl bg-black py-2 text-sm font-bold text-white"
+        >
+          {repeatLoading ? "Buscando..." : "Repetir último pedido"}
+        </button>
+      </div>
+
+      {cart.length === 0 && (
+        <p className="mb-2 text-sm text-green-100">
+          Todavía no agregaste productos
+        </p>
+      )}
+
+      {cart.map((item) => (
+        <div
+          key={item.id}
+          className="mb-2 flex items-center justify-between text-sm"
+        >
+          <div>
+            <p className="font-medium leading-tight">{item.name}</p>
+            <p className="text-xs text-green-200">
+              {getDisplayQuantity(item)}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => removeItem(item)}
+              className="h-6 w-6 rounded-full bg-white text-black"
+            >
+              -
+            </button>
+
+            <button
+              type="button"
+              onClick={() => addItem(item)}
+              className="h-6 w-6 rounded-full bg-black text-white"
+            >
+              +
+            </button>
+          </div>
+        </div>
+      ))}
+
+      <div className="mt-3 border-t border-green-400 pt-3">
+        <div className="flex items-center justify-between text-sm text-green-100">
+          <span>Subtotal</span>
+          <span>{money(getTotal())}</span>
+        </div>
+
+        <div className="mt-1 flex items-center justify-between text-sm text-green-100">
+          <span>Pedido mínimo</span>
+          <span>$20.000</span>
+        </div>
+
+        <p className="mt-3 text-2xl font-bold leading-none">
+          Total: {money(getTotal())}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        onClick={handleCheckout}
+        className="mt-4 w-full rounded-xl bg-black py-3 text-lg font-bold text-white shadow-xl"
+      >
+        Finalizar compra
+      </button>
+    </div>
+  </div>
+
+  <div className="block md:hidden rounded-3xl bg-green-600 p-4 text-white shadow-xl">
     <h3 className="mb-3 text-2xl font-bold leading-none">Mi pedido</h3>
 
     {needsLocationChoice && (
@@ -825,101 +981,11 @@ export default function VecinosCart({
       </div>
     )}
 
-    {selectedLocation && (
-      <div className="mb-2 rounded-2xl bg-white/15 p-3">
-        <p className="text-xs font-bold uppercase text-green-100">
-          Entrega en
-        </p>
-
-        <p className="mt-1 text-base font-black leading-tight">
-          {selectedLocation.name}
-        </p>
-
-        <p className="mt-1 text-xs leading-tight text-green-100">
-          En checkout cargás piso, departamento y propina si querés.
-        </p>
-      </div>
-    )}
-
-    <div className="mb-2 rounded-2xl bg-white/15 p-3">
-      <p className="text-xs font-bold uppercase text-green-100">
-        Progreso comunitario
-      </p>
-
-      <p className="mt-1 text-2xl font-black leading-none">
-        {communityProgress}%
-      </p>
-
-      <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/20">
-        <div
-          className="h-full rounded-full bg-white"
-          style={{ width: `${Math.max(0, Math.min(100, communityProgress))}%` }}
-        />
-      </div>
-
-      <p className="mt-1 text-xs leading-tight text-green-100">
-        Tu compra suma al beneficio de la comunidad.
-      </p>
-    </div>
-
-    <div className="mb-2 rounded-2xl bg-white/15 p-3">
-      <p className="mb-2 text-sm font-bold">¿Ya compraste antes?</p>
-
-      <input
-        value={repeatEmail}
-        onChange={(e) => setRepeatEmail(e.target.value)}
-        placeholder="Tu email"
-        type="email"
-        className="mb-2 w-full rounded-xl bg-white px-3 py-2 text-sm text-black placeholder:text-gray-500"
-      />
-
-      <button
-        type="button"
-        onClick={repeatLastOrder}
-        disabled={repeatLoading}
-        className="w-full rounded-xl bg-black py-2 text-sm font-bold text-white"
-      >
-        {repeatLoading ? "Buscando..." : "Repetir último pedido"}
-      </button>
-    </div>
-
     {cart.length === 0 && (
       <p className="mb-2 text-sm text-green-100">
         Todavía no agregaste productos
       </p>
     )}
-
-    {cart.map((item) => (
-      <div
-        key={item.id}
-        className="mb-2 flex items-center justify-between text-sm"
-      >
-        <div>
-          <p className="font-medium leading-tight">{item.name}</p>
-          <p className="text-xs text-green-200">
-            {getDisplayQuantity(item)}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => removeItem(item)}
-            className="h-6 w-6 rounded-full bg-white text-black"
-          >
-            -
-          </button>
-
-          <button
-            type="button"
-            onClick={() => addItem(item)}
-            className="h-6 w-6 rounded-full bg-black text-white"
-          >
-            +
-          </button>
-        </div>
-      </div>
-    ))}
 
     <div className="mt-3 border-t border-green-400 pt-3">
       <div className="flex items-center justify-between text-sm text-green-100">
