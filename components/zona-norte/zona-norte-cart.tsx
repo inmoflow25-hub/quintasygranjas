@@ -202,7 +202,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     price: 1800,
     type: "unit",
     unit_label: "unidad",
-    image: "",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/apio.jpg",
     category: "verduras"
   },
   {
