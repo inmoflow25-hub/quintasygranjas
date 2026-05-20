@@ -256,16 +256,13 @@ export default async function VecinosPage({
       </p>
 
       <div className="mt-8 flex flex-col sm:flex-row gap-4">
-        <button
-          type="button"
-          className="inline-flex items-center justify-center rounded-md bg-green-600 px-8 py-6 text-lg font-semibold text-white transition hover:bg-green-700"
-          onClick={() => {
-            document.getElementById("comprar")?.scrollIntoView({ behavior: "smooth" })
-          }}
-        >
-          Elegir domicilio y comprar
-          <span className="ml-2">→</span>
-        </button>
+      <a
+  href="#comprar"
+  className="inline-flex items-center justify-center rounded-md bg-green-600 px-8 py-6 text-lg font-semibold text-white transition hover:bg-green-700"
+>
+  Elegir domicilio y comprar
+  <span className="ml-2">→</span>
+</a>
       </div>
     </div>
   </div>
