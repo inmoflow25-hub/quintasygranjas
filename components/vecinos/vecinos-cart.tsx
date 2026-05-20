@@ -791,7 +791,7 @@ export default function VecinosCart({
           })}
         </div>
 
- <div className="md:col-span-1 self-start overflow-visible">
+<div className="md:col-span-1 self-start overflow-visible">
   <div className="sticky top-24 rounded-3xl bg-green-600 p-4 text-white shadow-xl">
     <h3 className="mb-3 text-2xl font-bold leading-none">Mi pedido</h3>
 
@@ -825,30 +825,24 @@ export default function VecinosCart({
       </div>
     )}
 
-    {selectedLocation && (
-      <div className="mb-2 rounded-2xl bg-white/15 p-3">
-        <p className="text-xs font-bold uppercase text-green-100">
-          Entrega en
-        </p>
-
-        <p className="mt-1 text-base font-black leading-tight">
-          {selectedLocation.name}
-        </p>
-
-        <p className="mt-1 text-xs leading-tight text-green-100">
-          En checkout cargás piso, departamento y propina si querés.
-        </p>
-      </div>
-    )}
-
     <div className="mb-2 rounded-2xl bg-white/15 p-3">
-      <p className="text-xs font-bold uppercase text-green-100">
-        Progreso comunitario
-      </p>
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="text-xs font-bold uppercase text-green-100">
+            Progreso comunitario
+          </p>
 
-      <p className="mt-1 text-2xl font-black leading-none">
-        {communityProgress}%
-      </p>
+          <p className="mt-1 text-2xl font-black leading-none">
+            {communityProgress}%
+          </p>
+        </div>
+
+        {selectedLocation && (
+          <p className="max-w-[9rem] text-right text-xs leading-tight text-green-100">
+            {selectedLocation.name}
+          </p>
+        )}
+      </div>
 
       <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/20">
         <div
@@ -856,70 +850,70 @@ export default function VecinosCart({
           style={{ width: `${Math.max(0, Math.min(100, communityProgress))}%` }}
         />
       </div>
-
-      <p className="mt-1 text-xs leading-tight text-green-100">
-        Tu compra suma al beneficio de la comunidad.
-      </p>
     </div>
 
     <div className="mb-2 rounded-2xl bg-white/15 p-3">
-      <p className="mb-2 text-sm font-bold">¿Ya compraste antes?</p>
+      <p className="mb-2 text-sm font-bold leading-none">¿Ya compraste antes?</p>
 
-      <input
-        value={repeatEmail}
-        onChange={(e) => setRepeatEmail(e.target.value)}
-        placeholder="Tu email"
-        type="email"
-        className="mb-2 w-full rounded-xl bg-white px-3 py-2 text-sm text-black placeholder:text-gray-500"
-      />
+      <div className="flex gap-2">
+        <input
+          value={repeatEmail}
+          onChange={(e) => setRepeatEmail(e.target.value)}
+          placeholder="Tu email"
+          type="email"
+          className="min-w-0 flex-1 rounded-xl bg-white px-3 py-2 text-sm text-black placeholder:text-gray-500"
+        />
 
-      <button
-        type="button"
-        onClick={repeatLastOrder}
-        disabled={repeatLoading}
-        className="w-full rounded-xl bg-black py-2 text-sm font-bold text-white"
-      >
-        {repeatLoading ? "Buscando..." : "Repetir último pedido"}
-      </button>
+        <button
+          type="button"
+          onClick={repeatLastOrder}
+          disabled={repeatLoading}
+          className="shrink-0 rounded-xl bg-black px-3 py-2 text-xs font-bold text-white"
+        >
+          {repeatLoading ? "..." : "Repetir"}
+        </button>
+      </div>
     </div>
 
-    {cart.length === 0 && (
+    {cart.length === 0 ? (
       <p className="mb-2 text-sm text-green-100">
         Todavía no agregaste productos
       </p>
-    )}
-
-    {cart.map((item) => (
-      <div
-        key={item.id}
-        className="mb-2 flex items-center justify-between text-sm"
-      >
-        <div>
-          <p className="font-medium leading-tight">{item.name}</p>
-          <p className="text-xs text-green-200">
-            {getDisplayQuantity(item)}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => removeItem(item)}
-            className="h-6 w-6 rounded-full bg-white text-black"
+    ) : (
+      <div className="mb-2 space-y-2">
+        {cart.map((item) => (
+          <div
+            key={item.id}
+            className="flex items-center justify-between gap-3 text-sm"
           >
-            -
-          </button>
+            <div className="min-w-0">
+              <p className="truncate font-medium leading-tight">{item.name}</p>
+              <p className="text-xs text-green-200">
+                {getDisplayQuantity(item)}
+              </p>
+            </div>
 
-          <button
-            type="button"
-            onClick={() => addItem(item)}
-            className="h-6 w-6 rounded-full bg-black text-white"
-          >
-            +
-          </button>
-        </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                onClick={() => removeItem(item)}
+                className="h-6 w-6 rounded-full bg-white text-black"
+              >
+                -
+              </button>
+
+              <button
+                type="button"
+                onClick={() => addItem(item)}
+                className="h-6 w-6 rounded-full bg-black text-white"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
-    ))}
+    )}
 
     <div className="mt-3 border-t border-green-400 pt-3">
       <div className="flex items-center justify-between text-sm text-green-100">
