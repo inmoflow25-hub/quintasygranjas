@@ -66,7 +66,7 @@ export default function SuccessPage() {
       ? "Tu orden quedó registrada, pero el pago no fue aprobado."
       : payment === "pending"
         ? "Tu orden quedó registrada. Cuando Mercado Pago confirme, la actualizamos."
-        : "Recibimos tu pedido. Por favor, andanos un WhatsApp para confirmar."
+        : "Recibimos tu pedido. Por favor, mandanos un WhatsApp para confirmar."
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-green-50 px-6">
