@@ -181,7 +181,7 @@ export default async function VecinosPage({
   const pageHref = `/vecinos/${location.slug}`
 
   return (
-    <main className="min-h-screen bg-[#eef8ef] text-[#172317]">
+    <main className="min-h-screen bg-white text-[#172317]">
       <header className="fixed left-0 right-0 top-0 z-50 border-b border-[#dfe8d9] bg-[#f5faf3]/95 backdrop-blur-sm">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
           <a
