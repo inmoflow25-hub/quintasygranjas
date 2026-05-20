@@ -243,18 +243,23 @@ export default async function VecinosPage({
 
   <div className="container mx-auto px-4 relative z-10">
     <div className="max-w-2xl">
-      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-        Comprá junto a tus vecinos y recibí en tu edificio
-      </h1>
 
-      <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
-        Elegí tu domicilio, armá tu pedido y sumá al objetivo semanal de la comunidad.
-      </p>
 
-      <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
-        Cada vecino paga su pedido por separado. La entrega se organiza para el edificio o complejo.
-      </p>
+    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
+  10% OFF en tu primera compra y envío gratis a tu edificio
+</h1>
 
+<p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
+  Comprá frutas, verduras, productos de granja y congelados junto a tus vecinos.
+  Cada persona paga su pedido por separado y recibe en su domicilio.
+</p>
+
+<p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
+  Después de tu primera compra quedás dentro de un sistema de beneficios semanales:
+  más compras en la comunidad, más descuentos para próximas compras.
+</p>
+      
+      
       <div className="mt-8 flex flex-col sm:flex-row gap-4">
       <a
   href="#comprar"
