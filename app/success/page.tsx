@@ -6,11 +6,11 @@ import Link from "next/link"
 export default function SuccessPage() {
   const purchaseTrackedRef = useRef(false)
 
- const orderNumber = useMemo(() => {
-  if (typeof window === "undefined") return null
-  const params = new URLSearchParams(window.location.search)
-  return params.get("order_number")
-}, [])
+  const orderNumber = useMemo(() => {
+    if (typeof window === "undefined") return null
+    const params = new URLSearchParams(window.location.search)
+    return params.get("order_number")
+  }, [])
 
   const payment = useMemo(() => {
     if (typeof window === "undefined") return null
@@ -23,36 +23,36 @@ export default function SuccessPage() {
     localStorage.removeItem("qyg_zona_norte_cart")
   }, [])
 
- useEffect(() => {
-  if (purchaseTrackedRef.current) return
-  if (payment === "failure" || payment === "pending") return
-  if (typeof window === "undefined") return
+  useEffect(() => {
+    if (purchaseTrackedRef.current) return
+    if (payment === "failure" || payment === "pending") return
+    if (typeof window === "undefined") return
 
-  const firePurchase = () => {
-    const fbq = (window as any).fbq
+    const firePurchase = () => {
+      const fbq = (window as any).fbq
 
-    if (!fbq) {
-      setTimeout(firePurchase, 500)
-      return
+      if (!fbq) {
+        setTimeout(firePurchase, 500)
+        return
+      }
+
+      if (purchaseTrackedRef.current) return
+      purchaseTrackedRef.current = true
+
+      fbq("track", "Purchase", {
+        value: 1,
+        currency: "ARS",
+        content_ids: orderNumber ? [orderNumber] : [],
+        content_type: "order"
+      }, {
+        eventID: orderNumber || Date.now().toString()
+      })
+
+      console.log("Purchase disparado", orderNumber)
     }
 
-    if (purchaseTrackedRef.current) return
-    purchaseTrackedRef.current = true
-
-   fbq("track", "Purchase", {
-  value: 1,
-  currency: "ARS",
-  content_ids: orderId ? [orderId] : [],
-  content_type: "order"
-}, {
-  eventID: orderId || Date.now().toString()
-})
-
-    console.log("Purchase disparado", orderId)
-  }
-
-  firePurchase()
-}, [orderId, payment])
+    firePurchase()
+  }, [orderNumber, payment])
 
   const title =
     payment === "failure"
@@ -78,13 +78,13 @@ export default function SuccessPage() {
         </h1>
 
         <p className="text-gray-600 mb-4">{message}</p>
-        
+
         {orderNumber && (
-  <div className="mb-6 rounded-xl bg-green-50 px-4 py-3 text-green-800">
-    <p className="text-sm text-green-700">Número de pedido</p>
-    <p className="text-2xl font-bold">#{orderNumber}</p>
-  </div>
-)}
+          <div className="mb-6 rounded-xl bg-green-50 px-4 py-3 text-green-800">
+            <p className="text-sm text-green-700">Número de pedido</p>
+            <p className="text-2xl font-bold">#{orderNumber}</p>
+          </div>
+        )}
 
         <div className="flex flex-col gap-3">
           <a
