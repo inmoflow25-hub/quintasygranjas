@@ -71,7 +71,6 @@ const FALLBACK_PRODUCTS: Product[] = [
       "lechuga 1 planta",
       "espinaca 2 atados",
       "30 huevos de campo",
-      "1 pollo fresco entero organico",
       "perfecta para dos personas",
       "ideal si queres cocinar y tener stock"
     ]
@@ -98,7 +97,6 @@ const FALLBACK_PRODUCTS: Product[] = [
       "lechuga 1 planta",
       "espinaca 2 atados",
       "30 huevos de campo",
-      "1 pollo fresco entero organico",
       "1 kg de miel de abejas real pura",
       "1 pan de campo grande",
       "le agrega nutrientes a tus desayunos",
