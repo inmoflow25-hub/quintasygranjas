@@ -122,7 +122,7 @@ const FALLBACK_PRODUCTS: Product[] = [
        "mandarina",
       "kiwi",
       "palta",
-      "pera"
+      "pera",
       "le agrega nutrientes a tus desayunos",
       "pensada para toda la familia"
     ]
