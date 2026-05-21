@@ -16,7 +16,7 @@ type Product = {
 }
 
 const FALLBACK_PRODUCTS: Product[] = [
-  {
+   {
     id: "caja_veggie",
     slug: "caja-veggie",
     name: "Caja Veggie",
@@ -35,12 +35,12 @@ const FALLBACK_PRODUCTS: Product[] = [
       "manzana 1/2 kg",
       "citricos (naranja + limon) 1 kg",
       "banana 1 kg",
-       "mandarina",
-      "kiwi",
-      "palta",
-      "pera",
-      "lechuga 1 planta",
-      "espinaca 2 atados"
+      "mandarina 1/2 kg",
+      "kiwi 1/2 kg",
+      "palta 2 unidades",
+      "pera 1/2kg",
+      "espinaca 2 atados",
+      "lechuga 1 planta"
     ]
   },
   {
@@ -62,13 +62,14 @@ const FALLBACK_PRODUCTS: Product[] = [
       "manzana 1/2 kg",
       "citricos (naranja + limon) 1 kg",
       "banana 1 kg",
-       "mandarina",
-      "kiwi",
-      "palta",
-      "pera",
+      "mandarina 1/2 kg",
+      "kiwi 1/2 kg",
+      "palta 2 unidades",
+      "pera 1/2kg",
       "lechuga 1 planta",
       "espinaca 2 atados",
       "30 huevos de campo",
+      "1 kg suprema de pollo congelado",
       "perfecta para dos personas",
       "ideal si queres cocinar y tener stock"
     ]
@@ -92,14 +93,15 @@ const FALLBACK_PRODUCTS: Product[] = [
       "manzana 1/2 kg",
       "citricos (naranja + limon) 1 kg",
       "banana 1 kg",
-       "mandarina",
-      "kiwi",
-      "palta",
-      "pera",
+      "mandarina 1/2 kg",
+      "kiwi 1/2 kg",
+      "palta 2 unidades",
+      "pera 1/2 kg",
       "lechuga 1 planta",
       "espinaca 2 atados",
       "30 huevos de campo",
-      "1 kg de miel de abejas real pura",
+      "1 kg suprema de pollo congelado",
+      "1/2 kg de miel de abejas real pura",
       "1 pan de campo grande",
       "le agrega nutrientes a tus desayunos",
       "pensada para toda la familia"
