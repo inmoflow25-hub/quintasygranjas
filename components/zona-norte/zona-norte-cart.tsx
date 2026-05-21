@@ -125,6 +125,7 @@ const FALLBACK_PRODUCTS: Product[] = [
       "kiwi 1/2 kg",
       "palta 2 unidades",
       "pera 1/2kg",
+      "1 kg suprema de pollo congelado",
       "le agrega nutrientes a tus desayunos",
       "pensada para toda la familia"
     ]
