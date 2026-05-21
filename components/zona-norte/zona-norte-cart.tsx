@@ -58,7 +58,11 @@ const FALLBACK_PRODUCTS: Product[] = [
       "citricos (naranja + limon) 1 kg",
       "banana 1 kg",
       "lechuga 1 planta",
-      "espinaca 2 atados"
+      "espinaca 2 atados",
+      "mandarina",
+      "kiwi",
+      "palta",
+      "pera"
     ]
   },
   {
@@ -83,6 +87,10 @@ const FALLBACK_PRODUCTS: Product[] = [
       "lechuga 1 planta",
       "espinaca 2 atados",
       "30 huevos de campo",
+       "mandarina",
+      "kiwi",
+      "palta",
+      "pera",
       "perfecta para dos personas",
       "ideal si queres cocinar y tener stock"
     ]
@@ -109,8 +117,12 @@ const FALLBACK_PRODUCTS: Product[] = [
       "lechuga 1 planta",
       "espinaca 2 atados",
       "30 huevos de campo",
-      "1 kg de miel de abejas real pura",
+      "1/2 kg de miel de abejas real pura",
       "1 pan de campo grande",
+       "mandarina",
+      "kiwi",
+      "palta",
+      "pera"
       "le agrega nutrientes a tus desayunos",
       "pensada para toda la familia"
     ]
