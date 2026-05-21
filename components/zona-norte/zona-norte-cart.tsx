@@ -59,10 +59,11 @@ const FALLBACK_PRODUCTS: Product[] = [
       "banana 1 kg",
       "lechuga 1 planta",
       "espinaca 2 atados",
-      "mandarina",
-      "kiwi",
-      "palta",
-      "pera"
+      "mandarina 1/2 kg",
+      "kiwi 1/2 kg",
+      "palta 2 unidades",
+      "pera 1/2kg",
+      "1 kg suprema de pollo congelado"
     ]
   },
   {
@@ -87,10 +88,11 @@ const FALLBACK_PRODUCTS: Product[] = [
       "lechuga 1 planta",
       "espinaca 2 atados",
       "30 huevos de campo",
-       "mandarina",
-      "kiwi",
-      "palta",
-      "pera",
+       "mandarina 1/2 kg",
+      "kiwi 1/2 kg",
+      "palta 2 unidades",
+      "pera 1/2kg",
+      "1 kg suprema de pollo congelado",
       "perfecta para dos personas",
       "ideal si queres cocinar y tener stock"
     ]
@@ -119,10 +121,10 @@ const FALLBACK_PRODUCTS: Product[] = [
       "30 huevos de campo",
       "1/2 kg de miel de abejas real pura",
       "1 pan de campo grande",
-       "mandarina",
-      "kiwi",
-      "palta",
-      "pera",
+      "mandarina 1/2 kg",
+      "kiwi 1/2 kg",
+      "palta 2 unidades",
+      "pera 1/2kg",
       "le agrega nutrientes a tus desayunos",
       "pensada para toda la familia"
     ]
