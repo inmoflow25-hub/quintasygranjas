@@ -61,7 +61,11 @@ export async function POST(req: Request) {
       )
     }
 
-    if (payment_method !== "mercadopago" && payment_method !== "cash") {
+    if (
+      payment_method !== "mercadopago" &&
+      payment_method !== "cash" &&
+      payment_method !== "mp_transfer"
+    ) {
       return NextResponse.json(
         { error: "Método de pago inválido" },
         { status: 400 }
@@ -175,6 +179,9 @@ export async function POST(req: Request) {
 
     const fullNotes = [
       delivery_notes || "",
+      payment_method === "mp_transfer"
+        ? `Pago por transferencia MP. Alias: ${process.env.NEXT_PUBLIC_MP_ALIAS || ""}`
+        : "",
       propina > 0 ? `Propina: $${propina.toLocaleString("es-AR")}` : ""
     ]
       .filter(Boolean)
@@ -194,10 +201,14 @@ export async function POST(req: Request) {
       )
 
     const initialStatus =
-      payment_method === "cash" ? "confirmed" : "pending_payment"
+      payment_method === "mercadopago" ? "pending_payment" : "confirmed"
 
     const initialPaymentStatus =
-      payment_method === "cash" ? "pending_cash" : "pending"
+      payment_method === "cash"
+        ? "pending_cash"
+        : payment_method === "mp_transfer"
+          ? "pending_transfer"
+          : "pending"
 
     const { data: order, error: orderError } = await supabase
       .from("orders")
@@ -252,14 +263,14 @@ export async function POST(req: Request) {
       )
     }
 
-    if (payment_method === "cash") {
+    if (payment_method === "cash" || payment_method === "mp_transfer") {
       return NextResponse.json({
         ok: true,
         order_id: order.id,
         subtotal,
         propina,
         final_price: finalPrice,
-        redirect_to: `/success?order_id=${order.id}&order_number=${order.order_number}`
+        redirect_to: `/success?order_id=${order.id}&order_number=${order.order_number}&payment=${payment_method}`
       })
     }
 
@@ -300,9 +311,9 @@ export async function POST(req: Request) {
         external_reference: order.id,
         notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mercadopago/webhook`,
         back_urls: {
-        success: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}`,
-        failure: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&payment=failure`,
-        pending: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&payment=pending`
+          success: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}`,
+          failure: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&payment=failure`,
+          pending: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&payment=pending`
         },
         auto_return: "approved"
       }
@@ -331,4 +342,3 @@ export async function POST(req: Request) {
     )
   }
 }
-
