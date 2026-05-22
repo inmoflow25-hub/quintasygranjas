@@ -77,6 +77,7 @@ export default async function AdminPage() {
         price
       )
     `)
+    .eq("status", "confirmed")
     .order("created_at", { ascending: false })
 
   if (error) {
