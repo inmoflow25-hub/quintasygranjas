@@ -30,7 +30,7 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
 
       {/* 🔥 BARRA SUPERIOR */}
       <div className="absolute top-0 left-0 w-full z-20 bg-green-600 text-white text-sm text-center py-2">
-        🚚 Envío GRATIS en CABA y GBA Norte · 🧺 Pedido mínimo $20.000
+        🚚 Envío GRATIS en CABA y GBA Norte · 🧺 Pedido mínimo $20.000 · 🎁 10% OFF en tu primera compra
       </div>
 
       {/* SLIDER */}
@@ -41,25 +41,29 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
           className="w-full h-full object-cover transition-opacity duration-1000"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/55 to-transparent" />
       </div>
 
       {/* CONTENIDO */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-2xl">
 
+          <div className="mb-5 inline-flex rounded-full bg-white/15 px-4 py-2 text-sm font-bold uppercase tracking-wide text-white backdrop-blur">
+            10% OFF primera compra
+          </div>
+
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-           Alimentos directamente de productores a tu mesa
+            Alimentos frescos directo de productores a tu mesa
           </h1>
 
           <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
-            Armá tu caja con los productos que quieras o elegí una ya lista. Sin supermercado. Sin filas. Sin pagar de más.
+            Armá tu caja con los productos que quieras o elegí una ya lista. En tu primera compra tenés 10% de descuento automático.
           </p>
 
           <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
-            Siempre calidad 100%.
-          </p> 
-          
+            Después seguís sumando beneficios semanales con tu domicilio, con envío gratis y calidad 100%.
+          </p>
+
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
 
             {/* 🔥 CTA 1 */}
