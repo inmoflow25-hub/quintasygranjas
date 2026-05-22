@@ -18,6 +18,8 @@ export default function SuccessPage() {
     return params.get("payment")
   }, [])
 
+  const mpAlias = process.env.NEXT_PUBLIC_MP_ALIAS || ""
+
   useEffect(() => {
     localStorage.removeItem("qyg_checkout_cart")
     localStorage.removeItem("qyg_zona_norte_cart")
@@ -59,14 +61,18 @@ export default function SuccessPage() {
       ? "No se pudo confirmar el pago"
       : payment === "pending"
         ? "Tu pago quedó pendiente"
-        : "¡Gracias por tu pedido!"
+        : payment === "mp_transfer"
+          ? "¡Pedido recibido!"
+          : "¡Gracias por tu pedido!"
 
   const message =
     payment === "failure"
       ? "Tu orden quedó registrada, pero el pago no fue aprobado."
       : payment === "pending"
         ? "Tu orden quedó registrada. Cuando Mercado Pago confirme, la actualizamos."
-        : "Recibimos tu pedido. Por favor, mandanos un WhatsApp para confirmar."
+        : payment === "mp_transfer"
+          ? "Transferí al alias de Mercado Pago y mandanos el comprobante por WhatsApp para confirmar tu pedido."
+          : "Recibimos tu pedido. Por favor, mandanos un WhatsApp para confirmar."
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-green-50 px-6">
@@ -83,6 +89,18 @@ export default function SuccessPage() {
           <div className="mb-6 rounded-xl bg-green-50 px-4 py-3 text-green-800">
             <p className="text-sm text-green-700">Número de pedido</p>
             <p className="text-2xl font-bold">#{orderNumber}</p>
+          </div>
+        )}
+
+        {payment === "mp_transfer" && (
+          <div className="mb-6 rounded-xl bg-green-50 px-4 py-3 text-green-800">
+            <p className="text-sm text-green-700">Alias Mercado Pago</p>
+            <p className="text-2xl font-bold">
+              {mpAlias || "Alias no configurado"}
+            </p>
+            <p className="mt-2 text-sm text-green-700">
+              Después de transferir, mandanos el comprobante por WhatsApp.
+            </p>
           </div>
         )}
 
