@@ -26,9 +26,11 @@ function CheckoutContent() {
 
   const [loading, setLoading] = useState(false)
   const [items, setItems] = useState<CheckoutItem[]>([])
-  const [paymentMethod, setPaymentMethod] = useState<"mercadopago" | "cash">("mercadopago")
+  const [paymentMethod, setPaymentMethod] = useState<"mercadopago" | "cash" | "mp_transfer">("mercadopago")
   const [propina, setPropina] = useState(0)
   const [customPropina, setCustomPropina] = useState("")
+
+  const mpAlias = process.env.NEXT_PUBLIC_MP_ALIAS || ""
 
   const [form, setForm] = useState({
     customer_name: "",
@@ -209,7 +211,7 @@ function CheckoutContent() {
         return
       }
 
-      if (paymentMethod === "cash") {
+      if (paymentMethod === "cash" || paymentMethod === "mp_transfer") {
         localStorage.removeItem("qyg_checkout_cart")
         router.push(data.redirect_to || `/success?order_id=${data.order_id}`)
         return
@@ -338,6 +340,29 @@ function CheckoutContent() {
                 Tarjetas débito / crédito
               </label>
 
+              <label className="mb-2 flex items-center gap-2">
+                <input
+                  type="radio"
+                  checked={paymentMethod === "mp_transfer"}
+                  onChange={() => setPaymentMethod("mp_transfer")}
+                />
+                Transferencia / alias Mercado Pago
+              </label>
+
+              {paymentMethod === "mp_transfer" && (
+                <div className="mb-3 rounded-xl bg-green-50 p-4 text-sm text-green-900">
+                  <p className="mb-1 font-semibold">Alias Mercado Pago</p>
+
+                  <p className="rounded-lg bg-white px-3 py-2 font-bold">
+                    {mpAlias || "Configurar NEXT_PUBLIC_MP_ALIAS"}
+                  </p>
+
+                  <p className="mt-2 text-green-800">
+                    Transferí el total y después mandanos el comprobante por WhatsApp.
+                  </p>
+                </div>
+              )}
+
               <label className="flex items-center gap-2">
                 <input
                   type="radio"
@@ -357,7 +382,9 @@ function CheckoutContent() {
                 ? "Procesando..."
                 : paymentMethod === "mercadopago"
                   ? "Ir a pagar"
-                  : "Confirmar pedido"}
+                  : paymentMethod === "mp_transfer"
+                    ? "Confirmar pedido y transferir"
+                    : "Confirmar pedido"}
             </button>
           </form>
         </div>
