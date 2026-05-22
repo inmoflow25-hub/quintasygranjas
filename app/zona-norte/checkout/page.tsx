@@ -1,7 +1,8 @@
 "use client"
 
-import { Suspense, useEffect, useMemo, useState } from "react"
-import { useRouter } from "next/navigation"
+import { Suspense, useEffect, useMemo, useRef, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { BOX_CATALOG } from "@/lib/boxes"
 
 type CheckoutItem = {
   id?: string
@@ -11,33 +12,20 @@ type CheckoutItem = {
   price: number
 }
 
-const ZONA_NORTE_CONTEXT_KEY = "qyg_zona_norte_context"
-const ZONA_NORTE_CART_KEY = "qyg_zona_norte_cart"
-
-const BARRIOS = [
-  { slug: "belgrano", name: "Belgrano", delivery_day: "Lunes y Viernes" },
-  { slug: "nunez", name: "Núñez", delivery_day: "Lunes y Viernes" },
-  { slug: "saavedra", name: "Saavedra", delivery_day: "Lunes y Viernes" },
-  { slug: "partido-vicente-lopez", name: "Partido de Vicente López", delivery_day: "Lunes y Viernes" },
-  { slug: "villa-urquiza", name: "Villa Urquiza", delivery_day: "Lunes y Viernes" },
-  { slug: "partido-san-martin", name: "Partido de San Martín", delivery_day: "Lunes y Viernes" },
-  { slug: "partido-san-isidro", name: "Partido de San Isidro", delivery_day: "Martes y Sábado" },
-  { slug: "partido-san-fernando", name: "Partido de San Fernando", delivery_day: "Martes y Sábado" },
-  { slug: "partido-tigre", name: "Partido de Tigre", delivery_day: "Martes y Sábado" }
-]
-
 function money(value: number) {
   return `$${Math.round(value || 0).toLocaleString("es-AR")}`
 }
 
-function ZonaNorteCheckoutContent() {
+function CheckoutContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const addressInputRef = useRef<HTMLInputElement | null>(null)
+
+  const source = searchParams.get("source")
+  const boxId = searchParams.get("box_id")
 
   const [loading, setLoading] = useState(false)
   const [items, setItems] = useState<CheckoutItem[]>([])
-  const [neighborhoodSlug, setNeighborhoodSlug] = useState("")
-  const [neighborhoodName, setNeighborhoodName] = useState("")
-  const [deliveryDay, setDeliveryDay] = useState("")
   const [paymentMethod, setPaymentMethod] = useState<"mercadopago" | "cash">("mercadopago")
   const [propina, setPropina] = useState(0)
   const [customPropina, setCustomPropina] = useState("")
@@ -52,18 +40,81 @@ function ZonaNorteCheckoutContent() {
   })
 
   useEffect(() => {
-    const rawCart = localStorage.getItem(ZONA_NORTE_CART_KEY)
-    const parsedCart = rawCart ? JSON.parse(rawCart) : []
-    setItems(Array.isArray(parsedCart) ? parsedCart : [])
-
-    const rawContext = localStorage.getItem(ZONA_NORTE_CONTEXT_KEY)
-    const parsedContext = rawContext ? JSON.parse(rawContext) : null
-
-    if (parsedContext?.neighborhood_slug) {
-      setNeighborhoodSlug(parsedContext.neighborhood_slug)
-      setNeighborhoodName(parsedContext.neighborhood_name || "")
-      setDeliveryDay(parsedContext.delivery_day || "")
+    if (source === "cart") {
+      const raw = localStorage.getItem("qyg_checkout_cart")
+      const parsed = raw ? JSON.parse(raw) : []
+      setItems(parsed)
+      return
     }
+
+    if (source === "box" && boxId && BOX_CATALOG[boxId]) {
+      const box = BOX_CATALOG[boxId]
+      setItems([
+        {
+          id: boxId,
+          name: box.name,
+          quantity: 1,
+          price: box.price
+        }
+      ])
+      return
+    }
+
+    setItems([])
+  }, [source, boxId])
+
+  useEffect(() => {
+    if (!addressInputRef.current) return
+    if (typeof window === "undefined") return
+
+    const existingScript = document.getElementById("google-places-script")
+
+    function initAutocomplete() {
+      const google = (window as any).google
+
+      if (!google?.maps?.places || !addressInputRef.current) {
+        return
+      }
+
+      const autocomplete = new google.maps.places.Autocomplete(addressInputRef.current, {
+        types: ["address"],
+        componentRestrictions: { country: "ar" },
+        fields: ["formatted_address", "address_components", "geometry", "place_id"]
+      })
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace()
+
+        if (!place?.formatted_address) return
+
+        const components = place.address_components || []
+
+        const locality =
+          components.find((c: any) => c.types.includes("locality"))?.long_name ||
+          components.find((c: any) => c.types.includes("administrative_area_level_2"))?.long_name ||
+          components.find((c: any) => c.types.includes("administrative_area_level_1"))?.long_name ||
+          ""
+
+        setForm((prev) => ({
+          ...prev,
+          delivery_address: place.formatted_address,
+          delivery_city: locality || prev.delivery_city
+        }))
+      })
+    }
+
+    if (existingScript) {
+      initAutocomplete()
+      return
+    }
+
+    const script = document.createElement("script")
+    script.id = "google-places-script"
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`
+    script.async = true
+    script.onload = initAutocomplete
+
+    document.body.appendChild(script)
   }, [])
 
   const subtotal = useMemo(() => {
@@ -100,52 +151,23 @@ function ZonaNorteCheckoutContent() {
     setPropina(Math.round(cleanValue))
   }
 
-  function handleNeighborhoodChange(value: string) {
-    const barrio = BARRIOS.find((b) => b.slug === value)
-
-    if (!barrio) {
-      setNeighborhoodSlug("")
-      setNeighborhoodName("")
-      setDeliveryDay("")
-      localStorage.removeItem(ZONA_NORTE_CONTEXT_KEY)
-      return
-    }
-
-    setNeighborhoodSlug(barrio.slug)
-    setNeighborhoodName(barrio.name)
-    setDeliveryDay(barrio.delivery_day)
-
-    localStorage.setItem(
-      ZONA_NORTE_CONTEXT_KEY,
-      JSON.stringify({
-        neighborhood_slug: barrio.slug,
-        neighborhood_name: barrio.name,
-        delivery_day: barrio.delivery_day
-      })
-    )
-  }
-
   function trackInitiateCheckout() {
     const fbq = (window as any).fbq
     if (!fbq) return
-
-    localStorage.setItem("qyg_last_checkout_source", "zona_norte")
 
     fbq("track", "InitiateCheckout", {
       value: finalTotal,
       currency: "ARS",
       num_items: items.reduce((acc, item) => acc + Number(item.quantity || 1), 0),
-      content_type: "product",
-      content_category: "zona_norte",
-      page_path: "/zona-norte/checkout"
+      content_type: "product"
     })
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    if (!neighborhoodSlug) {
-      alert("Elegí tu barrio antes de finalizar la compra")
+    if (!source) {
+      alert("Source inválido")
       return
     }
 
@@ -164,14 +186,14 @@ function ZonaNorteCheckoutContent() {
     setLoading(true)
 
     try {
-      const res = await fetch("/api/zona-norte/checkout/create", {
+      const res = await fetch("/api/checkout/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          source: "zona-norte",
-          neighborhood_slug: neighborhoodSlug,
+          source,
+          box_id: boxId,
           items,
           payment_method: paymentMethod,
           propina,
@@ -182,13 +204,13 @@ function ZonaNorteCheckoutContent() {
       const data = await res.json()
 
       if (!res.ok) {
-        alert(data?.error || "Error creando checkout Zona Norte")
+        alert(data?.error || "Error creando checkout")
         setLoading(false)
         return
       }
 
       if (paymentMethod === "cash") {
-        localStorage.removeItem(ZONA_NORTE_CART_KEY)
+        localStorage.removeItem("qyg_checkout_cart")
         router.push(data.redirect_to || `/success?order_id=${data.order_id}`)
         return
       }
@@ -199,7 +221,7 @@ function ZonaNorteCheckoutContent() {
         return
       }
 
-      localStorage.removeItem(ZONA_NORTE_CART_KEY)
+      localStorage.removeItem("qyg_checkout_cart")
       window.location.href = data.init_point
     } catch (error) {
       console.error(error)
@@ -212,40 +234,8 @@ function ZonaNorteCheckoutContent() {
     <main className="min-h-screen bg-green-50 px-6 py-10">
       <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-2">
         <div className="rounded-2xl bg-white p-8 shadow">
-          <p className="mb-2 text-sm font-semibold text-green-700">
-            Compra Zona Norte
-          </p>
-
-          <h1 className="mb-2 text-3xl font-bold text-green-700">
-            Checkout
-          </h1>
-
-          <div className="mb-6 rounded-xl border border-green-200 bg-green-50 p-4">
-            <p className="mb-3 text-sm font-semibold">
-              Elegí tu barrio/zona
-            </p>
-
-            <select
-              className="w-full rounded-xl border bg-white px-4 py-3"
-              value={neighborhoodSlug}
-              onChange={(e) => handleNeighborhoodChange(e.target.value)}
-              required
-            >
-              <option value="">Seleccionar barrio</option>
-              {BARRIOS.map((barrio) => (
-                <option key={barrio.slug} value={barrio.slug}>
-                  {barrio.name} - Entrega {barrio.delivery_day}
-                </option>
-              ))}
-            </select>
-
-            {neighborhoodName && (
-              <p className="mt-3 text-sm text-gray-700">
-                Barrio/Zona: <strong>{neighborhoodName}</strong> · Entrega:{" "}
-                <strong>{deliveryDay}</strong>
-              </p>
-            )}
-          </div>
+          <h1 className="mb-2 text-3xl font-bold text-green-700">Checkout</h1>
+          <p className="mb-8 text-gray-600">Completá tus datos antes de pagar.</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
@@ -274,12 +264,17 @@ function ZonaNorteCheckoutContent() {
             />
 
             <input
+              ref={addressInputRef}
               className="w-full rounded-xl border px-4 py-3"
-              placeholder="Dirección"
+              placeholder="Empezá a escribir tu dirección"
               value={form.delivery_address}
               onChange={(e) => updateField("delivery_address", e.target.value)}
               required
             />
+
+            <p className="text-xs text-gray-500">
+              Elegí una dirección sugerida para que podamos agrupar tu domicilio correctamente.
+            </p>
 
             <input
               className="w-full rounded-xl border px-4 py-3"
@@ -398,10 +393,6 @@ function ZonaNorteCheckoutContent() {
                 <span>{money(finalTotal)}</span>
               </div>
             </div>
-
-            <p className="mt-2 text-sm text-gray-500">
-              Si tenés beneficio disponible, se aplica al confirmar el pedido. La propina no recibe descuento.
-            </p>
           </div>
         </div>
       </div>
@@ -418,10 +409,10 @@ function Row({ label, value }: { label: string; value: string }) {
   )
 }
 
-export default function ZonaNorteCheckoutPage() {
+export default function CheckoutPage() {
   return (
     <Suspense fallback={<div className="p-6">Cargando checkout...</div>}>
-      <ZonaNorteCheckoutContent />
+      <CheckoutContent />
     </Suspense>
   )
 }
