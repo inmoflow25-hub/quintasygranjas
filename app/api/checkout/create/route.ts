@@ -26,6 +26,20 @@ function normalizeMoney(value: unknown) {
   return Math.round(numberValue)
 }
 
+function normalizeEmail(email: string) {
+  return String(email || "").trim().toLowerCase()
+}
+
+function normalizeText(value: string) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+}
+
 function normalizeCartItems(items: CheckoutItem[]) {
   return items.map((item) => ({
     id: String(item.id || item.product_name || item.name || crypto.randomUUID()),
@@ -33,6 +47,119 @@ function normalizeCartItems(items: CheckoutItem[]) {
     quantity: Number(item.quantity || 1),
     unit_price: Number(item.price || 0)
   }))
+}
+
+function buildCustomerLocationSlug(address: string, city: string) {
+  const slug = normalizeText(`${address}-${city}`)
+
+  if (slug) return `dom-${slug}`
+
+  return `domicilio-${crypto.randomUUID()}`
+}
+
+function normalizeOptionalNumber(value: unknown) {
+  const numberValue = Number(value)
+
+  if (!Number.isFinite(numberValue)) {
+    return null
+  }
+
+  return numberValue
+}
+
+async function getOrCreateCustomerAddressLocation({
+  delivery_address,
+  delivery_city,
+  google_place_id,
+  lat,
+  lng
+}: {
+  delivery_address: string
+  delivery_city: string
+  google_place_id?: string | null
+  lat?: number | null
+  lng?: number | null
+}) {
+  const cleanPlaceId = String(google_place_id || "").trim() || null
+  const address = String(delivery_address || "").trim()
+  const city = String(delivery_city || "").trim()
+
+  if (cleanPlaceId) {
+    const { data: existingByPlaceId, error: existingByPlaceIdError } = await supabase
+      .from("commercial_locations")
+      .select("id, slug")
+      .eq("google_place_id", cleanPlaceId)
+      .maybeSingle()
+
+    if (existingByPlaceIdError) {
+      console.error("find location by place id error", existingByPlaceIdError)
+    }
+
+    if (existingByPlaceId?.id) {
+      return existingByPlaceId.id as string
+    }
+  }
+
+  const slug = buildCustomerLocationSlug(address, city)
+
+  const { data: existingBySlug, error: existingBySlugError } = await supabase
+    .from("commercial_locations")
+    .select("id, slug")
+    .eq("slug", slug)
+    .maybeSingle()
+
+  if (existingBySlugError) {
+    console.error("find location by slug error", existingBySlugError)
+  }
+
+  if (existingBySlug?.id) {
+    if (cleanPlaceId) {
+      await supabase
+        .from("commercial_locations")
+        .update({
+          google_place_id: cleanPlaceId,
+          lat,
+          lng,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", existingBySlug.id)
+        .is("google_place_id", null)
+    }
+
+    return existingBySlug.id as string
+  }
+
+  const { data: createdLocation, error: createLocationError } = await supabase
+    .from("commercial_locations")
+    .insert({
+      slug,
+      name: address,
+      type: "customer_address",
+      address,
+      city,
+      google_place_id: cleanPlaceId,
+      lat,
+      lng,
+      is_active: true,
+      benefit_threshold_amount: 300000,
+      benefit_threshold_orders: 10,
+      benefit_discount_percent: 5,
+      benefit_status: "none",
+      cycle_auto_close: true,
+      cycle_timezone: "America/Argentina/Buenos_Aires",
+      cycle_close_weekday: 5,
+      cycle_close_time: "20:00:00",
+      delivery_weekday: 5
+    })
+    .select("id")
+    .single()
+
+  if (createLocationError || !createdLocation?.id) {
+    console.error("create customer address location error", createLocationError)
+    throw new Error("No se pudo crear la comunidad del domicilio")
+  }
+
+  return createdLocation.id as string
 }
 
 export async function POST(req: Request) {
@@ -53,8 +180,12 @@ export async function POST(req: Request) {
     } = body
 
     const propina = normalizeMoney(body.propina)
+    const googlePlaceId = String(body.google_place_id || "").trim()
+    const lat = normalizeOptionalNumber(body.lat)
+    const lng = normalizeOptionalNumber(body.lng)
+    const normalizedCustomerEmail = normalizeEmail(customer_email)
 
-    if (!customer_name || !customer_email || !customer_phone || !delivery_address || !delivery_city) {
+    if (!customer_name || !normalizedCustomerEmail || !customer_phone || !delivery_address || !delivery_city) {
       return NextResponse.json(
         { error: "Faltan datos obligatorios del receptor" },
         { status: 400 }
@@ -134,14 +265,12 @@ export async function POST(req: Request) {
       )
     }
 
-    const finalPrice = subtotal + propina
-
     let userId: string | null = null
 
     const { data: existingUser } = await supabase
       .from("users")
       .select("id, email")
-      .eq("email", customer_email)
+      .eq("email", normalizedCustomerEmail)
       .maybeSingle()
 
     if (existingUser?.id) {
@@ -153,7 +282,8 @@ export async function POST(req: Request) {
         .from("users")
         .insert({
           id: newUserId,
-          email: customer_email
+          email: normalizedCustomerEmail,
+          name: customer_name
         })
         .select("id")
         .single()
@@ -169,16 +299,121 @@ export async function POST(req: Request) {
       userId = createdUser.id
     }
 
+    const commercialLocationId = await getOrCreateCustomerAddressLocation({
+      delivery_address,
+      delivery_city,
+      google_place_id: googlePlaceId,
+      lat,
+      lng
+    })
+
+    const { data: activeCycleId, error: cycleError } = await supabase
+      .rpc("ensure_active_commercial_cycle", {
+        p_cluster_id: commercialLocationId
+      })
+
+    if (cycleError || !activeCycleId) {
+      console.error("active cycle error", cycleError)
+      return NextResponse.json(
+        { error: "No se pudo asignar el ciclo del domicilio" },
+        { status: 500 }
+      )
+    }
+
+    const { data: loyaltyRow, error: loyaltyRowError } = await supabase
+      .from("commercial_customer_loyalty")
+      .select("completed_purchases")
+      .eq("user_id", userId)
+      .eq("cluster_location_id", commercialLocationId)
+      .maybeSingle()
+
+    if (loyaltyRowError) {
+      console.error("loyalty row error", loyaltyRowError)
+    }
+
+    const completedPurchases = Number(loyaltyRow?.completed_purchases || 0)
+    const firstPurchaseDiscountPercent = completedPurchases <= 0 ? 10 : 0
+
+    const { data: loyaltyDiscountRaw, error: loyaltyError } = await supabase
+      .rpc("get_customer_commercial_discount", {
+        p_user_id: userId,
+        p_cluster_location_id: commercialLocationId
+      })
+
+    if (loyaltyError) {
+      console.error("loyalty discount error", loyaltyError)
+    }
+
+    const loyaltyDiscountPercent = Math.max(
+      0,
+      Math.min(100, Number(loyaltyDiscountRaw || 0))
+    )
+
+    const { data: availableBenefits, error: benefitError } = await supabase
+      .from("commercial_user_benefits")
+      .select("id, discount_percent, created_at")
+      .eq("user_id", userId)
+      .eq("cluster_location_id", commercialLocationId)
+      .eq("status", "available")
+      .order("created_at", { ascending: true })
+      .limit(1)
+
+    if (benefitError) {
+      console.error("available benefit error", benefitError)
+    }
+
+    const availableBenefit = availableBenefits?.[0] || null
+    const benefitDiscountPercent = availableBenefit
+      ? Math.max(0, Math.min(100, Number(availableBenefit.discount_percent || 0)))
+      : 0
+
+    const appliedDiscountPercent = Math.max(
+      firstPurchaseDiscountPercent,
+      loyaltyDiscountPercent,
+      benefitDiscountPercent
+    )
+
+    const commercialBenefitId =
+      availableBenefit?.id &&
+      benefitDiscountPercent > firstPurchaseDiscountPercent &&
+      benefitDiscountPercent >= loyaltyDiscountPercent
+        ? availableBenefit.id
+        : null
+
+    const benefitStatus =
+      commercialBenefitId
+        ? "applied"
+        : firstPurchaseDiscountPercent > 0 &&
+            appliedDiscountPercent === firstPurchaseDiscountPercent &&
+            firstPurchaseDiscountPercent >= loyaltyDiscountPercent &&
+            firstPurchaseDiscountPercent >= benefitDiscountPercent
+          ? "first_purchase"
+          : appliedDiscountPercent > 0
+            ? "applied"
+            : "none"
+
+    const discountAmount = Math.round(
+      subtotal * (appliedDiscountPercent / 100)
+    )
+
+    const finalPrice = Math.max(0, subtotal - discountAmount + propina)
+
     await supabase
       .from("profiles")
       .upsert({
         id: userId,
         name: customer_name,
-        phone: customer_phone
+        full_name: customer_name,
+        email: normalizedCustomerEmail,
+        phone: customer_phone,
+        address: delivery_address,
+        city: delivery_city
       })
 
     const fullNotes = [
       delivery_notes || "",
+      `Domicilio comunidad: ${delivery_address}`,
+      googlePlaceId ? `Google place id: ${googlePlaceId}` : "",
       payment_method === "mp_transfer"
         ? `Pago por transferencia MP. Alias: ${process.env.NEXT_PUBLIC_MP_ALIAS || ""}`
         : "",
@@ -224,14 +459,28 @@ export async function POST(req: Request) {
         base_price: subtotal,
         price: finalPrice,
         final_price: finalPrice,
+
+        discount_percent: appliedDiscountPercent,
+        discount_amount: discountAmount,
+        loyalty_discount_percent: loyaltyDiscountPercent,
+        loyalty_discount_amount:
+          loyaltyDiscountPercent > 0
+            ? Math.round(subtotal * (loyaltyDiscountPercent / 100))
+            : 0,
+
+        benefit_status: benefitStatus,
         propina,
 
         customer_name,
-        customer_email,
+        customer_email: normalizedCustomerEmail,
         customer_phone,
         delivery_address,
         delivery_city,
-        delivery_notes: fullNotes
+        delivery_notes: fullNotes,
+
+        commercial_location_id: commercialLocationId,
+        commercial_cycle_id: activeCycleId,
+        commercial_benefit_id: commercialBenefitId
       })
       .select()
       .single()
@@ -263,13 +512,33 @@ export async function POST(req: Request) {
       )
     }
 
+    if (commercialBenefitId && (payment_method === "cash" || payment_method === "mp_transfer")) {
+      const { error: markBenefitError } = await supabase
+        .from("commercial_user_benefits")
+        .update({
+          status: "used",
+          used_order_id: order.id,
+          used_at: new Date().toISOString()
+        })
+        .eq("id", commercialBenefitId)
+        .eq("status", "available")
+
+      if (markBenefitError) {
+        console.error("mark benefit used error", markBenefitError)
+      }
+    }
+
     if (payment_method === "cash" || payment_method === "mp_transfer") {
       return NextResponse.json({
         ok: true,
         order_id: order.id,
         subtotal,
+        discount_percent: appliedDiscountPercent,
+        discount_amount: discountAmount,
         propina,
         final_price: finalPrice,
+        commercial_location_id: commercialLocationId,
+        commercial_cycle_id: activeCycleId,
         redirect_to: `/success?order_id=${order.id}&order_number=${order.order_number}&payment=${payment_method}`
       })
     }
@@ -281,24 +550,13 @@ export async function POST(req: Request) {
     const preference = new Preference(client)
 
     const mpItems = [
-      ...normalizedItems.map((item) => ({
-        id: item.id,
-        title: item.title,
-        quantity: item.quantity,
+      {
+        id: order.id,
+        title: "Pedido Quintas y Granjas",
+        quantity: 1,
         currency_id: "ARS",
-        unit_price: item.unit_price
-      })),
-      ...(propina > 0
-        ? [
-            {
-              id: "propina",
-              title: "Propina",
-              quantity: 1,
-              currency_id: "ARS",
-              unit_price: propina
-            }
-          ]
-        : [])
+        unit_price: finalPrice
+      }
     ]
 
     const result = await preference.create({
@@ -306,7 +564,7 @@ export async function POST(req: Request) {
         items: mpItems,
         payer: {
           name: customer_name,
-          email: customer_email
+          email: normalizedCustomerEmail
         },
         external_reference: order.id,
         notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mercadopago/webhook`,
@@ -330,14 +588,18 @@ export async function POST(req: Request) {
       ok: true,
       order_id: order.id,
       subtotal,
+      discount_percent: appliedDiscountPercent,
+      discount_amount: discountAmount,
       propina,
       final_price: finalPrice,
+      commercial_location_id: commercialLocationId,
+      commercial_cycle_id: activeCycleId,
       init_point: result.init_point
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error("checkout create error", error)
     return NextResponse.json(
-      { error: "Error interno del servidor" },
+      { error: error?.message || "Error interno del servidor" },
       { status: 500 }
     )
   }
