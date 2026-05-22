@@ -134,7 +134,7 @@ async function getOrCreateCustomerAddressLocation({
     .insert({
       slug,
       name: address,
-      type: "customer_address",
+      type: "cluster",
       address,
       city,
       google_place_id: cleanPlaceId,
