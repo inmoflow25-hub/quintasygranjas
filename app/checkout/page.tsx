@@ -38,7 +38,10 @@ function CheckoutContent() {
     customer_phone: "",
     delivery_address: "",
     delivery_city: "",
-    delivery_notes: ""
+    delivery_notes: "",
+    google_place_id: "",
+    lat: "",
+    lng: ""
   })
 
   useEffect(() => {
@@ -97,10 +100,23 @@ function CheckoutContent() {
           components.find((c: any) => c.types.includes("administrative_area_level_1"))?.long_name ||
           ""
 
+        const lat =
+          typeof place.geometry?.location?.lat === "function"
+            ? String(place.geometry.location.lat())
+            : ""
+
+        const lng =
+          typeof place.geometry?.location?.lng === "function"
+            ? String(place.geometry.location.lng())
+            : ""
+
         setForm((prev) => ({
           ...prev,
           delivery_address: place.formatted_address,
-          delivery_city: locality || prev.delivery_city
+          delivery_city: locality || prev.delivery_city,
+          google_place_id: place.place_id || "",
+          lat,
+          lng
         }))
       })
     }
@@ -270,7 +286,15 @@ function CheckoutContent() {
               className="w-full rounded-xl border px-4 py-3"
               placeholder="Empezá a escribir tu dirección"
               value={form.delivery_address}
-              onChange={(e) => updateField("delivery_address", e.target.value)}
+              onChange={(e) => {
+                setForm((prev) => ({
+                  ...prev,
+                  delivery_address: e.target.value,
+                  google_place_id: "",
+                  lat: "",
+                  lng: ""
+                }))
+              }}
               required
             />
 
@@ -443,4 +467,4 @@ export default function CheckoutPage() {
     </Suspense>
   )
 }
-
+}
