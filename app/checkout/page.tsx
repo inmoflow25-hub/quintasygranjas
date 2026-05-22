@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useMemo, useState } from "react"
+import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { BOX_CATALOG } from "@/lib/boxes"
 
@@ -19,6 +19,7 @@ function money(value: number) {
 function CheckoutContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const addressInputRef = useRef<HTMLInputElement | null>(null)
 
   const source = searchParams.get("source")
   const boxId = searchParams.get("box_id")
@@ -61,6 +62,60 @@ function CheckoutContent() {
 
     setItems([])
   }, [source, boxId])
+
+  useEffect(() => {
+    if (!addressInputRef.current) return
+    if (typeof window === "undefined") return
+
+    const existingScript = document.getElementById("google-places-script")
+
+    function initAutocomplete() {
+      const google = (window as any).google
+
+      if (!google?.maps?.places || !addressInputRef.current) {
+        return
+      }
+
+      const autocomplete = new google.maps.places.Autocomplete(addressInputRef.current, {
+        types: ["address"],
+        componentRestrictions: { country: "ar" },
+        fields: ["formatted_address", "address_components", "geometry", "place_id"]
+      })
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace()
+
+        if (!place?.formatted_address) return
+
+        const components = place.address_components || []
+
+        const locality =
+          components.find((c: any) => c.types.includes("locality"))?.long_name ||
+          components.find((c: any) => c.types.includes("administrative_area_level_2"))?.long_name ||
+          components.find((c: any) => c.types.includes("administrative_area_level_1"))?.long_name ||
+          ""
+
+        setForm((prev) => ({
+          ...prev,
+          delivery_address: place.formatted_address,
+          delivery_city: locality || prev.delivery_city
+        }))
+      })
+    }
+
+    if (existingScript) {
+      initAutocomplete()
+      return
+    }
+
+    const script = document.createElement("script")
+    script.id = "google-places-script"
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`
+    script.async = true
+    script.onload = initAutocomplete
+
+    document.body.appendChild(script)
+  }, [])
 
   const subtotal = useMemo(() => {
     return items.reduce(
@@ -209,12 +264,17 @@ function CheckoutContent() {
             />
 
             <input
+              ref={addressInputRef}
               className="w-full rounded-xl border px-4 py-3"
-              placeholder="Dirección"
+              placeholder="Empezá a escribir tu dirección"
               value={form.delivery_address}
               onChange={(e) => updateField("delivery_address", e.target.value)}
               required
             />
+
+            <p className="text-xs text-gray-500">
+              Elegí una dirección sugerida para que podamos agrupar tu domicilio correctamente.
+            </p>
 
             <input
               className="w-full rounded-xl border px-4 py-3"
@@ -356,5 +416,4 @@ export default function CheckoutPage() {
     </Suspense>
   )
 }
-
 
