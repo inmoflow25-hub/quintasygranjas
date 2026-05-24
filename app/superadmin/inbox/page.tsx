@@ -249,11 +249,14 @@ export default async function SuperAdminInboxPage() {
                     const text = lastMessage?.text || "Sin mensaje"
 
                     return (
-                      <tr key={conversation.id} className="hover:bg-neutral-50">
-                        <td className="px-5 py-4">
-                          <div className="font-semibold text-neutral-900">
-                            {displayName}
-                          </div>
+                        <tr key={conversation.id} className="hover:bg-neutral-50">
+                      <td className="px-5 py-4">
+                          <Link
+                            href={`/superadmin/inbox/${conversation.id}`}
+                                className="font-semibold text-neutral-900 hover:text-green-700"
+                                  >
+                                {displayName}
+                            </Link>
                           <div className="mt-1 text-xs text-neutral-500">
                             {phone}
                           </div>
