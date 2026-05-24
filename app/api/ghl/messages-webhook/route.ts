@@ -126,11 +126,15 @@ async function findOrCreateContact(payload: any, channel: Exclude<Channel, "unkn
       })
       .eq("id", existingChannel.contact_id)
 
-    return {
-      contactId: existingChannel.contact_id as string,
-      channelId: existingChannel.id as string,
-      externalUserId
-    }
+  if (!contactId) {
+  throw new Error("No se pudo resolver contacto CRM")
+}
+
+return {
+  contactId: contactId as string,
+  channelId: createdChannel.id as string,
+  externalUserId
+}
   }
 
   let contactId: string | null = null
