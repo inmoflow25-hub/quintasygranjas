@@ -126,15 +126,11 @@ async function findOrCreateContact(payload: any, channel: Exclude<Channel, "unkn
       })
       .eq("id", existingChannel.contact_id)
 
-  if (!contactId) {
-  throw new Error("No se pudo resolver contacto CRM")
-}
-
-return {
-  contactId: contactId as string,
-  channelId: createdChannel.id as string,
-  externalUserId
-}
+    return {
+      contactId: existingChannel.contact_id as string,
+      channelId: existingChannel.id as string,
+      externalUserId
+    }
   }
 
   let contactId: string | null = null
@@ -189,6 +185,10 @@ return {
     }
 
     contactId = createdContact.id
+  }
+
+  if (!contactId) {
+    throw new Error("No se pudo resolver contacto CRM")
   }
 
   const { data: createdChannel, error: createChannelError } = await supabase
