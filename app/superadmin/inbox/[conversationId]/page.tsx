@@ -5,6 +5,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { createClient } from "@supabase/supabase-js"
 import { requireAdmin } from "@/lib/admin-auth"
+import ReplyBox from "./ReplyBox"
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -200,12 +201,8 @@ export default async function ConversationDetailPage({
 
           <div className="border-t border-neutral-100 bg-neutral-50 px-6 py-4">
             <div className="rounded-2xl border border-dashed border-neutral-300 bg-white p-4">
-              <p className="text-sm font-semibold text-neutral-800">
-                Próximo paso: responder desde acá
-              </p>
-              <p className="mt-1 text-sm text-neutral-500">
-                Vamos a conectar este chat con GHL para enviar WhatsApp, Instagram y Facebook desde tu app.
-              </p>
+              <ReplyBox conversationId={conversation.id} />
+             
             </div>
           </div>
         </section>
