@@ -378,23 +378,24 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    rawEventId = rawEvent.id
+  rawEventId = rawEvent.id as string
+const safeRawEventId = rawEventId
 
-    const { contactId, channelId } = await findOrCreateContact(payload, channel)
-    const conversationId = await findOrCreateConversation({
-      contactId,
-      channelId,
-      channel,
-      payload
-    })
+const { contactId, channelId } = await findOrCreateContact(payload, channel)
+const conversationId = await findOrCreateConversation({
+  contactId,
+  channelId,
+  channel,
+  payload
+})
 
-    await saveMessage({
-      conversationId,
-      contactId,
-      channel,
-      payload,
-      rawEventId
-    })
+await saveMessage({
+  conversationId,
+  contactId,
+  channel,
+  payload,
+  rawEventId: safeRawEventId
+})
 
     await supabase
       .from("crm_meta_webhook_events")
