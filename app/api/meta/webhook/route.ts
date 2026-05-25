@@ -263,9 +263,9 @@ export async function POST(req: NextRequest) {
 
     savedEventId = savedEvent.id
 
-    if (payload?.object === "page") {
-      await processMessengerWebhook(savedEventId, payload)
-    }
+   if (payload?.object === "page") {
+  await processMessengerWebhook(savedEvent.id, payload)
+}
 
     return NextResponse.json({ ok: true })
   } catch (error: any) {
