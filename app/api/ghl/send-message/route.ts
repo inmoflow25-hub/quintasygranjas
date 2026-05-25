@@ -83,14 +83,29 @@ export async function POST(req: NextRequest) {
       [contact.first_name, contact.last_name].filter(Boolean).join(" ") ||
       "Cliente"
 
-    const phone = contact.phone || contact.normalized_phone
+    const phone = contact.phone || contact.normalized_phone || null
 
-    if (!phone) {
+    /*
+      Para WhatsApp normalmente usamos phone.
+      Para Facebook / Instagram vía GHL no hay phone.
+      En conversaciones source = "ghl", external_thread_id es el contact_id de GHL.
+    */
+    const ghlContactId =
+      conversation.source === "ghl"
+        ? conversation.external_thread_id || null
+        : null
+
+    if (!phone && !ghlContactId) {
       return NextResponse.json(
-        { ok: false, error: "El contacto no tiene teléfono" },
+        {
+          ok: false,
+          error: "El contacto no tiene teléfono ni contact_id de GHL"
+        },
         { status: 400 }
       )
     }
+
+    const recipientExternalId = phone || ghlContactId
 
     const ghlResponse = await fetch(webhookUrl, {
       method: "POST",
@@ -99,11 +114,12 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         phone,
+        contact_id: ghlContactId,
         name: displayName,
         message,
         channel: conversation.channel,
         conversation_id: conversation.id,
-        contact_id: contact.id,
+        crm_contact_id: contact.id,
         external_thread_id: conversation.external_thread_id
       })
     })
@@ -130,12 +146,14 @@ export async function POST(req: NextRequest) {
         direction: "outbound",
         external_message_id: null,
         sender_external_id: "qyg_app",
-        recipient_external_id: phone,
+        recipient_external_id: recipientExternalId,
         message_type: "text",
         text: message,
         status: "sent",
         raw_payload: {
           provider: "ghl_webhook",
+          phone,
+          ghl_contact_id: ghlContactId,
           ghl_response: ghlText
         }
       })
