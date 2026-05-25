@@ -13,6 +13,41 @@ function cleanMessage(value: unknown) {
   return String(value || "").trim()
 }
 
+async function sendMessengerMessage(psid: string, message: string) {
+  const token = process.env.META_PAGE_ACCESS_TOKEN
+
+  if (!token) {
+    throw new Error("Falta META_PAGE_ACCESS_TOKEN")
+  }
+
+  const response = await fetch(
+    `https://graph.facebook.com/v25.0/me/messages?access_token=${encodeURIComponent(token)}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        recipient: {
+          id: psid
+        },
+        message: {
+          text: message
+        },
+        messaging_type: "RESPONSE"
+      })
+    }
+  )
+
+  const text = await response.text()
+
+  if (!response.ok) {
+    throw new Error(`Meta rechazó el envío: ${text}`)
+  }
+
+  return text
+}
+
 export async function POST(req: NextRequest) {
   try {
     await requireAdmin()
@@ -25,15 +60,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { ok: false, error: "conversationId y message son requeridos" },
         { status: 400 }
-      )
-    }
-
-    const webhookUrl = process.env.GHL_SEND_MESSAGE_WEBHOOK_URL
-
-    if (!webhookUrl) {
-      return NextResponse.json(
-        { ok: false, error: "Falta GHL_SEND_MESSAGE_WEBHOOK_URL" },
-        { status: 500 }
       )
     }
 
@@ -85,56 +111,79 @@ export async function POST(req: NextRequest) {
 
     const phone = contact.phone || contact.normalized_phone || null
 
-    /*
-      Para WhatsApp normalmente usamos phone.
-      Para Facebook / Instagram vía GHL no hay phone.
-      En conversaciones source = "ghl", external_thread_id es el contact_id de GHL.
-    */
-    const ghlContactId =
-      conversation.source === "ghl"
-        ? conversation.external_thread_id || null
-        : null
+    let provider = "ghl_webhook"
+    let providerResponse = ""
+    let recipientExternalId = phone || conversation.external_thread_id || null
 
-    if (!phone && !ghlContactId) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "El contacto no tiene teléfono ni contact_id de GHL"
+    if (conversation.channel === "messenger" && conversation.source === "meta") {
+      const psid = conversation.external_thread_id
+
+      if (!psid) {
+        return NextResponse.json(
+          { ok: false, error: "La conversación Messenger no tiene PSID" },
+          { status: 400 }
+        )
+      }
+
+      provider = "meta_messenger"
+      providerResponse = await sendMessengerMessage(psid, message)
+      recipientExternalId = psid
+    } else {
+      const webhookUrl = process.env.GHL_SEND_MESSAGE_WEBHOOK_URL
+
+      if (!webhookUrl) {
+        return NextResponse.json(
+          { ok: false, error: "Falta GHL_SEND_MESSAGE_WEBHOOK_URL" },
+          { status: 500 }
+        )
+      }
+
+      const ghlContactId =
+        conversation.source === "ghl"
+          ? conversation.external_thread_id || null
+          : null
+
+      if (!phone && !ghlContactId) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: "El contacto no tiene teléfono ni contact_id de GHL"
+          },
+          { status: 400 }
+        )
+      }
+
+      const ghlResponse = await fetch(webhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
         },
-        { status: 400 }
-      )
-    }
-
-    const recipientExternalId = phone || ghlContactId
-
-    const ghlResponse = await fetch(webhookUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        phone,
-        contact_id: ghlContactId,
-        name: displayName,
-        message,
-        channel: conversation.channel,
-        conversation_id: conversation.id,
-        crm_contact_id: contact.id,
-        external_thread_id: conversation.external_thread_id
+        body: JSON.stringify({
+          phone,
+          contact_id: ghlContactId,
+          name: displayName,
+          message,
+          channel: conversation.channel,
+          conversation_id: conversation.id,
+          crm_contact_id: contact.id,
+          external_thread_id: conversation.external_thread_id
+        })
       })
-    })
 
-    const ghlText = await ghlResponse.text()
+      providerResponse = await ghlResponse.text()
 
-    if (!ghlResponse.ok) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "GHL rechazó el envío",
-          details: ghlText
-        },
-        { status: 502 }
-      )
+      if (!ghlResponse.ok) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: "GHL rechazó el envío",
+            details: providerResponse
+          },
+          { status: 502 }
+        )
+      }
+
+      recipientExternalId = phone || ghlContactId
     }
 
     const { error: messageError } = await supabase
@@ -151,10 +200,8 @@ export async function POST(req: NextRequest) {
         text: message,
         status: "sent",
         raw_payload: {
-          provider: "ghl_webhook",
-          phone,
-          ghl_contact_id: ghlContactId,
-          ghl_response: ghlText
+          provider,
+          provider_response: providerResponse
         }
       })
 
@@ -162,7 +209,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           ok: false,
-          error: "El mensaje salió a GHL pero no se guardó en CRM",
+          error: "El mensaje salió pero no se guardó en CRM",
           details: messageError.message
         },
         { status: 500 }
@@ -178,7 +225,8 @@ export async function POST(req: NextRequest) {
       .eq("id", conversation.id)
 
     return NextResponse.json({
-      ok: true
+      ok: true,
+      provider
     })
   } catch (error: any) {
     return NextResponse.json(
