@@ -1,139 +1,127 @@
-import { NextRequest, NextResponse } from "next/server"
-import { createClient } from "@supabase/supabase-js"
+async function processMessengerWebhook(eventId: string, payload: any) {
+  const entries = Array.isArray(payload?.entry) ? payload.entry : []
 
-export const dynamic = "force-dynamic"
+  for (const entry of entries) {
+    const pageId = String(entry?.id || "")
+    const messagingEvents = Array.isArray(entry?.messaging) ? entry.messaging : []
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+    for (const item of messagingEvents) {
+      const senderId = String(item?.sender?.id || "")
+      const recipientId = String(item?.recipient?.id || pageId || "")
+      const messageId = String(item?.message?.mid || "")
+      const text = String(item?.message?.text || "").trim()
+      const timestamp = item?.timestamp ? new Date(Number(item.timestamp)).toISOString() : new Date().toISOString()
 
-function getChannelFromPayload(payload: any): "whatsapp" | "instagram" | "messenger" | "unknown" {
-  const objectType = String(payload?.object || "").toLowerCase()
+      if (!senderId || !text) continue
 
-  if (objectType === "whatsapp_business_account") {
-    return "whatsapp"
-  }
+      const displayName = `Facebook ${senderId.slice(-6)}`
 
-  if (objectType === "instagram") {
-    return "instagram"
-  }
+      const { data: existingContact } = await supabase
+        .from("crm_contacts")
+        .select("id")
+        .eq("source", "meta")
+        .filter("metadata->>messenger_psid", "eq", senderId)
+        .maybeSingle()
 
-  if (objectType === "page") {
-    return "messenger"
-  }
+      let contactId = existingContact?.id
 
-  return "unknown"
-}
+      if (!contactId) {
+        const { data: newContact, error: contactError } = await supabase
+          .from("crm_contacts")
+          .insert({
+            display_name: displayName,
+            phone: null,
+            normalized_phone: null,
+            lifecycle_status: "lead",
+            source: "meta",
+            last_seen_at: timestamp,
+            metadata: {
+              messenger_psid: senderId,
+              page_id: recipientId,
+              channel: "messenger"
+            }
+          })
+          .select("id")
+          .single()
 
-function getExternalMessageId(payload: any): string | null {
-  try {
-    const entry = payload?.entry?.[0]
-    const change = entry?.changes?.[0]
+        if (contactError) throw contactError
+        contactId = newContact.id
+      } else {
+        await supabase
+          .from("crm_contacts")
+          .update({
+            last_seen_at: timestamp
+          })
+          .eq("id", contactId)
+      }
 
-    const whatsappMessageId =
-      change?.value?.messages?.[0]?.id ||
-      change?.value?.statuses?.[0]?.id
+      const { data: existingConversation } = await supabase
+        .from("crm_conversations")
+        .select("id")
+        .eq("channel", "messenger")
+        .eq("external_thread_id", senderId)
+        .maybeSingle()
 
-    if (whatsappMessageId) return String(whatsappMessageId)
+      let conversationId = existingConversation?.id
 
-    const messaging = entry?.messaging?.[0]
+      if (!conversationId) {
+        const { data: newConversation, error: conversationError } = await supabase
+          .from("crm_conversations")
+          .insert({
+            contact_id: contactId,
+            channel: "messenger",
+            status: "open",
+            source: "meta",
+            external_thread_id: senderId,
+            last_message_at: timestamp
+          })
+          .select("id")
+          .single()
 
-    const messengerMessageId =
-      messaging?.message?.mid ||
-      messaging?.postback?.mid
+        if (conversationError) throw conversationError
+        conversationId = newConversation.id
+      } else {
+        await supabase
+          .from("crm_conversations")
+          .update({
+            last_message_at: timestamp,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", conversationId)
+      }
 
-    if (messengerMessageId) return String(messengerMessageId)
+      const { data: existingMessage } = await supabase
+        .from("crm_messages")
+        .select("id")
+        .eq("external_message_id", messageId)
+        .maybeSingle()
 
-    return null
-  } catch {
-    return null
-  }
-}
-
-function getExternalEventId(payload: any): string | null {
-  try {
-    const entryId = payload?.entry?.[0]?.id
-    const time = payload?.entry?.[0]?.time
-
-    if (entryId && time) {
-      return `${entryId}:${time}`
+      if (!existingMessage) {
+        await supabase
+          .from("crm_messages")
+          .insert({
+            conversation_id: conversationId,
+            contact_id: contactId,
+            channel: "messenger",
+            direction: "inbound",
+            external_message_id: messageId || null,
+            sender_external_id: senderId,
+            recipient_external_id: recipientId,
+            message_type: "text",
+            text,
+            status: "received",
+            raw_payload: item
+          })
+      }
     }
-
-    if (entryId) {
-      return String(entryId)
-    }
-
-    return null
-  } catch {
-    return null
-  }
-}
-
-export async function GET(req: NextRequest) {
-  const url = new URL(req.url)
-
-  const mode = url.searchParams.get("hub.mode")
-  const token = url.searchParams.get("hub.verify_token")
-  const challenge = url.searchParams.get("hub.challenge")
-
-  const verifyToken = process.env.META_VERIFY_TOKEN
-
-  if (!verifyToken) {
-    return new NextResponse("Missing META_VERIFY_TOKEN", { status: 500 })
   }
 
-  if (mode === "subscribe" && token === verifyToken && challenge) {
-    return new NextResponse(challenge, { status: 200 })
-  }
-
-  return new NextResponse("Forbidden", { status: 403 })
-}
-
-export async function POST(req: NextRequest) {
-  try {
-    const payload = await req.json()
-
-    const channel = getChannelFromPayload(payload)
-    const objectType = payload?.object ? String(payload.object) : null
-    const externalMessageId = getExternalMessageId(payload)
-    const externalEventId = getExternalEventId(payload)
-
-    const { error } = await supabase
-      .from("crm_meta_webhook_events")
-      .insert({
-        channel,
-        object_type: objectType,
-        external_event_id: externalEventId,
-        external_message_id: externalMessageId,
-        payload,
-        processed: false
-      })
-
-    if (error) {
-      console.error("meta webhook insert error:", error)
-
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "db_error"
-        },
-        { status: 500 }
-      )
-    }
-
-    return NextResponse.json({
-      ok: true
+  await supabase
+    .from("crm_meta_webhook_events")
+    .update({
+      processed: true,
+      processed_at: new Date().toISOString(),
+      processing_error: null
     })
-  } catch (error) {
-    console.error("meta webhook error:", error)
-
-    return NextResponse.json(
-      {
-        ok: false,
-        error: "webhook_error"
-      },
-      { status: 500 }
-    )
-  }
+    .eq("id", eventId)
 }
