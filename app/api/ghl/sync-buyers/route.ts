@@ -72,26 +72,14 @@ function getBuyerKey(order: OrderRow) {
   return ""
 }
 
-function getBehaviorTag(totalOrders: number, totalSpent: number) {
-  if (totalSpent >= 150000) return "cliente_vip"
-  if (totalOrders >= 3) return "cliente_recurrente"
-  if (totalOrders === 2) return "cliente_2_compras"
-  return "cliente_1_compra"
-}
+function getLoyaltyTag(totalOrders: number) {
+  const cyclePosition = totalOrders % 4
 
-function getSourceTag(source: string | null) {
-  if (source === "csv_import_real") return "cliente_importado_csv"
-  if (source === "vecinos") return "cliente_vecinos"
-  if (source === "zona-norte") return "cliente_zona_norte"
-  return "cliente_web"
-}
+  if (cyclePosition === 1) return "loyalty_1_de_4"
+  if (cyclePosition === 2) return "loyalty_2_de_4"
+  if (cyclePosition === 3) return "loyalty_3_de_4"
 
-function getPaymentTag(paymentMethod: string | null) {
-  if (paymentMethod === "historical") return "pago_historico"
-  if (paymentMethod === "cash") return "pago_efectivo"
-  if (paymentMethod === "mp_transfer") return "pago_transferencia"
-  if (paymentMethod === "mercadopago") return "pago_mercadopago"
-  return "pago_sin_definir"
+  return "loyalty_4_de_4"
 }
 
 async function upsertGhlContact({
@@ -188,8 +176,6 @@ export async function POST() {
       totalOrders: number
       totalSpent: number
       lastOrderAt: string
-      sources: Set<string>
-      paymentMethods: Set<string>
     }>()
 
     for (const order of validOrders as OrderRow[]) {
@@ -210,9 +196,7 @@ export async function POST() {
           phone,
           totalOrders: 1,
           totalSpent: amount,
-          lastOrderAt: order.created_at,
-          sources: new Set([String(order.source || "sin_origen")]),
-          paymentMethods: new Set([String(order.payment_method || "sin_pago")])
+          lastOrderAt: order.created_at
         })
       } else {
         existing.totalOrders += 1
@@ -224,9 +208,6 @@ export async function POST() {
           existing.email = email || existing.email
           existing.phone = phone || existing.phone
         }
-
-        existing.sources.add(String(order.source || "sin_origen"))
-        existing.paymentMethods.add(String(order.payment_method || "sin_pago"))
       }
     }
 
@@ -235,15 +216,10 @@ export async function POST() {
     const errors: Array<{ buyer: string; error: string }> = []
 
     for (const buyer of buyers.values()) {
-      const sourceTags = Array.from(buyer.sources).map(getSourceTag)
-      const paymentTags = Array.from(buyer.paymentMethods).map(getPaymentTag)
-
-      const tags = Array.from(new Set([
+      const tags = [
         "comprador_quintas_y_granjas",
-        getBehaviorTag(buyer.totalOrders, buyer.totalSpent),
-        ...sourceTags,
-        ...paymentTags
-      ]))
+        getLoyaltyTag(buyer.totalOrders)
+      ]
 
       try {
         await upsertGhlContact({
