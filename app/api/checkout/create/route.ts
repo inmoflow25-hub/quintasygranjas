@@ -210,7 +210,7 @@ export async function POST(req: Request) {
       payment_method,
       customer_name,
       customer_email,
-      customer_phone: normalizedCustomerPhone,
+      customer_phone,
       delivery_address,
       delivery_city,
       delivery_notes
@@ -511,7 +511,7 @@ export async function POST(req: Request) {
 
         customer_name,
         customer_email: normalizedCustomerEmail,
-        customer_phone: normalizedCustomerPhone,
+        customer_phone,
         delivery_address,
         delivery_city,
         delivery_notes: fullNotes,
