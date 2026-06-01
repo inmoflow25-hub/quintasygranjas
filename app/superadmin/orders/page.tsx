@@ -173,7 +173,7 @@ export default async function SuperAdminOrdersPage() {
             </thead>
 
             <tbody>
-              {safeOrders.map((order: any) => {
+              {safeOrders.filter((order: any) => order.source !== "csv_import_real").map((order: any) => {
                 const key = customerKey(order)
                 const purchases = customerCounts.get(key) || 0
                 const isRepeat = purchases >= 2
