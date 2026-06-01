@@ -443,7 +443,7 @@ export async function POST(req: Request) {
         name: customer_name,
         full_name: customer_name,
         email: normalizedCustomerEmail,
-        phone: normalizedCustomerPhone
+        phone: normalizedCustomerPhone,
         address: delivery_address,
         city: delivery_city
       })
