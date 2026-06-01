@@ -1,0 +1,284 @@
+import { NextResponse } from "next/server"
+import { createClient } from "@supabase/supabase-js"
+import { requireAdmin } from "@/lib/admin-auth"
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
+
+type OrderRow = {
+  id: string
+  created_at: string
+  source: string | null
+  status: string | null
+  payment_method: string | null
+  payment_status: string | null
+  price: number | null
+  final_price: number | null
+  customer_name: string | null
+  customer_email: string | null
+  customer_phone: string | null
+  is_test: boolean | null
+}
+
+function normalizeEmail(email: string | null | undefined) {
+  return String(email || "").trim().toLowerCase()
+}
+
+function normalizeArgentinaPhone(rawPhone: string | null | undefined) {
+  let phone = String(rawPhone || "").replace(/\D/g, "")
+
+  if (!phone) return ""
+
+  if (phone.startsWith("00")) {
+    phone = phone.slice(2)
+  }
+
+  if (phone.startsWith("011")) {
+    phone = `11${phone.slice(3)}`
+  }
+
+  if (phone.startsWith("15") && phone.length >= 10) {
+    phone = `11${phone.slice(2)}`
+  }
+
+  if (phone.startsWith("5411")) {
+    phone = `54911${phone.slice(4)}`
+  }
+
+  if (phone.startsWith("54911")) {
+    return `+${phone}`
+  }
+
+  if (phone.startsWith("11")) {
+    return `+549${phone}`
+  }
+
+  if (phone.startsWith("54") && !phone.startsWith("549")) {
+    return `+549${phone.slice(2)}`
+  }
+
+  return `+54${phone}`
+}
+
+function getBuyerKey(order: OrderRow) {
+  const phone = normalizeArgentinaPhone(order.customer_phone)
+  const email = normalizeEmail(order.customer_email)
+
+  if (phone) return phone
+  if (email) return email
+
+  return ""
+}
+
+function getBehaviorTag(totalOrders: number, totalSpent: number) {
+  if (totalSpent >= 150000) return "cliente_vip"
+  if (totalOrders >= 3) return "cliente_recurrente"
+  if (totalOrders === 2) return "cliente_2_compras"
+  return "cliente_1_compra"
+}
+
+function getSourceTag(source: string | null) {
+  if (source === "csv_import_real") return "cliente_importado_csv"
+  if (source === "vecinos") return "cliente_vecinos"
+  if (source === "zona-norte") return "cliente_zona_norte"
+  return "cliente_web"
+}
+
+function getPaymentTag(paymentMethod: string | null) {
+  if (paymentMethod === "historical") return "pago_historico"
+  if (paymentMethod === "cash") return "pago_efectivo"
+  if (paymentMethod === "mp_transfer") return "pago_transferencia"
+  if (paymentMethod === "mercadopago") return "pago_mercadopago"
+  return "pago_sin_definir"
+}
+
+async function upsertGhlContact({
+  name,
+  email,
+  phone,
+  tags
+}: {
+  name: string
+  email: string
+  phone: string
+  tags: string[]
+}) {
+  const token = process.env.GHL_API_TOKEN
+  const locationId = process.env.GHL_LOCATION_ID
+
+  if (!token || !locationId) {
+    throw new Error("Faltan GHL_API_TOKEN o GHL_LOCATION_ID en Vercel")
+  }
+
+  const body: any = {
+    locationId,
+    firstName: name,
+    tags
+  }
+
+  if (email) body.email = email
+  if (phone) body.phone = phone
+
+  const response = await fetch("https://services.leadconnectorhq.com/contacts/upsert", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Version: "2021-07-28",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
+  })
+
+  const data = await response.json().catch(() => null)
+
+  if (!response.ok) {
+    console.error("GHL upsert error", data)
+    throw new Error(data?.message || "Error creando/actualizando contacto en GHL")
+  }
+
+  return data
+}
+
+export async function POST() {
+  try {
+    await requireAdmin()
+
+    const { data: orders, error } = await supabase
+      .from("orders")
+      .select(`
+        id,
+        created_at,
+        source,
+        status,
+        payment_method,
+        payment_status,
+        price,
+        final_price,
+        customer_name,
+        customer_email,
+        customer_phone,
+        is_test
+      `)
+      .eq("status", "confirmed")
+      .eq("is_test", false)
+      .order("created_at", { ascending: false })
+
+    if (error) {
+      console.error("orders fetch error", error)
+      return NextResponse.json(
+        { ok: false, error: "No se pudieron leer compradores" },
+        { status: 500 }
+      )
+    }
+
+    const validOrders = (orders || []).filter((order: OrderRow) => {
+      if (order.payment_method === "mercadopago") {
+        return ["approved", "paid"].includes(String(order.payment_status || ""))
+      }
+
+      return true
+    })
+
+    const buyers = new Map<string, {
+      name: string
+      email: string
+      phone: string
+      totalOrders: number
+      totalSpent: number
+      lastOrderAt: string
+      sources: Set<string>
+      paymentMethods: Set<string>
+    }>()
+
+    for (const order of validOrders as OrderRow[]) {
+      const key = getBuyerKey(order)
+
+      if (!key) continue
+
+      const phone = normalizeArgentinaPhone(order.customer_phone)
+      const email = normalizeEmail(order.customer_email)
+      const amount = Number(order.final_price || order.price || 0)
+
+      const existing = buyers.get(key)
+
+      if (!existing) {
+        buyers.set(key, {
+          name: String(order.customer_name || "").trim() || "Cliente",
+          email,
+          phone,
+          totalOrders: 1,
+          totalSpent: amount,
+          lastOrderAt: order.created_at,
+          sources: new Set([String(order.source || "sin_origen")]),
+          paymentMethods: new Set([String(order.payment_method || "sin_pago")])
+        })
+      } else {
+        existing.totalOrders += 1
+        existing.totalSpent += amount
+
+        if (new Date(order.created_at) > new Date(existing.lastOrderAt)) {
+          existing.lastOrderAt = order.created_at
+          existing.name = String(order.customer_name || "").trim() || existing.name
+          existing.email = email || existing.email
+          existing.phone = phone || existing.phone
+        }
+
+        existing.sources.add(String(order.source || "sin_origen"))
+        existing.paymentMethods.add(String(order.payment_method || "sin_pago"))
+      }
+    }
+
+    let synced = 0
+    let failed = 0
+    const errors: Array<{ buyer: string; error: string }> = []
+
+    for (const buyer of buyers.values()) {
+      const sourceTags = Array.from(buyer.sources).map(getSourceTag)
+      const paymentTags = Array.from(buyer.paymentMethods).map(getPaymentTag)
+
+      const tags = Array.from(new Set([
+        "comprador_quintas_y_granjas",
+        getBehaviorTag(buyer.totalOrders, buyer.totalSpent),
+        ...sourceTags,
+        ...paymentTags
+      ]))
+
+      try {
+        await upsertGhlContact({
+          name: buyer.name,
+          email: buyer.email,
+          phone: buyer.phone,
+          tags
+        })
+
+        synced += 1
+      } catch (error: any) {
+        failed += 1
+        errors.push({
+          buyer: buyer.phone || buyer.email || buyer.name,
+          error: error?.message || "Error desconocido"
+        })
+      }
+    }
+
+    return NextResponse.json({
+      ok: true,
+      total_buyers: buyers.size,
+      synced,
+      failed,
+      errors: errors.slice(0, 20)
+    })
+  } catch (error: any) {
+    console.error("sync buyers ghl error", error)
+
+    return NextResponse.json(
+      {
+        ok: false,
+        error: error?.message || "Error interno sincronizando GHL"
+      },
+      { status: 500 }
+    )
+  }
+}
