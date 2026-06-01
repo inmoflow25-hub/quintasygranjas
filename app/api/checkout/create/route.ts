@@ -443,7 +443,7 @@ export async function POST(req: Request) {
         name: customer_name,
         full_name: customer_name,
         email: normalizedCustomerEmail,
-        phone: customer_phone,
+        phone: normalizedCustomerPhone
         address: delivery_address,
         city: delivery_city
       })
@@ -468,7 +468,7 @@ export async function POST(req: Request) {
           address: delivery_address,
           city: delivery_city,
           notes: fullNotes,
-          phone: customer_phone
+          phone: normalizedCustomerPhone
         },
         { onConflict: "user_id" }
       )
