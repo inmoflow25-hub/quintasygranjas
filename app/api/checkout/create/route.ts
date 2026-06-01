@@ -221,6 +221,7 @@ export async function POST(req: Request) {
     const lat = normalizeOptionalNumber(body.lat)
     const lng = normalizeOptionalNumber(body.lng)
     const normalizedCustomerEmail = normalizeEmail(customer_email)
+    const normalizedCustomerPhone = normalizeArgentinaPhone(customer_phone)
 
     if (!customer_name || !normalizedCustomerEmail || !customer_phone || !delivery_address || !delivery_city) {
       return NextResponse.json(
