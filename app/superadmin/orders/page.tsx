@@ -117,7 +117,10 @@ export default async function SuperAdminOrdersPage() {
   return (
     <div className="space-y-6">
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-        <Metric title="Pedidos reales" value={safeOrders.length} />
+        <Metric
+  title="Pedidos reales"
+  value={safeOrders.filter((o: any) => o.source !== "csv_import_real").length}
+/>
         <Metric title="Confirmados" value={confirmedOrders.length} />
         <Metric
           title="Cancelados"
