@@ -223,7 +223,7 @@ export async function POST(req: Request) {
     const normalizedCustomerEmail = normalizeEmail(customer_email)
     const normalizedCustomerPhone = normalizeArgentinaPhone(customer_phone)
 
-    if (!customer_name || !normalizedCustomerEmail || !customer_phone || !delivery_address || !delivery_city) {
+    if (!customer_name || !normalizedCustomerEmail || !normalizedCustomerPhone || !delivery_address || !delivery_city) {
       return NextResponse.json(
         { error: "Faltan datos obligatorios del receptor" },
         { status: 400 }
