@@ -7,7 +7,8 @@ const navItems = [
   { href: "/superadmin/torres", label: "Torres" },
   { href: "/superadmin/expenses", label: "Gastos" },
   { href: "/superadmin/suppliers", label: "Proveedores" },
-  { href: "/superadmin/map", label: "Mapa" }
+  { href: "/superadmin/map", label: "Mapa" },
+  { href: "/superadmin/ghl", label: "GHL" }
 ]
 
 export default function SuperAdminLayout({
