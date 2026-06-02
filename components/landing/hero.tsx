@@ -48,25 +48,16 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl">
 
-          {/* BLOQUE 10% OFF */}
-          <div className="mb-7 max-w-xl rounded-3xl border border-white/30 bg-white/95 p-5 shadow-2xl backdrop-blur">
-            <p className="text-sm font-bold uppercase tracking-[0.22em] text-green-700">
+          <div className="mb-6 flex flex-wrap items-center gap-3 text-white">
+            <span className="h-px w-10 bg-white/70" />
+
+            <span className="text-sm font-semibold uppercase tracking-[0.28em] text-white/90">
               Primera compra
-            </p>
+            </span>
 
-            <div className="mt-2 flex flex-col gap-1 sm:flex-row sm:items-end sm:gap-4">
-              <span className="text-5xl font-black leading-none text-green-800 md:text-6xl">
-                10% OFF
-              </span>
-
-              <span className="pb-1 text-lg font-semibold text-[#1f2a1f]">
-                automático en tu pedido
-              </span>
-            </div>
-
-            <p className="mt-3 text-sm leading-relaxed text-gray-700">
-              Comprás fresco, directo de productores, y en tu primera compra el descuento se aplica solo.
-            </p>
+            <span className="rounded-full border border-white/40 bg-white/10 px-4 py-1.5 text-sm font-semibold backdrop-blur">
+              10% OFF automático
+            </span>
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
@@ -74,12 +65,17 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
           </h1>
 
           <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
-            Armá tu caja con los productos que quieras o elegí una ya lista. Sin supermercado. Sin filas. Sin pagar de más.
+            Armá tu caja con los productos que quieras o elegí una ya lista.
+            Sin supermercado. Sin filas. Sin pagar de más.
           </p>
 
-          <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
-            Después seguís sumando beneficios con tu domicilio: cada 4 compras, 10% OFF.
-          </p>
+          <div className="mt-6 max-w-xl border-l-2 border-white/50 pl-5">
+            <p className="text-lg md:text-xl text-white/95 leading-relaxed">
+              En tu primera compra tenés{" "}
+              <span className="font-bold text-white">10% de descuento</span>.
+              Después, cada 4 compras, volvés a recibir otro 10% OFF.
+            </p>
+          </div>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
             <Button
