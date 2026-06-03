@@ -12,6 +12,8 @@ type CheckoutItem = {
   price: number
 }
 
+type GooglePlacesStatus = "manual" | "loading" | "ready" | "error"
+
 function money(value: number) {
   return `$${Math.round(value || 0).toLocaleString("es-AR")}`
 }
@@ -29,8 +31,21 @@ function CheckoutContent() {
   const [paymentMethod, setPaymentMethod] = useState<"mercadopago" | "cash" | "mp_transfer">("mercadopago")
   const [propina, setPropina] = useState(0)
   const [customPropina, setCustomPropina] = useState("")
+  const [googlePlacesStatus, setGooglePlacesStatus] = useState<GooglePlacesStatus>("manual")
 
   const mpAlias = process.env.NEXT_PUBLIC_MP_ALIAS || ""
+
+  /**
+   * IMPORTANTE:
+   *
+   * Para que Google Places cargue, en Vercel poné:
+   * NEXT_PUBLIC_ENABLE_GOOGLE_PLACES=true
+   *
+   * Si está vacío, false, o si Google falla, el checkout queda manual.
+   */
+  const googlePlacesEnabled =
+    process.env.NEXT_PUBLIC_ENABLE_GOOGLE_PLACES === "true" &&
+    Boolean(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY)
 
   const [form, setForm] = useState({
     customer_name: "",
@@ -69,71 +84,121 @@ function CheckoutContent() {
   }, [source, boxId])
 
   useEffect(() => {
+    if (!googlePlacesEnabled) {
+      setGooglePlacesStatus("manual")
+      return
+    }
+
     if (!addressInputRef.current) return
     if (typeof window === "undefined") return
 
-    const existingScript = document.getElementById("google-places-script")
+    let autocomplete: any = null
+    let destroyed = false
 
     function initAutocomplete() {
+      if (destroyed) return
+
       const google = (window as any).google
 
       if (!google?.maps?.places || !addressInputRef.current) {
+        setGooglePlacesStatus("error")
         return
       }
 
-      const autocomplete = new google.maps.places.Autocomplete(addressInputRef.current, {
-        types: ["address"],
-        componentRestrictions: { country: "ar" },
-        fields: ["formatted_address", "address_components", "geometry", "place_id"]
-      })
+      try {
+        autocomplete = new google.maps.places.Autocomplete(addressInputRef.current, {
+          types: ["address"],
+          componentRestrictions: { country: "ar" },
+          fields: ["formatted_address", "address_components", "geometry", "place_id"]
+        })
 
-      autocomplete.addListener("place_changed", () => {
-        const place = autocomplete.getPlace()
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace()
 
-        if (!place?.formatted_address) return
+          if (!place?.formatted_address) return
 
-        const components = place.address_components || []
+          const components = place.address_components || []
 
-        const locality =
-          components.find((c: any) => c.types.includes("locality"))?.long_name ||
-          components.find((c: any) => c.types.includes("administrative_area_level_2"))?.long_name ||
-          components.find((c: any) => c.types.includes("administrative_area_level_1"))?.long_name ||
-          ""
+          const locality =
+            components.find((c: any) => c.types.includes("locality"))?.long_name ||
+            components.find((c: any) => c.types.includes("administrative_area_level_2"))?.long_name ||
+            components.find((c: any) => c.types.includes("administrative_area_level_1"))?.long_name ||
+            ""
 
-        const lat =
-          typeof place.geometry?.location?.lat === "function"
-            ? String(place.geometry.location.lat())
-            : ""
+          const lat =
+            typeof place.geometry?.location?.lat === "function"
+              ? String(place.geometry.location.lat())
+              : ""
 
-        const lng =
-          typeof place.geometry?.location?.lng === "function"
-            ? String(place.geometry.location.lng())
-            : ""
+          const lng =
+            typeof place.geometry?.location?.lng === "function"
+              ? String(place.geometry.location.lng())
+              : ""
 
-        setForm((prev) => ({
-          ...prev,
-          delivery_address: place.formatted_address,
-          delivery_city: locality || prev.delivery_city,
-          google_place_id: place.place_id || "",
-          lat,
-          lng
-        }))
-      })
+          setForm((prev) => ({
+            ...prev,
+            delivery_address: place.formatted_address,
+            delivery_city: locality || prev.delivery_city,
+            google_place_id: place.place_id || "",
+            lat,
+            lng
+          }))
+        })
+
+        setGooglePlacesStatus("ready")
+      } catch (error) {
+        console.error("Google Places init error", error)
+        setGooglePlacesStatus("error")
+      }
+    }
+
+    const existingScript = document.getElementById("google-places-script")
+
+    if ((window as any).google?.maps?.places) {
+      initAutocomplete()
+      return () => {
+        destroyed = true
+      }
     }
 
     if (existingScript) {
-      initAutocomplete()
-      return
+      setGooglePlacesStatus("loading")
+
+      const timeout = window.setTimeout(() => {
+        if (!(window as any).google?.maps?.places) {
+          setGooglePlacesStatus("error")
+        } else {
+          initAutocomplete()
+        }
+      }, 2500)
+
+      return () => {
+        destroyed = true
+        window.clearTimeout(timeout)
+      }
     }
+
+    setGooglePlacesStatus("loading")
 
     const script = document.createElement("script")
     script.id = "google-places-script"
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`
     script.async = true
+    script.defer = true
+
     script.onload = initAutocomplete
 
+    script.onerror = () => {
+      console.error("Google Places script failed")
+      setGooglePlacesStatus("error")
+    }
+
     document.body.appendChild(script)
-  }, [])
+
+    return () => {
+      destroyed = true
+    }
+  }, [googlePlacesEnabled])
 
   const subtotal = useMemo(() => {
     return items.reduce(
@@ -148,6 +213,16 @@ function CheckoutContent() {
     setForm((prev) => ({
       ...prev,
       [field]: value
+    }))
+  }
+
+  function updateAddressManually(value: string) {
+    setForm((prev) => ({
+      ...prev,
+      delivery_address: value,
+      google_place_id: "",
+      lat: "",
+      lng: ""
     }))
   }
 
@@ -196,6 +271,16 @@ function CheckoutContent() {
 
     if (subtotal < 20000) {
       alert("El pedido mínimo es de $20.000")
+      return
+    }
+
+    if (!form.delivery_address.trim()) {
+      alert("Ingresá tu dirección de entrega")
+      return
+    }
+
+    if (!form.delivery_city.trim()) {
+      alert("Ingresá tu ciudad")
       return
     }
 
@@ -284,23 +369,27 @@ function CheckoutContent() {
             <input
               ref={addressInputRef}
               className="w-full rounded-xl border px-4 py-3"
-              placeholder="Empezá a escribir tu dirección"
+              placeholder="Dirección de entrega"
               value={form.delivery_address}
-              onChange={(e) => {
-                setForm((prev) => ({
-                  ...prev,
-                  delivery_address: e.target.value,
-                  google_place_id: "",
-                  lat: "",
-                  lng: ""
-                }))
-              }}
+              onChange={(e) => updateAddressManually(e.target.value)}
               required
             />
 
             <p className="text-xs text-gray-500">
-              Elegí una dirección sugerida para que podamos agrupar tu domicilio correctamente.
+              Escribí tu dirección completa. Si aparecen sugerencias, podés elegir una; si no aparecen, igual podés continuar.
             </p>
+
+            {googlePlacesStatus === "loading" && (
+              <p className="text-xs text-gray-400">
+                Cargando sugerencias de dirección...
+              </p>
+            )}
+
+            {googlePlacesStatus === "error" && (
+              <p className="text-xs text-amber-700">
+                Las sugerencias automáticas no están disponibles. Podés escribir tu domicilio manualmente.
+              </p>
+            )}
 
             <input
               className="w-full rounded-xl border px-4 py-3"
@@ -400,7 +489,7 @@ function CheckoutContent() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-green-600 py-3 font-semibold text-white"
+              className="w-full rounded-xl bg-green-600 py-3 font-semibold text-white disabled:opacity-60"
             >
               {loading
                 ? "Procesando..."
@@ -467,3 +556,5 @@ export default function CheckoutPage() {
     </Suspense>
   )
 }
+
+
