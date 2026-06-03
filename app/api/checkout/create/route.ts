@@ -315,11 +315,18 @@ export async function POST(req: Request) {
       userId = createdUser.id
     }
 
-    const completedPurchases = await getCompletedPurchasesForCustomer({
-      userId,
-      email: normalizedCustomerEmail,
-      phone: normalizedCustomerPhone
-    })
+  if (!userId) {
+  return NextResponse.json(
+    { error: "No se pudo identificar el usuario" },
+    { status: 500 }
+  )
+}
+
+const completedPurchases = await getCompletedPurchasesForCustomer({
+  userId,
+  email: normalizedCustomerEmail,
+  phone: normalizedCustomerPhone
+})
 
     const {
       discountPercent,
