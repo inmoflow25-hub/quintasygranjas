@@ -146,8 +146,9 @@ function getIndividualDiscount({
 }: {
   completedPurchases: number
 }) {
-  const isFirstPurchase = completedPurchases === 0
-  const hasCycleBenefit = completedPurchases > 0 && completedPurchases % 4 === 0
+  const nextPurchaseNumber = completedPurchases + 1
+  const isFirstPurchase = nextPurchaseNumber === 1
+  const isFourthPurchaseCycle = nextPurchaseNumber % 4 === 0
 
   if (isFirstPurchase) {
     return {
@@ -157,7 +158,7 @@ function getIndividualDiscount({
     }
   }
 
-  if (hasCycleBenefit) {
+  if (isFourthPurchaseCycle) {
     return {
       discountPercent: 10,
       benefitStatus: "loyalty_4_cycle",
