@@ -81,6 +81,13 @@ function formatMoney(value: number) {
   return `$${Math.round(value || 0).toLocaleString("es-AR")}`
 }
 
+function formatPaymentMethod(paymentMethod: string) {
+  if (paymentMethod === "cash") return "Efectivo"
+  if (paymentMethod === "mercadopago") return "Mercado Pago"
+  if (paymentMethod === "mp_transfer") return "Transferencia"
+  return paymentMethod || "No informado"
+}
+
 function normalizeCartItems(items: CheckoutItem[]) {
   return items.map((item) => ({
     id: String(item.id || item.product_name || item.name || crypto.randomUUID()),
@@ -185,6 +192,7 @@ function buildOrderDetailMessage({
   discountAmount,
   propina,
   finalPrice,
+  paymentMethod,
   deliveryAddress,
   deliveryCity
 }: {
@@ -199,6 +207,7 @@ function buildOrderDetailMessage({
   discountAmount: number
   propina: number
   finalPrice: number
+  paymentMethod: string
   deliveryAddress: string
   deliveryCity: string
 }) {
@@ -236,6 +245,7 @@ function buildOrderDetailMessage({
 
   lines.push(
     `Total: ${formatMoney(finalPrice)}`,
+    `Forma de pago elegida: ${formatPaymentMethod(paymentMethod)}`,
     ``,
     `Dirección de entrega:`,
     `${deliveryAddress}, ${deliveryCity}`,
@@ -583,6 +593,7 @@ export async function POST(req: Request) {
       discountAmount,
       propina,
       finalPrice,
+      paymentMethod: payment_method,
       deliveryAddress: delivery_address,
       deliveryCity: delivery_city
     })
