@@ -77,6 +77,10 @@ function normalizeArgentinaPhone(rawPhone: string | null | undefined) {
   return `+54${phone}`
 }
 
+function formatMoney(value: number) {
+  return `$${Math.round(value || 0).toLocaleString("es-AR")}`
+}
+
 function normalizeCartItems(items: CheckoutItem[]) {
   return items.map((item) => ({
     id: String(item.id || item.product_name || item.name || crypto.randomUUID()),
@@ -170,6 +174,119 @@ function getIndividualDiscount({
     discountPercent: 0,
     benefitStatus: "none",
     loyaltyDiscountPercent: 0
+  }
+}
+
+function buildOrderDetailMessage({
+  orderNumber,
+  customerName,
+  items,
+  subtotal,
+  discountAmount,
+  propina,
+  finalPrice,
+  deliveryAddress,
+  deliveryCity
+}: {
+  orderNumber: string | number
+  customerName: string
+  items: Array<{
+    title: string
+    quantity: number
+    unit_price: number
+  }>
+  subtotal: number
+  discountAmount: number
+  propina: number
+  finalPrice: number
+  deliveryAddress: string
+  deliveryCity: string
+}) {
+  const cleanName = String(customerName || "").trim()
+
+  const itemsText = items
+    .map((item) => {
+      const quantity = Number(item.quantity || 1)
+      const unitPrice = Number(item.unit_price || 0)
+      const lineTotal = unitPrice * quantity
+
+      return `• ${item.title} x${quantity} — ${formatMoney(lineTotal)}`
+    })
+    .join("\n")
+
+  const lines = [
+    `¡Gracias por tu pedido en Quintas y Granjas! 🥬`,
+    cleanName ? `${cleanName}, recibimos tu pedido correctamente.` : `Recibimos tu pedido correctamente.`,
+    ``,
+    `Pedido #${orderNumber}`,
+    ``,
+    `Detalle del pedido:`,
+    itemsText,
+    ``,
+    `Subtotal: ${formatMoney(subtotal)}`
+  ]
+
+  if (discountAmount > 0) {
+    lines.push(`Descuento: -${formatMoney(discountAmount)}`)
+  }
+
+  if (propina > 0) {
+    lines.push(`Propina: ${formatMoney(propina)}`)
+  }
+
+  lines.push(
+    `Total: ${formatMoney(finalPrice)}`,
+    ``,
+    `Dirección de entrega:`,
+    `${deliveryAddress}, ${deliveryCity}`,
+    ``,
+    `Te vamos a escribir por este medio si necesitamos confirmar algún dato.`
+  )
+
+  return lines.filter((line) => line !== null && line !== undefined).join("\n")
+}
+
+async function sendPostPurchaseMessage({
+  phone,
+  name,
+  message,
+  orderId,
+  orderNumber
+}: {
+  phone: string
+  name: string
+  message: string
+  orderId: string
+  orderNumber: string | number
+}) {
+  const webhookUrl = process.env.GHL_SEND_MESSAGE_WEBHOOK_URL
+
+  if (!webhookUrl) {
+    console.warn("GHL_SEND_MESSAGE_WEBHOOK_URL no configurado")
+    return
+  }
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        phone,
+        name,
+        message,
+        order_id: orderId,
+        order_number: orderNumber
+      })
+    })
+
+    if (!response.ok) {
+      const text = await response.text().catch(() => "")
+      console.error("post purchase message webhook error", response.status, text)
+    }
+  } catch (error) {
+    console.error("post purchase message error", error)
   }
 }
 
@@ -315,18 +432,18 @@ export async function POST(req: Request) {
       userId = createdUser.id
     }
 
-  if (!userId) {
-  return NextResponse.json(
-    { error: "No se pudo identificar el usuario" },
-    { status: 500 }
-  )
-}
+    if (!userId) {
+      return NextResponse.json(
+        { error: "No se pudo identificar el usuario" },
+        { status: 500 }
+      )
+    }
 
-const completedPurchases = await getCompletedPurchasesForCustomer({
-  userId,
-  email: normalizedCustomerEmail,
-  phone: normalizedCustomerPhone
-})
+    const completedPurchases = await getCompletedPurchasesForCustomer({
+      userId,
+      email: normalizedCustomerEmail,
+      phone: normalizedCustomerPhone
+    })
 
     const {
       discountPercent,
@@ -365,7 +482,7 @@ const completedPurchases = await getCompletedPurchasesForCustomer({
       payment_method === "mp_transfer"
         ? `Pago por transferencia MP. Alias: ${process.env.NEXT_PUBLIC_MP_ALIAS || ""}`
         : "",
-      propina > 0 ? `Propina: $${propina.toLocaleString("es-AR")}` : "",
+      propina > 0 ? `Propina: ${formatMoney(propina)}` : "",
       discountPercent > 0
         ? `Descuento individual aplicado: ${discountPercent}% (${benefitStatus})`
         : ""
@@ -457,6 +574,26 @@ const completedPurchases = await getCompletedPurchasesForCustomer({
         { status: 500 }
       )
     }
+
+    const postPurchaseMessage = buildOrderDetailMessage({
+      orderNumber: order.order_number || order.id,
+      customerName: customer_name,
+      items: normalizedItems,
+      subtotal,
+      discountAmount,
+      propina,
+      finalPrice,
+      deliveryAddress: delivery_address,
+      deliveryCity: delivery_city
+    })
+
+    await sendPostPurchaseMessage({
+      phone: normalizedCustomerPhone,
+      name: customer_name,
+      message: postPurchaseMessage,
+      orderId: order.id,
+      orderNumber: order.order_number || order.id
+    })
 
     if (payment_method === "cash" || payment_method === "mp_transfer") {
       return NextResponse.json({
