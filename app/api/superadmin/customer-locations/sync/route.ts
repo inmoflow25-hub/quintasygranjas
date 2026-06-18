@@ -11,7 +11,7 @@ function normalizeEmail(email: string | null | undefined) {
   return String(email || "").trim().toLowerCase()
 }
 
-function normalizePhone(rawPhone: string | null | undefined) {
+function normalizeArgentinaPhone(rawPhone: string | null | undefined) {
   let phone = String(rawPhone || "").replace(/\D/g, "")
 
   if (!phone) return ""
@@ -52,7 +52,7 @@ function cleanText(value: unknown) {
 }
 
 function buildCustomerKey(order: any) {
-  const phone = normalizePhone(order.customer_phone)
+  const phone = normalizeArgentinaPhone(order.customer_phone)
   const email = normalizeEmail(order.customer_email)
 
   if (phone) return phone
@@ -63,26 +63,13 @@ function buildCustomerKey(order: any) {
 }
 
 function buildCoordinateKey(row: any) {
-  const phone = normalizePhone(row.customer_phone)
+  const phone = normalizeArgentinaPhone(row.customer_phone)
   const email = normalizeEmail(row.customer_email)
 
   if (phone) return phone
   if (email) return email
 
   return String(row.customer_key || "")
-}
-
-function isRealConfirmedOrder(order: any) {
-  if (order.is_test === true) return false
-  if (order.status !== "confirmed") return false
-
-  if (order.source === "csv_import_real") return false
-
-  if (order.payment_method === "mercadopago") {
-    return ["approved", "paid"].includes(String(order.payment_status || ""))
-  }
-
-  return true
 }
 
 export async function POST() {
@@ -111,21 +98,14 @@ export async function POST() {
       )
     }
 
-    const coordinateMemory = new Map<string, any>()
+    const existingByKey = new Map<string, any>()
 
     for (const location of existingLocations || []) {
       const key = buildCoordinateKey(location)
 
       if (!key) continue
 
-      if (location.lat !== null && location.lng !== null) {
-        coordinateMemory.set(key, {
-          lat: location.lat,
-          lng: location.lng,
-          geocoding_status: location.geocoding_status || "ok",
-          notes: location.notes || null
-        })
-      }
+      existingByKey.set(key, location)
     }
 
     const { data: orders, error: ordersError } = await supabase
@@ -146,7 +126,6 @@ export async function POST() {
         delivery_city,
         delivery_notes
       `)
-      .not("customer_phone", "is", null)
       .not("delivery_address", "is", null)
       .order("created_at", { ascending: false })
 
@@ -159,11 +138,22 @@ export async function POST() {
       )
     }
 
-    const realOrders = (orders || []).filter(isRealConfirmedOrder)
+    const usableOrders = (orders || []).filter((order: any) => {
+      if (order.is_test === true) return false
+
+      const address = cleanText(order.delivery_address)
+      const phone = normalizeArgentinaPhone(order.customer_phone)
+      const email = normalizeEmail(order.customer_email)
+
+      if (!address) return false
+      if (!phone && !email && !order.user_id) return false
+
+      return true
+    })
 
     const grouped = new Map<string, any>()
 
-    for (const order of realOrders) {
+    for (const order of usableOrders) {
       const customerKey = buildCustomerKey(order)
 
       if (!customerKey) continue
@@ -171,78 +161,116 @@ export async function POST() {
 
       const customerName = cleanText(order.customer_name)
       const customerEmail = normalizeEmail(order.customer_email)
-      const customerPhone = normalizePhone(order.customer_phone)
+      const customerPhone = normalizeArgentinaPhone(order.customer_phone)
       const address = cleanText(order.delivery_address)
       const city = cleanText(order.delivery_city)
 
       if (!address) continue
-      if (!customerName && !customerPhone && !customerEmail) continue
 
-      const savedCoords = coordinateMemory.get(customerPhone) || coordinateMemory.get(customerEmail)
+      const existing =
+        existingByKey.get(customerPhone) ||
+        existingByKey.get(customerEmail) ||
+        existingByKey.get(customerKey)
 
       grouped.set(customerKey, {
+        existing_id: existing?.id || null,
         customer_key: customerKey,
         customer_name: customerName || customerPhone || customerEmail || "Cliente",
         customer_email: customerEmail || null,
         customer_phone: customerPhone || null,
         address,
         city: city || "Buenos Aires",
-        lat: savedCoords?.lat ?? null,
-        lng: savedCoords?.lng ?? null,
-        geocoding_status: savedCoords?.lat && savedCoords?.lng ? "ok" : "pending",
-        notes: savedCoords?.notes || `Reconstruido desde pedido real. Último pedido: ${order.id}`,
+        lat: existing?.lat ?? null,
+        lng: existing?.lng ?? null,
+        geocoding_status:
+          existing?.lat !== null && existing?.lng !== null
+            ? existing?.geocoding_status || "ok"
+            : "pending",
+        notes:
+          existing?.lat !== null && existing?.lng !== null
+            ? existing?.notes || `Actualizado desde pedido: ${order.id}`
+            : `Sincronizado desde pedido: ${order.id}`,
         updated_at: new Date().toISOString()
       })
     }
 
     const rows = Array.from(grouped.values())
 
-    const { error: deleteError } = await supabase
-      .from("customer_locations")
-      .delete()
-      .neq("id", "00000000-0000-0000-0000-000000000000")
+    let inserted = 0
+    let updated = 0
+    let failed = 0
+    const errors: string[] = []
 
-    if (deleteError) {
-      console.error("delete customer_locations error", deleteError)
+    for (const row of rows) {
+      if (row.existing_id) {
+        const updatePayload: any = {
+          customer_key: row.customer_key,
+          customer_name: row.customer_name,
+          customer_email: row.customer_email,
+          customer_phone: row.customer_phone,
+          address: row.address,
+          city: row.city,
+          updated_at: row.updated_at
+        }
 
-      return NextResponse.json(
-        { error: "No se pudo limpiar customer_locations" },
-        { status: 500 }
-      )
-    }
+        if (row.lat === null || row.lng === null) {
+          updatePayload.lat = null
+          updatePayload.lng = null
+          updatePayload.geocoding_status = "pending"
+          updatePayload.notes = row.notes
+        }
 
-    if (rows.length === 0) {
-      return NextResponse.json({
-        ok: true,
-        read_orders: orders?.length || 0,
-        real_orders: realOrders.length,
-        unique_customers: 0,
-        synced: 0,
-        failed: 0,
-        message: "No había clientes reales para cargar en el mapa"
-      })
-    }
+        const { error: updateError } = await supabase
+          .from("customer_locations")
+          .update(updatePayload)
+          .eq("id", row.existing_id)
 
-    const { error: insertError } = await supabase
-      .from("customer_locations")
-      .insert(rows)
+        if (updateError) {
+          failed += 1
+          errors.push(`${row.customer_key}: ${updateError.message}`)
+          continue
+        }
 
-    if (insertError) {
-      console.error("insert customer_locations error", insertError)
+        updated += 1
+      } else {
+        const insertPayload = {
+          customer_key: row.customer_key,
+          customer_name: row.customer_name,
+          customer_email: row.customer_email,
+          customer_phone: row.customer_phone,
+          address: row.address,
+          city: row.city,
+          lat: row.lat,
+          lng: row.lng,
+          geocoding_status: row.geocoding_status,
+          notes: row.notes,
+          updated_at: row.updated_at
+        }
 
-      return NextResponse.json(
-        { error: "No se pudieron insertar clientes reales en el mapa" },
-        { status: 500 }
-      )
+        const { error: insertError } = await supabase
+          .from("customer_locations")
+          .insert(insertPayload)
+
+        if (insertError) {
+          failed += 1
+          errors.push(`${row.customer_key}: ${insertError.message}`)
+          continue
+        }
+
+        inserted += 1
+      }
     }
 
     return NextResponse.json({
       ok: true,
       read_orders: orders?.length || 0,
-      real_orders: realOrders.length,
+      usable_orders: usableOrders.length,
       unique_customers: rows.length,
-      synced: rows.length,
-      failed: 0
+      inserted,
+      updated,
+      synced: inserted + updated,
+      failed,
+      errors: errors.slice(0, 10)
     })
   } catch (error: any) {
     console.error("sync customer locations error", error)
