@@ -13,6 +13,14 @@ type CustomerPoint = {
   lat: number
   lng: number
   geocoding_status: string | null
+  purchases_count?: number
+  total_purchased?: number
+  average_ticket?: number
+  first_order_at?: string | null
+  last_order_at?: string | null
+  last_order_label?: string | null
+  main_source?: string | null
+  main_payment_method?: string | null
 }
 
 type CommercialLocationPoint = {
@@ -53,6 +61,10 @@ const towerIcon = new L.Icon({
   popupAnchor: [1, -38],
   shadowSize: [41, 41]
 })
+
+function money(value: number | null | undefined) {
+  return `$${Number(value || 0).toLocaleString("es-AR")}`
+}
 
 export default function CustomerMap({
   points,
@@ -158,6 +170,32 @@ export default function CustomerMap({
                   <br />
                   {point.city || "-"}
                 </p>
+
+                <div className="mt-2 rounded-xl bg-[#f5f5f3] p-2">
+                  <p>
+                    <strong>Compras:</strong> {point.purchases_count || 0}
+                  </p>
+
+                  <p>
+                    <strong>Total comprado:</strong> {money(point.total_purchased)}
+                  </p>
+
+                  <p>
+                    <strong>Ticket prom.:</strong> {money(point.average_ticket)}
+                  </p>
+
+                  <p>
+                    <strong>Última compra:</strong> {point.last_order_label || "-"}
+                  </p>
+
+                  <p>
+                    <strong>Canal:</strong> {point.main_source || "-"}
+                  </p>
+
+                  <p>
+                    <strong>Pago:</strong> {point.main_payment_method || "-"}
+                  </p>
+                </div>
               </div>
             </AnyPopup>
           </AnyMarker>
