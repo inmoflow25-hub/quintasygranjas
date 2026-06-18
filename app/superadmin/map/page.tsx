@@ -115,12 +115,8 @@ export default async function SuperAdminMapPage() {
       <section className="flex flex-col gap-4 rounded-3xl border border-[#e3e1dc] bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="text-3xl font-serif font-bold">
-            Mapa de clientes reales
+            Mapa de clientes
           </h2>
-
-          <p className="mt-2 text-sm text-gray-600">
-            Un pin por cliente real con coordenada real. Sin pins temporales.
-          </p>
         </div>
 
         <GeocodeCustomersButton />
