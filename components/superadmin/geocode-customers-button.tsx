@@ -5,11 +5,11 @@ import { useState } from "react"
 export default function GeocodeCustomersButton() {
   const [loading, setLoading] = useState(false)
 
-  async function runGeocoding() {
+  async function updateMapCustomers() {
     if (loading) return
 
     const ok = confirm(
-      "Esto va a buscar coordenadas para clientes pendientes. Puede tardar unos segundos. ¿Seguimos?"
+      "Esto va a sincronizar compradores reales desde pedidos y después cargar coordenadas pendientes. Puede tardar. ¿Seguimos?"
     )
 
     if (!ok) return
@@ -17,32 +17,55 @@ export default function GeocodeCustomersButton() {
     setLoading(true)
 
     try {
-      const res = await fetch("/api/superadmin/customer-locations/geocode", {
+      const syncRes = await fetch("/api/superadmin/customer-locations/sync", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+
+      const syncData = await syncRes.json()
+
+      if (!syncRes.ok) {
+        alert(syncData?.error || "Error sincronizando compradores al mapa")
+        setLoading(false)
+        return
+      }
+
+      const geocodeRes = await fetch("/api/superadmin/customer-locations/geocode", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          limit: 10
+          limit: 25
         })
       })
 
-      const data = await res.json()
+      const geocodeData = await geocodeRes.json()
 
-      if (!res.ok) {
-        alert(data?.error || "Error geocodificando clientes")
+      if (!geocodeRes.ok) {
+        alert(geocodeData?.error || "Error geocodificando clientes")
         setLoading(false)
         return
       }
 
       alert(
-        `Listo.\nProcesados: ${data.processed}\nGeocodificados: ${data.geocoded}\nNo encontrados: ${data.not_found}\nErrores: ${data.failed}`
+        `Mapa actualizado.\n\n` +
+          `Pedidos leídos: ${syncData.read_orders}\n` +
+          `Clientes únicos: ${syncData.unique_customers}\n` +
+          `Sincronizados: ${syncData.synced}\n` +
+          `Fallidos sync: ${syncData.failed}\n\n` +
+          `Geocoding procesados: ${geocodeData.processed}\n` +
+          `Geocodificados: ${geocodeData.geocoded}\n` +
+          `No encontrados: ${geocodeData.not_found}\n` +
+          `Errores geocoding: ${geocodeData.failed}`
       )
 
       window.location.reload()
     } catch (error) {
       console.error(error)
-      alert("Error ejecutando geocoding")
+      alert("Error actualizando mapa")
     } finally {
       setLoading(false)
     }
@@ -51,11 +74,11 @@ export default function GeocodeCustomersButton() {
   return (
     <button
       type="button"
-      onClick={runGeocoding}
+      onClick={updateMapCustomers}
       disabled={loading}
       className="rounded-xl bg-[#1f2a1f] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
     >
-      {loading ? "Geocodificando..." : "Cargar coordenadas"}
+      {loading ? "Actualizando mapa..." : "Actualizar clientes del mapa"}
     </button>
   )
 }
