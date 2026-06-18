@@ -9,7 +9,7 @@ export default function GeocodeCustomersButton() {
     if (loading) return
 
     const ok = confirm(
-      "Esto va a sincronizar compradores reales desde pedidos hacia el mapa y después cargar coordenadas pendientes. No borra customer_locations. ¿Seguimos?"
+      "Esto va a sincronizar compradores reales desde pedidos hacia el mapa. No geocodifica y no borra customer_locations. ¿Seguimos?"
     )
 
     if (!ok) return
@@ -32,44 +32,8 @@ export default function GeocodeCustomersButton() {
         return
       }
 
-      let totalGeocodeProcessed = 0
-      let totalGeocoded = 0
-      let totalNotFound = 0
-      let totalFailed = 0
-
-      for (let batch = 0; batch < 20; batch++) {
-        const geocodeRes = await fetch("/api/superadmin/customer-locations/geocode", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            limit: 25
-          })
-        })
-
-        const geocodeData = await geocodeRes.json()
-
-        if (!geocodeRes.ok) {
-          alert(geocodeData?.error || "Error geocodificando clientes")
-          setLoading(false)
-          return
-        }
-
-        const processed = Number(geocodeData.processed || 0)
-
-        totalGeocodeProcessed += processed
-        totalGeocoded += Number(geocodeData.geocoded || 0)
-        totalNotFound += Number(geocodeData.not_found || 0)
-        totalFailed += Number(geocodeData.failed || 0)
-
-        if (processed === 0) {
-          break
-        }
-      }
-
       alert(
-        `Mapa actualizado.\n\n` +
+        `Clientes sincronizados.\n\n` +
           `Pedidos leídos: ${syncData.read_orders}\n` +
           `Pedidos usables: ${syncData.usable_orders}\n` +
           `Clientes únicos desde pedidos: ${syncData.unique_customers}\n` +
@@ -77,16 +41,13 @@ export default function GeocodeCustomersButton() {
           `Actualizados: ${syncData.updated}\n` +
           `Sincronizados: ${syncData.synced}\n` +
           `Fallidos sync: ${syncData.failed}\n\n` +
-          `Geocoding procesados: ${totalGeocodeProcessed}\n` +
-          `Geocodificados: ${totalGeocoded}\n` +
-          `No encontrados: ${totalNotFound}\n` +
-          `Errores geocoding: ${totalFailed}`
+          `Importante: este botón ya no geocodifica. Solo actualiza la cache del mapa.`
       )
 
       window.location.reload()
     } catch (error) {
       console.error(error)
-      alert("Error actualizando mapa")
+      alert("Error actualizando clientes del mapa")
     } finally {
       setLoading(false)
     }
@@ -99,7 +60,7 @@ export default function GeocodeCustomersButton() {
       disabled={loading}
       className="rounded-xl bg-[#1f2a1f] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
     >
-      {loading ? "Actualizando mapa..." : "Actualizar clientes del mapa"}
+      {loading ? "Sincronizando clientes..." : "Actualizar clientes del mapa"}
     </button>
   )
 }
