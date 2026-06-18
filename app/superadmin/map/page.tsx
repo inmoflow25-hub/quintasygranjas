@@ -163,32 +163,11 @@ export default async function SuperAdminMapPage() {
 
   const { data: orders, error: ordersError } = await fetchConfirmedOrders()
 
-  const { data: commercialLocations, error: commercialError } = await supabase
-    .from("commercial_locations")
-    .select(`
-      id,
-      slug,
-      name,
-      type,
-      address,
-      city,
-      lat,
-      lng,
-      polygon,
-      parent_location_id,
-      is_active
-    `)
-    .eq("is_active", true)
-    .in("type", ["cluster", "tower"])
-    .order("type", { ascending: true })
-    .order("slug", { ascending: true })
-
-  if (error || commercialError || ordersError) {
+  if (error || ordersError) {
     return (
       <div className="rounded-3xl bg-white p-8 shadow-sm">
-        {error && <p className="text-red-600">Error cargando clientes: {error.message}</p>}
-        {ordersError && <p className="text-red-600">Error cargando compras reales: {ordersError.message}</p>}
-        {commercialError && <p className="text-red-600">Error cargando torres: {commercialError.message}</p>}
+        {error && <p className="text-red-600">Error cargando coordenadas: {error.message}</p>}
+        {ordersError && <p className="text-red-600">Error cargando clientes reales: {ordersError.message}</p>}
       </div>
     )
   }
@@ -326,12 +305,11 @@ export default async function SuperAdminMapPage() {
     }))
 
   const realCustomersCount = realCustomerRows.length
-  const realCustomersWithPin = realCustomerPoints.length
-  const realCustomersPending = Math.max(0, realCustomersCount - realCustomersWithPin)
-
-  const commercial = commercialLocations || []
-  const towers = commercial.filter((location: any) => location.type === "tower")
-  const clusters = commercial.filter((location: any) => location.type === "cluster")
+  const realCustomersWithCoords = realCustomerPoints.length
+  const realCustomersWithoutCoords = Math.max(
+    0,
+    realCustomersCount - realCustomersWithCoords
+  )
 
   const realPurchasesCount = Array.from(statsByCustomerKey.values()).reduce(
     (acc, stats: any) => acc + Number(stats.purchases_count || 0),
@@ -343,11 +321,11 @@ export default async function SuperAdminMapPage() {
     0
   )
 
-  const mapAuxiliaryRecords = safeLocations.length
+  const auxiliaryMapRecords = safeLocations.length
 
   const nonRealMapRecords = Math.max(
     0,
-    mapAuxiliaryRecords - realCustomersCount
+    auxiliaryMapRecords - realCustomersCount
   )
 
   return (
@@ -359,51 +337,24 @@ export default async function SuperAdminMapPage() {
           </h2>
 
           <p className="mt-2 text-sm text-gray-600">
-            Clientes reales con compras confirmadas. Las coordenadas salen de customer_locations.
+            Solo clientes reales con compras confirmadas. Cada pin corresponde a un cliente real con coordenadas.
           </p>
         </div>
 
         <GeocodeCustomersButton />
       </section>
 
-      <section className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-8">
+      <section className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-7">
         <Metric title="Clientes reales" value={realCustomersCount} />
-        <Metric title="Clientes con pin" value={realCustomersWithPin} />
-        <Metric title="Clientes pendientes" value={realCustomersPending} />
+        <Metric title="Clientes con coordenadas" value={realCustomersWithCoords} />
+        <Metric title="Clientes sin coordenadas" value={realCustomersWithoutCoords} />
         <Metric title="Compras reales" value={realPurchasesCount} />
         <Metric title="Total vendido" value={money(realRevenue)} />
-        <Metric title="Registros mapa" value={mapAuxiliaryRecords} />
-        <Metric title="Registros no reales" value={nonRealMapRecords} />
-        <Metric title="Torres" value={towers.length} />
+        <Metric title="Registros auxiliares" value={auxiliaryMapRecords} />
+        <Metric title="Auxiliares no reales" value={nonRealMapRecords} />
       </section>
 
-      <CustomerMap
-        points={realCustomerPoints}
-        commercialLocations={commercial as any}
-      />
-
-      <section className="rounded-3xl border border-[#e3e1dc] bg-white p-5 shadow-sm">
-        <h3 className="mb-4 text-xl font-serif font-bold">
-          Torres comerciales
-        </h3>
-
-        <div className="grid gap-3 md:grid-cols-3">
-          {towers.map((tower: any) => (
-            <a
-              key={tower.id}
-              href={`/vecinos/${tower.slug}`}
-              target="_blank"
-              className="rounded-2xl bg-[#f5f5f3] p-4 hover:bg-[#ece8df]"
-            >
-              <p className="font-bold">{tower.name}</p>
-              <p className="text-sm text-gray-500">/vecinos/{tower.slug}</p>
-              <p className="mt-2 text-sm">
-                {tower.address || "Domicilio pendiente"}
-              </p>
-            </a>
-          ))}
-        </div>
-      </section>
+      <CustomerMap points={realCustomerPoints} />
     </div>
   )
 }
@@ -416,4 +367,3 @@ function Metric({ title, value }: { title: string; value: any }) {
     </div>
   )
 }
-
