@@ -1,10 +1,11 @@
 "use client"
 
-import { MapContainer, Marker, Polygon, Popup, TileLayer } from "react-leaflet"
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
 import L from "leaflet"
 
 type CustomerPoint = {
   id: string
+  customer_key: string
   customer_name: string | null
   customer_email: string | null
   customer_phone: string | null
@@ -13,6 +14,7 @@ type CustomerPoint = {
   lat: number
   lng: number
   geocoding_status: string | null
+  notes?: string | null
   purchases_count?: number
   total_purchased?: number
   average_ticket?: number
@@ -23,24 +25,10 @@ type CustomerPoint = {
   main_payment_method?: string | null
 }
 
-type CommercialLocationPoint = {
-  id: string
-  slug: string
-  name: string
-  type: string
-  address: string | null
-  city: string | null
-  lat: number | null
-  lng: number | null
-  polygon: any
-  parent_location_id: string | null
-}
-
 const AnyMapContainer = MapContainer as any
 const AnyTileLayer = TileLayer as any
 const AnyMarker = Marker as any
 const AnyPopup = Popup as any
-const AnyPolygon = Polygon as any
 
 const customerIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -52,50 +40,66 @@ const customerIcon = new L.Icon({
   shadowSize: [41, 41]
 })
 
-const towerIcon = new L.Icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [30, 49],
-  iconAnchor: [15, 49],
-  popupAnchor: [1, -38],
-  shadowSize: [41, 41]
-})
-
 function money(value: number | null | undefined) {
   return `$${Number(value || 0).toLocaleString("es-AR")}`
 }
 
+function coordinateKey(point: CustomerPoint) {
+  return `${point.lat.toFixed(6)},${point.lng.toFixed(6)}`
+}
+
+function offsetPoint(point: CustomerPoint, index: number, total: number) {
+  if (total <= 1) {
+    return [point.lat, point.lng] as [number, number]
+  }
+
+  const radius = 0.00018
+  const angle = (2 * Math.PI * index) / total
+
+  return [
+    point.lat + Math.sin(angle) * radius,
+    point.lng + Math.cos(angle) * radius
+  ] as [number, number]
+}
+
 export default function CustomerMap({
-  points,
-  commercialLocations = []
+  points
 }: {
   points: CustomerPoint[]
-  commercialLocations?: CommercialLocationPoint[]
 }) {
-  const towers = commercialLocations.filter(
-    (location) => location.type === "tower" && location.lat !== null && location.lng !== null
-  )
-
-  const clusters = commercialLocations.filter(
-    (location) => location.type === "cluster"
-  )
-
-  const firstTower = towers[0]
   const firstCustomer = points[0]
 
-  const center: [number, number] =
-    firstTower?.lat && firstTower?.lng
-      ? [Number(firstTower.lat), Number(firstTower.lng)]
-      : firstCustomer
-        ? [firstCustomer.lat, firstCustomer.lng]
-        : [-34.6037, -58.3816]
+  const center: [number, number] = firstCustomer
+    ? [firstCustomer.lat, firstCustomer.lng]
+    : [-34.6037, -58.3816]
+
+  const duplicateGroups = new Map<string, CustomerPoint[]>()
+
+  for (const point of points) {
+    const key = coordinateKey(point)
+    const current = duplicateGroups.get(key) || []
+
+    current.push(point)
+    duplicateGroups.set(key, current)
+  }
+
+  const renderPoints = points.map((point) => {
+    const key = coordinateKey(point)
+    const group = duplicateGroups.get(key) || [point]
+    const index = group.findIndex((item) => item.id === point.id)
+
+    return {
+      ...point,
+      renderPosition: offsetPoint(point, Math.max(index, 0), group.length),
+      duplicateCount: group.length
+    }
+  })
 
   return (
     <div className="h-[620px] overflow-hidden rounded-3xl border border-[#e3e1dc] bg-white shadow-sm">
       <AnyMapContainer
         center={center}
-        zoom={16}
+        zoom={11}
         scrollWheelZoom={true}
         className="h-full w-full"
       >
@@ -104,56 +108,10 @@ export default function CustomerMap({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {clusters.map((cluster) => {
-          const polygon = Array.isArray(cluster.polygon)
-            ? cluster.polygon.map((point: any) => [Number(point[0]), Number(point[1])])
-            : []
-
-          if (!polygon.length) return null
-
-          return (
-            <AnyPolygon
-              key={cluster.id}
-              positions={polygon}
-            >
-              <AnyPopup>
-                <div className="space-y-1 text-sm">
-                  <p className="font-bold">{cluster.name}</p>
-                  <p>{cluster.address || "-"}</p>
-                  <p>{cluster.city || "-"}</p>
-                </div>
-              </AnyPopup>
-            </AnyPolygon>
-          )
-        })}
-
-        {towers.map((tower) => (
-          <AnyMarker
-            key={tower.id}
-            position={[Number(tower.lat), Number(tower.lng)]}
-            icon={towerIcon}
-          >
-            <AnyPopup>
-              <div className="space-y-1 text-sm">
-                <p className="font-bold">{tower.name}</p>
-                <p>{tower.address || "Domicilio pendiente"}</p>
-                <p>{tower.city || "-"}</p>
-                <a
-                  href={`/vecinos/${tower.slug}`}
-                  target="_blank"
-                  className="font-semibold underline"
-                >
-                  Abrir QR/web
-                </a>
-              </div>
-            </AnyPopup>
-          </AnyMarker>
-        ))}
-
-        {points.map((point) => (
+        {renderPoints.map((point) => (
           <AnyMarker
             key={point.id}
-            position={[point.lat, point.lng]}
+            position={point.renderPosition}
             icon={customerIcon}
           >
             <AnyPopup>
@@ -196,6 +154,12 @@ export default function CustomerMap({
                     <strong>Pago:</strong> {point.main_payment_method || "-"}
                   </p>
                 </div>
+
+                {point.duplicateCount > 1 && (
+                  <p className="mt-2 rounded-lg bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-800">
+                    Coordenada compartida con {point.duplicateCount - 1} cliente(s). Este pin fue separado visualmente.
+                  </p>
+                )}
               </div>
             </AnyPopup>
           </AnyMarker>
