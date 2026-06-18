@@ -93,6 +93,7 @@ export async function POST(request: NextRequest) {
       .is("lat", null)
       .is("lng", null)
       .not("address", "is", null)
+      .or("geocoding_status.is.null,geocoding_status.eq.pending")
       .limit(limit)
 
     if (error) {
