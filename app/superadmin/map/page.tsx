@@ -77,12 +77,14 @@ function buildOrderCustomerKey(order: any) {
   const phone = normalizeArgentinaPhone(order.customer_phone)
   const email = normalizeEmail(order.customer_email)
 
-  if (order.user_id) return String(order.user_id)
   if (phone) return phone
   if (email) return email
+  if (order.user_id) return String(order.user_id)
 
   return ""
 }
+
+
 
 function buildLocationKeys(location: any) {
   const keys = new Set<string>()
