@@ -40,12 +40,16 @@ function normalizeArgentinaPhone(rawPhone: string | null | undefined) {
     return `+${phone}`
   }
 
-  if (phone.startsWith("11")) {
-    return `+549${phone}`
+  if (phone.startsWith("549")) {
+    return `+${phone}`
   }
 
   if (phone.startsWith("54") && !phone.startsWith("549")) {
     return `+549${phone.slice(2)}`
+  }
+
+  if (phone.startsWith("11")) {
+    return `+549${phone}`
   }
 
   return `+54${phone}`
@@ -53,27 +57,6 @@ function normalizeArgentinaPhone(rawPhone: string | null | undefined) {
 
 function cleanText(value: unknown) {
   return String(value || "").trim()
-}
-
-function buildOrderCustomerKey(order: any) {
-  const phone = normalizeArgentinaPhone(order.customer_phone)
-  const email = normalizeEmail(order.customer_email)
-
-  if (phone) return phone
-  if (email) return email
-  if (order.user_id) return String(order.user_id)
-
-  return ""
-}
-
-function buildLocationCustomerKey(location: any) {
-  const phone = normalizeArgentinaPhone(location.customer_phone)
-  const email = normalizeEmail(location.customer_email)
-
-  if (phone) return phone
-  if (email) return email
-
-  return String(location.customer_key || "")
 }
 
 function formatDateLabel(dateString: string | null | undefined) {
@@ -88,6 +71,31 @@ function formatDateLabel(dateString: string | null | undefined) {
 
 function money(value: number | null | undefined) {
   return `$${Number(value || 0).toLocaleString("es-AR")}`
+}
+
+function buildOrderCustomerKey(order: any) {
+  const phone = normalizeArgentinaPhone(order.customer_phone)
+  const email = normalizeEmail(order.customer_email)
+
+  if (order.user_id) return String(order.user_id)
+  if (phone) return phone
+  if (email) return email
+
+  return ""
+}
+
+function buildLocationKeys(location: any) {
+  const keys = new Set<string>()
+
+  const customerKey = cleanText(location.customer_key)
+  const phone = normalizeArgentinaPhone(location.customer_phone)
+  const email = normalizeEmail(location.customer_email)
+
+  if (customerKey) keys.add(customerKey)
+  if (phone) keys.add(phone)
+  if (email) keys.add(email)
+
+  return Array.from(keys)
 }
 
 async function fetchConfirmedOrders() {
@@ -128,7 +136,6 @@ async function fetchConfirmedOrders() {
     }
 
     const batch = data || []
-
     allOrders = allOrders.concat(batch)
 
     if (batch.length < pageSize) {
@@ -144,7 +151,21 @@ async function fetchConfirmedOrders() {
 export default async function SuperAdminMapPage() {
   await requireAdmin()
 
-  const { data: locations, error } = await supabase
+  const { data: addresses, error: addressesError } = await supabase
+    .from("addresses")
+    .select(`
+      id,
+      user_id,
+      address,
+      city,
+      notes,
+      phone,
+      created_at
+    `)
+    .not("address", "is", null)
+    .order("created_at", { ascending: false })
+
+  const { data: locations, error: locationsError } = await supabase
     .from("customer_locations")
     .select(`
       id,
@@ -159,41 +180,38 @@ export default async function SuperAdminMapPage() {
       geocoding_status,
       notes
     `)
-    .order("customer_name", { ascending: true })
 
   const { data: orders, error: ordersError } = await fetchConfirmedOrders()
 
-  if (error || ordersError) {
+  if (addressesError || locationsError || ordersError) {
     return (
       <div className="rounded-3xl bg-white p-8 shadow-sm">
-        {error && <p className="text-red-600">Error cargando coordenadas: {error.message}</p>}
-        {ordersError && <p className="text-red-600">Error cargando clientes reales: {ordersError.message}</p>}
+        {addressesError && <p className="text-red-600">Error cargando domicilios: {addressesError.message}</p>}
+        {locationsError && <p className="text-red-600">Error cargando coordenadas: {locationsError.message}</p>}
+        {ordersError && <p className="text-red-600">Error cargando compras: {ordersError.message}</p>}
       </div>
     )
   }
 
+  const safeAddresses = addresses || []
   const safeLocations = locations || []
   const safeOrders = orders || []
 
-  const locationByCustomerKey = new Map<string, any>()
+  const locationsByKey = new Map<string, any>()
 
   for (const location of safeLocations) {
-    const key = buildLocationCustomerKey(location)
+    const keys = buildLocationKeys(location)
 
-    if (!key) continue
+    for (const key of keys) {
+      if (!key) continue
 
-    if (!locationByCustomerKey.has(key)) {
-      locationByCustomerKey.set(key, location)
-      continue
-    }
+      const current = locationsByKey.get(key)
+      const currentHasCoords = current?.lat !== null && current?.lng !== null
+      const nextHasCoords = location?.lat !== null && location?.lng !== null
 
-    const current = locationByCustomerKey.get(key)
-
-    const currentHasCoords = current?.lat !== null && current?.lng !== null
-    const nextHasCoords = location?.lat !== null && location?.lng !== null
-
-    if (!currentHasCoords && nextHasCoords) {
-      locationByCustomerKey.set(key, location)
+      if (!current || (!currentHasCoords && nextHasCoords)) {
+        locationsByKey.set(key, location)
+      }
     }
   }
 
@@ -201,17 +219,14 @@ export default async function SuperAdminMapPage() {
 
   for (const order of safeOrders) {
     const key = buildOrderCustomerKey(order)
-    const address = cleanText(order.delivery_address)
 
-    if (!key || !address) continue
+    if (!key) continue
 
     const current = statsByCustomerKey.get(key) || {
       customer_key: key,
       customer_name: cleanText(order.customer_name) || "Cliente",
       customer_email: normalizeEmail(order.customer_email) || null,
       customer_phone: normalizeArgentinaPhone(order.customer_phone) || null,
-      address: cleanText(order.delivery_address),
-      city: cleanText(order.delivery_city) || "Buenos Aires",
       purchases_count: 0,
       total_purchased: 0,
       first_order_at: order.created_at,
@@ -238,8 +253,6 @@ export default async function SuperAdminMapPage() {
       current.customer_name = cleanText(order.customer_name) || current.customer_name
       current.customer_email = normalizeEmail(order.customer_email) || current.customer_email
       current.customer_phone = normalizeArgentinaPhone(order.customer_phone) || current.customer_phone
-      current.address = cleanText(order.delivery_address) || current.address
-      current.city = cleanText(order.delivery_city) || current.city
     }
 
     const source = order.source || "sin-source"
@@ -268,48 +281,56 @@ export default async function SuperAdminMapPage() {
     delete stats.paymentMethods
   }
 
-  const realCustomerRows = Array.from(statsByCustomerKey.entries()).map(
-    ([customerKey, stats]) => {
-      const location = locationByCustomerKey.get(customerKey)
+  const addressRows = safeAddresses.map((addressRow: any) => {
+    const userKey = addressRow.user_id ? String(addressRow.user_id) : ""
+    const phoneKey = normalizeArgentinaPhone(addressRow.phone)
 
-      return {
-        customerKey,
-        stats,
-        location
-      }
+    const stats =
+      statsByCustomerKey.get(userKey) ||
+      statsByCustomerKey.get(phoneKey) ||
+      null
+
+    const location =
+      locationsByKey.get(userKey) ||
+      locationsByKey.get(phoneKey) ||
+      null
+
+    return {
+      addressRow,
+      stats,
+      location
     }
-  )
+  })
 
-  const realCustomerPoints = realCustomerRows
+  const addressPoints = addressRows
     .filter(({ location }) => location && location.lat !== null && location.lng !== null)
-    .map(({ customerKey, stats, location }) => ({
-      id: location.id,
-      customer_key: customerKey,
-      customer_name: location.customer_name || stats.customer_name,
-      customer_email: location.customer_email || stats.customer_email,
-      customer_phone: location.customer_phone || stats.customer_phone,
-      address: location.address || stats.address,
-      city: location.city || stats.city,
+    .map(({ addressRow, stats, location }) => ({
+      id: addressRow.id,
+      customer_key: addressRow.user_id || normalizeArgentinaPhone(addressRow.phone) || addressRow.id,
+      customer_name: stats?.customer_name || location.customer_name || "Cliente",
+      customer_email: stats?.customer_email || location.customer_email || null,
+      customer_phone: addressRow.phone || stats?.customer_phone || location.customer_phone || null,
+      address: addressRow.address,
+      city: addressRow.city || location.city || "",
       lat: Number(location.lat),
       lng: Number(location.lng),
       geocoding_status: location.geocoding_status || null,
-      notes: location.notes || null,
-      purchases_count: stats.purchases_count || 0,
-      total_purchased: stats.total_purchased || 0,
-      average_ticket: stats.average_ticket || 0,
-      first_order_at: stats.first_order_at || null,
-      last_order_at: stats.last_order_at || null,
-      last_order_label: stats.last_order_label || null,
-      main_source: stats.main_source || null,
-      main_payment_method: stats.main_payment_method || null
+      notes: addressRow.notes || location.notes || null,
+      purchases_count: stats?.purchases_count || 0,
+      total_purchased: stats?.total_purchased || 0,
+      average_ticket: stats?.average_ticket || 0,
+      first_order_at: stats?.first_order_at || null,
+      last_order_at: stats?.last_order_at || null,
+      last_order_label: stats?.last_order_label || null,
+      main_source: stats?.main_source || null,
+      main_payment_method: stats?.main_payment_method || null
     }))
 
-  const realCustomersCount = realCustomerRows.length
-  const realCustomersWithCoords = realCustomerPoints.length
-  const realCustomersWithoutCoords = Math.max(
-    0,
-    realCustomersCount - realCustomersWithCoords
-  )
+  const totalAddresses = addressRows.length
+  const addressesWithPin = addressPoints.length
+  const addressesWithoutPin = Math.max(0, totalAddresses - addressesWithPin)
+
+  const realCustomersCount = statsByCustomerKey.size
 
   const realPurchasesCount = Array.from(statsByCustomerKey.values()).reduce(
     (acc, stats: any) => acc + Number(stats.purchases_count || 0),
@@ -321,40 +342,32 @@ export default async function SuperAdminMapPage() {
     0
   )
 
-  const auxiliaryMapRecords = safeLocations.length
-
-  const nonRealMapRecords = Math.max(
-    0,
-    auxiliaryMapRecords - realCustomersCount
-  )
-
   return (
     <div className="space-y-6">
       <section className="flex flex-col gap-4 rounded-3xl border border-[#e3e1dc] bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="text-3xl font-serif font-bold">
-            Mapa comercial
+            Mapa de domicilios
           </h2>
 
           <p className="mt-2 text-sm text-gray-600">
-            Solo clientes reales con compras confirmadas. Cada pin corresponde a un cliente real con coordenadas.
+            Un pin por domicilio cargado en addresses cuando tiene coordenadas.
           </p>
         </div>
 
         <GeocodeCustomersButton />
       </section>
 
-      <section className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-7">
+      <section className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+        <Metric title="Domicilios cargados" value={totalAddresses} />
+        <Metric title="Domicilios con pin" value={addressesWithPin} />
+        <Metric title="Domicilios sin pin" value={addressesWithoutPin} />
         <Metric title="Clientes reales" value={realCustomersCount} />
-        <Metric title="Clientes con coordenadas" value={realCustomersWithCoords} />
-        <Metric title="Clientes sin coordenadas" value={realCustomersWithoutCoords} />
         <Metric title="Compras reales" value={realPurchasesCount} />
         <Metric title="Total vendido" value={money(realRevenue)} />
-        <Metric title="Registros auxiliares" value={auxiliaryMapRecords} />
-        <Metric title="Auxiliares no reales" value={nonRealMapRecords} />
       </section>
 
-      <CustomerMap points={realCustomerPoints} />
+      <CustomerMap points={addressPoints} />
     </div>
   )
 }
