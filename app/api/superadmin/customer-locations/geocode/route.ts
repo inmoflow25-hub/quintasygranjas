@@ -34,7 +34,55 @@ function buildQueries(location: any) {
   return Array.from(new Set(queries))
 }
 
-async function geocodeAddress(query: string) {
+async function geocodeWithGoogle(query: string) {
+  const apiKey =
+    process.env.GOOGLE_GEOCODING_API_KEY ||
+    process.env.GOOGLE_MAPS_API_KEY
+
+  if (!apiKey) return null
+
+  const params = new URLSearchParams({
+    address: query,
+    key: apiKey,
+    region: "ar"
+  })
+
+  const res = await fetch(
+    `https://maps.googleapis.com/maps/api/geocode/json?${params.toString()}`
+  )
+
+  if (!res.ok) {
+    throw new Error(`Google geocoding error ${res.status}`)
+  }
+
+  const data = await res.json()
+
+  if (data.status === "OVER_QUERY_LIMIT" || data.status === "REQUEST_DENIED") {
+    const error: any = new Error(`Google geocoding ${data.status}`)
+    error.code = "RATE_LIMIT"
+    throw error
+  }
+
+  if (data.status !== "OK" || !Array.isArray(data.results) || !data.results.length) {
+    return null
+  }
+
+  const result = data.results[0]
+  const location = result.geometry?.location
+
+  if (!location) return null
+
+  return {
+    lat: Number(location.lat),
+    lng: Number(location.lng),
+    display_name: result.formatted_address || query,
+    provider: "google"
+  }
+}
+
+async function geocodeWithNominatim(query: string) {
+  await sleep(1300)
+
   const params = new URLSearchParams({
     q: query,
     format: "jsonv2",
@@ -47,10 +95,17 @@ async function geocodeAddress(query: string) {
     `https://nominatim.openstreetmap.org/search?${params.toString()}`,
     {
       headers: {
-        "User-Agent": "QuintasYGranjas/1.0 contacto@quintasygranjas.com"
+        "User-Agent": "QuintasYGranjas/1.0 contacto@quintasygranjas.com",
+        "Accept": "application/json"
       }
     }
   )
+
+  if (res.status === 403 || res.status === 429) {
+    const error: any = new Error(`Nominatim rate limit ${res.status}`)
+    error.code = "RATE_LIMIT"
+    throw error
+  }
 
   if (!res.ok) {
     throw new Error(`Nominatim error ${res.status}`)
@@ -65,8 +120,19 @@ async function geocodeAddress(query: string) {
   return {
     lat: Number(data[0].lat),
     lng: Number(data[0].lon),
-    display_name: data[0].display_name
+    display_name: data[0].display_name,
+    provider: "nominatim"
   }
+}
+
+async function geocodeAddress(query: string) {
+  const googleResult = await geocodeWithGoogle(query)
+
+  if (googleResult) {
+    return googleResult
+  }
+
+  return geocodeWithNominatim(query)
 }
 
 export async function POST(request: NextRequest) {
@@ -74,7 +140,7 @@ export async function POST(request: NextRequest) {
     await requireAdmin()
 
     const body = await request.json().catch(() => ({}))
-    const limit = Math.min(Number(body?.limit || 25), 25)
+    const limit = Math.min(Number(body?.limit || 5), 10)
 
     const { data: locations, error } = await supabase
       .from("customer_locations")
@@ -93,14 +159,14 @@ export async function POST(request: NextRequest) {
       .is("lat", null)
       .is("lng", null)
       .not("address", "is", null)
-      .or("geocoding_status.is.null,geocoding_status.eq.pending")
+      .or("geocoding_status.is.null,geocoding_status.eq.pending,geocoding_status.eq.error")
       .limit(limit)
 
     if (error) {
       console.error("load customer_locations error", error)
 
       return NextResponse.json(
-        { error: "No se pudieron leer clientes pendientes" },
+        { error: "No se pudieron leer domicilios pendientes" },
         { status: 500 }
       )
     }
@@ -108,6 +174,7 @@ export async function POST(request: NextRequest) {
     let ok = 0
     let notFound = 0
     let failed = 0
+    let stoppedByRateLimit = false
 
     for (const location of locations || []) {
       const queries = buildQueries(location)
@@ -121,8 +188,6 @@ export async function POST(request: NextRequest) {
           found = await geocodeAddress(query)
 
           if (found) break
-
-          await sleep(1100)
         }
 
         if (!found) {
@@ -145,15 +210,30 @@ export async function POST(request: NextRequest) {
               lat: found.lat,
               lng: found.lng,
               geocoding_status: "ok",
-              notes: `Encontrado con: ${usedQuery} | ${found.display_name}`,
+              notes: `Encontrado con ${found.provider}: ${usedQuery} | ${found.display_name}`,
               updated_at: new Date().toISOString()
             })
             .eq("id", location.id)
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("geocode error", location.id, error)
 
         failed += 1
+
+        if (error?.code === "RATE_LIMIT") {
+          stoppedByRateLimit = true
+
+          await supabase
+            .from("customer_locations")
+            .update({
+              geocoding_status: "pending",
+              notes: `Geocoder frenado por límite externo. Último intento: ${usedQuery}`,
+              updated_at: new Date().toISOString()
+            })
+            .eq("id", location.id)
+
+          break
+        }
 
         await supabase
           .from("customer_locations")
@@ -164,8 +244,6 @@ export async function POST(request: NextRequest) {
           })
           .eq("id", location.id)
       }
-
-      await sleep(1100)
     }
 
     return NextResponse.json({
@@ -173,13 +251,14 @@ export async function POST(request: NextRequest) {
       processed: locations?.length || 0,
       geocoded: ok,
       not_found: notFound,
-      failed
+      failed,
+      stopped_by_rate_limit: stoppedByRateLimit
     })
   } catch (error) {
     console.error("customer geocode route error", error)
 
     return NextResponse.json(
-      { error: "Error geocodificando clientes" },
+      { error: "Error geocodificando domicilios" },
       { status: 500 }
     )
   }
