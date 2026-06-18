@@ -32,22 +32,40 @@ export default function GeocodeCustomersButton() {
         return
       }
 
-      const geocodeRes = await fetch("/api/superadmin/customer-locations/geocode", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          limit: 25
+      let totalGeocodeProcessed = 0
+      let totalGeocoded = 0
+      let totalNotFound = 0
+      let totalFailed = 0
+
+      for (let batch = 0; batch < 20; batch++) {
+        const geocodeRes = await fetch("/api/superadmin/customer-locations/geocode", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            limit: 25
+          })
         })
-      })
 
-      const geocodeData = await geocodeRes.json()
+        const geocodeData = await geocodeRes.json()
 
-      if (!geocodeRes.ok) {
-        alert(geocodeData?.error || "Error geocodificando clientes")
-        setLoading(false)
-        return
+        if (!geocodeRes.ok) {
+          alert(geocodeData?.error || "Error geocodificando clientes")
+          setLoading(false)
+          return
+        }
+
+        const processed = Number(geocodeData.processed || 0)
+
+        totalGeocodeProcessed += processed
+        totalGeocoded += Number(geocodeData.geocoded || 0)
+        totalNotFound += Number(geocodeData.not_found || 0)
+        totalFailed += Number(geocodeData.failed || 0)
+
+        if (processed === 0) {
+          break
+        }
       }
 
       alert(
@@ -59,10 +77,10 @@ export default function GeocodeCustomersButton() {
           `Actualizados: ${syncData.updated}\n` +
           `Sincronizados: ${syncData.synced}\n` +
           `Fallidos sync: ${syncData.failed}\n\n` +
-          `Geocoding procesados: ${geocodeData.processed}\n` +
-          `Geocodificados: ${geocodeData.geocoded}\n` +
-          `No encontrados: ${geocodeData.not_found}\n` +
-          `Errores geocoding: ${geocodeData.failed}`
+          `Geocoding procesados: ${totalGeocodeProcessed}\n` +
+          `Geocodificados: ${totalGeocoded}\n` +
+          `No encontrados: ${totalNotFound}\n` +
+          `Errores geocoding: ${totalFailed}`
       )
 
       window.location.reload()
