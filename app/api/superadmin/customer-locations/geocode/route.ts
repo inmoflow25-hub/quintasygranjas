@@ -11,19 +11,27 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-function buildQuery(location: any) {
-  const parts = [
-    location.address,
-    location.city,
-    "Buenos Aires",
-    "Argentina"
-  ]
-
-  return parts
-    .filter(Boolean)
-    .join(", ")
+function cleanText(value: unknown) {
+  return String(value || "")
     .replace(/\s+/g, " ")
     .trim()
+}
+
+function buildQueries(location: any) {
+  const address = cleanText(location.address)
+  const city = cleanText(location.city)
+
+  const queries = [
+    [address, city, "Buenos Aires", "Argentina"],
+    [address, city, "Provincia de Buenos Aires", "Argentina"],
+    [address, "Buenos Aires", "Argentina"],
+    [address, "Argentina"]
+  ]
+    .map((parts) => parts.filter(Boolean).join(", "))
+    .map((query) => cleanText(query))
+    .filter(Boolean)
+
+  return Array.from(new Set(queries))
 }
 
 async function geocodeAddress(query: string) {
@@ -31,7 +39,8 @@ async function geocodeAddress(query: string) {
     q: query,
     format: "jsonv2",
     limit: "1",
-    addressdetails: "1"
+    addressdetails: "1",
+    countrycodes: "ar"
   })
 
   const res = await fetch(
@@ -65,7 +74,7 @@ export async function POST(request: NextRequest) {
     await requireAdmin()
 
     const body = await request.json().catch(() => ({}))
-    const limit = Math.min(Number(body?.limit || 10), 25)
+    const limit = Math.min(Number(body?.limit || 25), 25)
 
     const { data: locations, error } = await supabase
       .from("customer_locations")
@@ -83,13 +92,16 @@ export async function POST(request: NextRequest) {
       `)
       .is("lat", null)
       .is("lng", null)
-      .in("geocoding_status", ["pending", "error", "not_found"])
       .not("address", "is", null)
       .limit(limit)
 
     if (error) {
       console.error("load customer_locations error", error)
-      return NextResponse.json({ error: "db error" }, { status: 500 })
+
+      return NextResponse.json(
+        { error: "No se pudieron leer clientes pendientes" },
+        { status: 500 }
+      )
     }
 
     let ok = 0
@@ -97,19 +109,29 @@ export async function POST(request: NextRequest) {
     let failed = 0
 
     for (const location of locations || []) {
-      const query = buildQuery(location)
+      const queries = buildQueries(location)
+
+      let found: any = null
+      let usedQuery = ""
 
       try {
-        const result = await geocodeAddress(query)
+        for (const query of queries) {
+          usedQuery = query
+          found = await geocodeAddress(query)
 
-        if (!result) {
+          if (found) break
+
+          await sleep(1100)
+        }
+
+        if (!found) {
           notFound += 1
 
           await supabase
             .from("customer_locations")
             .update({
               geocoding_status: "not_found",
-              notes: `No encontrado: ${query}`,
+              notes: `No encontrado. Intentos: ${queries.join(" || ")}`,
               updated_at: new Date().toISOString()
             })
             .eq("id", location.id)
@@ -119,23 +141,24 @@ export async function POST(request: NextRequest) {
           await supabase
             .from("customer_locations")
             .update({
-              lat: result.lat,
-              lng: result.lng,
+              lat: found.lat,
+              lng: found.lng,
               geocoding_status: "ok",
-              notes: result.display_name,
+              notes: `Encontrado con: ${usedQuery} | ${found.display_name}`,
               updated_at: new Date().toISOString()
             })
             .eq("id", location.id)
         }
       } catch (error) {
         console.error("geocode error", location.id, error)
+
         failed += 1
 
         await supabase
           .from("customer_locations")
           .update({
             geocoding_status: "error",
-            notes: `Error geocodificando: ${query}`,
+            notes: `Error geocodificando. Último intento: ${usedQuery}`,
             updated_at: new Date().toISOString()
           })
           .eq("id", location.id)
@@ -143,7 +166,6 @@ export async function POST(request: NextRequest) {
 
       await sleep(1100)
     }
-    
 
     return NextResponse.json({
       ok: true,
@@ -154,6 +176,7 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("customer geocode route error", error)
+
     return NextResponse.json(
       { error: "Error geocodificando clientes" },
       { status: 500 }
