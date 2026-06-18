@@ -157,7 +157,7 @@ export default function CustomerMap({
 
                 {point.duplicateCount > 1 && (
                   <p className="mt-2 rounded-lg bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-800">
-                    Coordenada compartida con {point.duplicateCount - 1} cliente(s). Este pin fue separado visualmente.
+                    Coordenada compartida. Separado visualmente.
                   </p>
                 )}
               </div>
