@@ -12,26 +12,26 @@ function sleep(ms: number) {
 }
 
 function cleanText(value: unknown) {
-  return String(value || "")
-    .replace(/\s+/g, " ")
-    .trim()
+  return String(value || "").replace(/\s+/g, " ").trim()
 }
 
-function buildQueries(location: any) {
-  const address = cleanText(location.address)
-  const city = cleanText(location.city)
+function buildQueries(customer: any) {
+  const address = cleanText(customer.real_address)
+  const city = cleanText(customer.real_city)
 
-  const queries = [
-    [address, city, "Buenos Aires", "Argentina"],
-    [address, city, "Provincia de Buenos Aires", "Argentina"],
-    [address, "Buenos Aires", "Argentina"],
-    [address, "Argentina"]
-  ]
-    .map((parts) => parts.filter(Boolean).join(", "))
-    .map((query) => cleanText(query))
-    .filter(Boolean)
-
-  return Array.from(new Set(queries))
+  return Array.from(
+    new Set(
+      [
+        [address, city, "Argentina"],
+        [address, city, "Buenos Aires", "Argentina"],
+        [address, city, "Provincia de Buenos Aires", "Argentina"],
+        [address, "Argentina"]
+      ]
+        .map((parts) => parts.filter(Boolean).join(", "))
+        .map(cleanText)
+        .filter(Boolean)
+    )
+  )
 }
 
 async function geocodeWithGoogle(query: string) {
@@ -51,9 +51,7 @@ async function geocodeWithGoogle(query: string) {
     `https://maps.googleapis.com/maps/api/geocode/json?${params.toString()}`
   )
 
-  if (!res.ok) {
-    throw new Error(`Google geocoding error ${res.status}`)
-  }
+  if (!res.ok) throw new Error(`Google geocoding error ${res.status}`)
 
   const data = await res.json()
 
@@ -67,15 +65,14 @@ async function geocodeWithGoogle(query: string) {
     return null
   }
 
-  const result = data.results[0]
-  const location = result.geometry?.location
+  const location = data.results[0]?.geometry?.location
 
   if (!location) return null
 
   return {
     lat: Number(location.lat),
     lng: Number(location.lng),
-    display_name: result.formatted_address || query,
+    display_name: data.results[0].formatted_address || query,
     provider: "google"
   }
 }
@@ -107,15 +104,11 @@ async function geocodeWithNominatim(query: string) {
     throw error
   }
 
-  if (!res.ok) {
-    throw new Error(`Nominatim error ${res.status}`)
-  }
+  if (!res.ok) throw new Error(`Nominatim error ${res.status}`)
 
   const data = await res.json()
 
-  if (!Array.isArray(data) || data.length === 0) {
-    return null
-  }
+  if (!Array.isArray(data) || data.length === 0) return null
 
   return {
     lat: Number(data[0].lat),
@@ -128,9 +121,7 @@ async function geocodeWithNominatim(query: string) {
 async function geocodeAddress(query: string) {
   const googleResult = await geocodeWithGoogle(query)
 
-  if (googleResult) {
-    return googleResult
-  }
+  if (googleResult) return googleResult
 
   return geocodeWithNominatim(query)
 }
@@ -142,31 +133,28 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}))
     const limit = Math.min(Number(body?.limit || 5), 10)
 
-    const { data: locations, error } = await supabase
-      .from("customer_locations")
+    const { data: customers, error } = await supabase
+      .from("real_customers_map")
       .select(`
-        id,
-        customer_key,
+        real_customer_key,
         customer_name,
-        customer_email,
         customer_phone,
-        address,
-        city,
-        lat,
-        lng,
-        geocoding_status
+        customer_email,
+        real_address,
+        real_city,
+        has_pin,
+        map_lat,
+        map_lng
       `)
-      .is("lat", null)
-      .is("lng", null)
-      .not("address", "is", null)
-      .or("geocoding_status.is.null,geocoding_status.eq.pending,geocoding_status.eq.error")
+      .or("has_pin.eq.false,map_lat.is.null,map_lng.is.null")
+      .not("real_address", "is", null)
       .limit(limit)
 
     if (error) {
-      console.error("load customer_locations error", error)
+      console.error("load real_customers_map error", error)
 
       return NextResponse.json(
-        { error: "No se pudieron leer domicilios pendientes" },
+        { error: "No se pudieron leer clientes reales pendientes" },
         { status: 500 }
       )
     }
@@ -176,8 +164,8 @@ export async function POST(request: NextRequest) {
     let failed = 0
     let stoppedByRateLimit = false
 
-    for (const location of locations || []) {
-      const queries = buildQueries(location)
+    for (const customer of customers || []) {
+      const queries = buildQueries(customer)
 
       let found: any = null
       let usedQuery = ""
@@ -192,73 +180,61 @@ export async function POST(request: NextRequest) {
 
         if (!found) {
           notFound += 1
-
-          await supabase
-            .from("customer_locations")
-            .update({
-              geocoding_status: "not_found",
-              notes: `No encontrado. Intentos: ${queries.join(" || ")}`,
-              updated_at: new Date().toISOString()
-            })
-            .eq("id", location.id)
-        } else {
-          ok += 1
-
-          await supabase
-            .from("customer_locations")
-            .update({
-              lat: found.lat,
-              lng: found.lng,
-              geocoding_status: "ok",
-              notes: `Encontrado con ${found.provider}: ${usedQuery} | ${found.display_name}`,
-              updated_at: new Date().toISOString()
-            })
-            .eq("id", location.id)
+          continue
         }
+
+        const { error: upsertError } = await supabase
+          .from("real_customer_map_overrides")
+          .upsert(
+            {
+              real_customer_key: customer.real_customer_key,
+              customer_name: customer.customer_name,
+              customer_phone: customer.customer_phone,
+              customer_email: customer.customer_email,
+              real_address: customer.real_address,
+              real_city: customer.real_city || "Buenos Aires",
+              map_lat: found.lat,
+              map_lng: found.lng,
+              notes: `Geocodificado con ${found.provider}: ${usedQuery} | ${found.display_name}`,
+              updated_at: new Date().toISOString()
+            },
+            {
+              onConflict: "real_customer_key"
+            }
+          )
+
+        if (upsertError) {
+          console.error("override upsert error", upsertError)
+          failed += 1
+          continue
+        }
+
+        ok += 1
       } catch (error: any) {
-        console.error("geocode error", location.id, error)
+        console.error("real customer geocode error", customer.real_customer_key, error)
 
         failed += 1
 
         if (error?.code === "RATE_LIMIT") {
           stoppedByRateLimit = true
-
-          await supabase
-            .from("customer_locations")
-            .update({
-              geocoding_status: "pending",
-              notes: `Geocoder frenado por límite externo. Último intento: ${usedQuery}`,
-              updated_at: new Date().toISOString()
-            })
-            .eq("id", location.id)
-
           break
         }
-
-        await supabase
-          .from("customer_locations")
-          .update({
-            geocoding_status: "error",
-            notes: `Error geocodificando. Último intento: ${usedQuery}`,
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", location.id)
       }
     }
 
     return NextResponse.json({
       ok: true,
-      processed: locations?.length || 0,
+      processed: customers?.length || 0,
       geocoded: ok,
       not_found: notFound,
       failed,
       stopped_by_rate_limit: stoppedByRateLimit
     })
   } catch (error) {
-    console.error("customer geocode route error", error)
+    console.error("real customer geocode route error", error)
 
     return NextResponse.json(
-      { error: "Error geocodificando domicilios" },
+      { error: "Error geocodificando clientes reales" },
       { status: 500 }
     )
   }
