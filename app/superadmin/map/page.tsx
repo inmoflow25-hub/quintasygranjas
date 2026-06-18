@@ -4,6 +4,7 @@ export const revalidate = 0
 import { createClient } from "@supabase/supabase-js"
 import { requireAdmin } from "@/lib/admin-auth"
 import CustomerMap from "@/components/superadmin/customer-map"
+import GeocodeCustomersButton from "@/components/superadmin/geocode-customers-button"
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -64,6 +65,7 @@ export default async function SuperAdminMapPage() {
   const safeCustomers = customers || []
 
   const points = safeCustomers
+    .filter((customer: any) => customer.has_pin === true)
     .filter((customer: any) => customer.map_lat !== null && customer.map_lng !== null)
     .map((customer: any) => ({
       id: customer.real_customer_key,
@@ -76,9 +78,7 @@ export default async function SuperAdminMapPage() {
       lat: Number(customer.map_lat),
       lng: Number(customer.map_lng),
       geocoding_status: customer.geocoding_status || null,
-      notes: customer.has_real_coordinate
-        ? customer.geocoding_notes || null
-        : "PIN TEMPORAL: falta coordenada real",
+      notes: customer.geocoding_notes || null,
       purchases_count: Number(customer.purchases_count || 0),
       total_purchased: Number(customer.total_purchased || 0),
       average_ticket: Number(customer.average_ticket || 0),
@@ -93,15 +93,12 @@ export default async function SuperAdminMapPage() {
         : null,
       main_source: customer.main_source || null,
       main_payment_method: customer.main_payment_method || null,
-      has_real_coordinate: customer.has_real_coordinate === true
+      has_real_coordinate: true
     }))
 
   const clientesReales = safeCustomers.length
   const clientesConPin = points.length
   const clientesSinPin = Math.max(0, clientesReales - clientesConPin)
-  const clientesConPinTemporal = safeCustomers.filter(
-    (customer: any) => customer.has_real_coordinate === false
-  ).length
 
   const comprasReales = safeCustomers.reduce(
     (acc: number, customer: any) => acc + Number(customer.purchases_count || 0),
@@ -115,21 +112,24 @@ export default async function SuperAdminMapPage() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border border-[#e3e1dc] bg-white p-6 shadow-sm">
-        <h2 className="text-3xl font-serif font-bold">
-          Mapa de clientes reales
-        </h2>
+      <section className="flex flex-col gap-4 rounded-3xl border border-[#e3e1dc] bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+        <div>
+          <h2 className="text-3xl font-serif font-bold">
+            Mapa de clientes reales
+          </h2>
 
-        <p className="mt-2 text-sm text-gray-600">
-          Un pin por cliente real. Si falta coordenada real, el cliente aparece igual con pin temporal.
-        </p>
+          <p className="mt-2 text-sm text-gray-600">
+            Un pin por cliente real con coordenada real. Sin pins temporales.
+          </p>
+        </div>
+
+        <GeocodeCustomersButton />
       </section>
 
-      <section className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+      <section className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
         <Metric title="Clientes reales" value={clientesReales} />
-        <Metric title="Clientes con pin" value={clientesConPin} />
+        <Metric title="Clientes con pin real" value={clientesConPin} />
         <Metric title="Clientes sin pin" value={clientesSinPin} />
-        <Metric title="Pins temporales" value={clientesConPinTemporal} />
         <Metric title="Compras reales" value={comprasReales} />
         <Metric title="Total vendido" value={money(totalVendido)} />
       </section>
