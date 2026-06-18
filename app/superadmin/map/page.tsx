@@ -196,6 +196,28 @@ export default async function SuperAdminMapPage() {
   const safeLocations = locations || []
   const safeOrders = orders || []
 
+  const locationByCustomerKey = new Map<string, any>()
+
+  for (const location of safeLocations) {
+    const key = buildLocationCustomerKey(location)
+
+    if (!key) continue
+
+    if (!locationByCustomerKey.has(key)) {
+      locationByCustomerKey.set(key, location)
+      continue
+    }
+
+    const current = locationByCustomerKey.get(key)
+
+    const currentHasCoords = current?.lat !== null && current?.lng !== null
+    const nextHasCoords = location?.lat !== null && location?.lng !== null
+
+    if (!currentHasCoords && nextHasCoords) {
+      locationByCustomerKey.set(key, location)
+    }
+  }
+
   const statsByCustomerKey = new Map<string, any>()
 
   for (const order of safeOrders) {
@@ -205,6 +227,12 @@ export default async function SuperAdminMapPage() {
     if (!key || !address) continue
 
     const current = statsByCustomerKey.get(key) || {
+      customer_key: key,
+      customer_name: cleanText(order.customer_name) || "Cliente",
+      customer_email: normalizeEmail(order.customer_email) || null,
+      customer_phone: normalizeArgentinaPhone(order.customer_phone) || null,
+      address: cleanText(order.delivery_address),
+      city: cleanText(order.delivery_city) || "Buenos Aires",
       purchases_count: 0,
       total_purchased: 0,
       first_order_at: order.created_at,
@@ -228,6 +256,11 @@ export default async function SuperAdminMapPage() {
     if (orderTime > new Date(current.last_order_at).getTime()) {
       current.last_order_at = order.created_at
       current.last_order_label = formatDateLabel(order.created_at)
+      current.customer_name = cleanText(order.customer_name) || current.customer_name
+      current.customer_email = normalizeEmail(order.customer_email) || current.customer_email
+      current.customer_phone = normalizeArgentinaPhone(order.customer_phone) || current.customer_phone
+      current.address = cleanText(order.delivery_address) || current.address
+      current.city = cleanText(order.delivery_city) || current.city
     }
 
     const source = order.source || "sin-source"
@@ -256,35 +289,49 @@ export default async function SuperAdminMapPage() {
     delete stats.paymentMethods
   }
 
-  const points = safeLocations
-    .filter((location: any) => location.lat !== null && location.lng !== null)
-    .map((location: any) => {
-      const stats = statsByCustomerKey.get(buildLocationCustomerKey(location))
+  const realCustomerRows = Array.from(statsByCustomerKey.entries()).map(
+    ([customerKey, stats]) => {
+      const location = locationByCustomerKey.get(customerKey)
 
       return {
-        ...location,
-        lat: Number(location.lat),
-        lng: Number(location.lng),
-        purchases_count: stats?.purchases_count || 0,
-        total_purchased: stats?.total_purchased || 0,
-        average_ticket: stats?.average_ticket || 0,
-        first_order_at: stats?.first_order_at || null,
-        last_order_at: stats?.last_order_at || null,
-        last_order_label: stats?.last_order_label || null,
-        main_source: stats?.main_source || null,
-        main_payment_method: stats?.main_payment_method || null
+        customerKey,
+        stats,
+        location
       }
-    })
-
-  const pending = safeLocations.filter(
-    (location: any) => location.lat === null || location.lng === null
+    }
   )
+
+  const realCustomerPoints = realCustomerRows
+    .filter(({ location }) => location && location.lat !== null && location.lng !== null)
+    .map(({ customerKey, stats, location }) => ({
+      id: location.id,
+      customer_key: customerKey,
+      customer_name: location.customer_name || stats.customer_name,
+      customer_email: location.customer_email || stats.customer_email,
+      customer_phone: location.customer_phone || stats.customer_phone,
+      address: location.address || stats.address,
+      city: location.city || stats.city,
+      lat: Number(location.lat),
+      lng: Number(location.lng),
+      geocoding_status: location.geocoding_status || null,
+      notes: location.notes || null,
+      purchases_count: stats.purchases_count || 0,
+      total_purchased: stats.total_purchased || 0,
+      average_ticket: stats.average_ticket || 0,
+      first_order_at: stats.first_order_at || null,
+      last_order_at: stats.last_order_at || null,
+      last_order_label: stats.last_order_label || null,
+      main_source: stats.main_source || null,
+      main_payment_method: stats.main_payment_method || null
+    }))
+
+  const realCustomersCount = realCustomerRows.length
+  const realCustomersWithPin = realCustomerPoints.length
+  const realCustomersPending = Math.max(0, realCustomersCount - realCustomersWithPin)
 
   const commercial = commercialLocations || []
   const towers = commercial.filter((location: any) => location.type === "tower")
   const clusters = commercial.filter((location: any) => location.type === "cluster")
-
-  const realCustomersCount = statsByCustomerKey.size
 
   const realPurchasesCount = Array.from(statsByCustomerKey.values()).reduce(
     (acc, stats: any) => acc + Number(stats.purchases_count || 0),
@@ -296,6 +343,13 @@ export default async function SuperAdminMapPage() {
     0
   )
 
+  const mapAuxiliaryRecords = safeLocations.length
+
+  const nonRealMapRecords = Math.max(
+    0,
+    mapAuxiliaryRecords - realCustomersCount
+  )
+
   return (
     <div className="space-y-6">
       <section className="flex flex-col gap-4 rounded-3xl border border-[#e3e1dc] bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
@@ -305,25 +359,26 @@ export default async function SuperAdminMapPage() {
           </h2>
 
           <p className="mt-2 text-sm text-gray-600">
-            Clientes reales con compras confirmadas, torres y manzanas comerciales.
+            Clientes reales con compras confirmadas. Las coordenadas salen de customer_locations.
           </p>
         </div>
 
         <GeocodeCustomersButton />
       </section>
 
-      <section className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-7">
+      <section className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-8">
         <Metric title="Clientes reales" value={realCustomersCount} />
+        <Metric title="Clientes con pin" value={realCustomersWithPin} />
+        <Metric title="Clientes pendientes" value={realCustomersPending} />
         <Metric title="Compras reales" value={realPurchasesCount} />
         <Metric title="Total vendido" value={money(realRevenue)} />
-        <Metric title="Clientes en mapa" value={safeLocations.length} />
-        <Metric title="Con coordenadas" value={points.length} />
-        <Metric title="Pendientes" value={pending.length} />
+        <Metric title="Registros mapa" value={mapAuxiliaryRecords} />
+        <Metric title="Registros no reales" value={nonRealMapRecords} />
         <Metric title="Torres" value={towers.length} />
       </section>
 
       <CustomerMap
-        points={points}
+        points={realCustomerPoints}
         commercialLocations={commercial as any}
       />
 
