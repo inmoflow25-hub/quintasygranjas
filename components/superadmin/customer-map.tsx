@@ -11,6 +11,7 @@ type CustomerPoint = {
   customer_phone: string | null
   address: string | null
   city: string | null
+  address_notes?: string | null
   lat: number
   lng: number
   geocoding_status: string | null
@@ -128,6 +129,11 @@ export default function CustomerMap({
                   <br />
                   {point.city || "-"}
                 </p>
+                {point.address_notes && (
+  <p className="mt-1 rounded-lg bg-[#f5f5f3] px-2 py-1 text-xs">
+    <strong>Detalle:</strong> {point.address_notes}
+  </p>
+)}
 
                 <div className="mt-2 rounded-xl bg-[#f5f5f3] p-2">
                   <p>
