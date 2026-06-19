@@ -75,6 +75,7 @@ export default async function SuperAdminMapPage() {
       customer_phone: customer.customer_phone || null,
       address: customer.real_address || "Sin domicilio cargado",
       city: customer.real_city || "Buenos Aires",
+      address_notes: customer.address_notes || null,
       lat: Number(customer.map_lat),
       lng: Number(customer.map_lng),
       geocoding_status: customer.geocoding_status || null,
