@@ -249,9 +249,10 @@ function CheckoutContent() {
     if (!fbq) return
 
     fbq("track", "InitiateCheckout", {
-      value: finalTotal,
+      value: Number(finalTotal || subtotal || 0),
       currency: "ARS",
       num_items: items.reduce((acc, item) => acc + Number(item.quantity || 1), 0),
+      content_ids: items.map((item) => String(item.id || item.product_name || item.name || "")),
       content_type: "product"
     })
   }
@@ -556,5 +557,6 @@ export default function CheckoutPage() {
     </Suspense>
   )
 }
+
 
 
