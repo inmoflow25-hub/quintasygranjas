@@ -300,6 +300,79 @@ async function sendPostPurchaseMessage({
   }
 }
 
+async function syncConfirmedOrderToGhl({
+  orderId,
+  orderNumber,
+  userId,
+  customerName,
+  customerEmail,
+  customerPhone,
+  value,
+  source,
+  status,
+  paymentStatus,
+  paymentMethod,
+  boxId,
+  createdAt
+}: {
+  orderId: string
+  orderNumber: string | number | null
+  userId: string | null
+  customerName: string
+  customerEmail: string
+  customerPhone: string
+  value: number
+  source: string
+  status: string
+  paymentStatus: string
+  paymentMethod: string
+  boxId: string | null
+  createdAt: string
+}) {
+  const ghlWebhookUrl = process.env.GHL_ORDER_WEBHOOK_URL
+
+  if (!ghlWebhookUrl) {
+    console.warn("GHL_ORDER_WEBHOOK_URL no configurado")
+    return
+  }
+
+  const payload = {
+    order_id: orderId,
+    order_number: orderNumber ?? null,
+    user_id: userId ?? null,
+    customer_name: customerName,
+    customer_email: customerEmail,
+    customer_phone: customerPhone,
+    value: Number(value || 0),
+    price: Number(value || 0),
+    source: source || "web_app",
+    status,
+    payment_status: paymentStatus,
+    payment_method: paymentMethod,
+    order_type: boxId ? "box" : "cart",
+    box_id: boxId ?? null,
+    created_at: createdAt,
+    event_time: Math.floor(Date.now() / 1000)
+  }
+
+  try {
+    const response = await fetch(ghlWebhookUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      const text = await response.text().catch(() => "")
+      console.error("ghl confirmed order sync error", response.status, text)
+    }
+  } catch (error) {
+    console.error("ghl confirmed order sync fetch error", error)
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json()
@@ -606,6 +679,24 @@ export async function POST(req: Request) {
       orderNumber: order.order_number || order.id
     })
 
+    if (initialStatus === "confirmed") {
+      await syncConfirmedOrderToGhl({
+        orderId: order.id,
+        orderNumber: order.order_number || order.id,
+        userId,
+        customerName: customer_name,
+        customerEmail: normalizedCustomerEmail,
+        customerPhone: normalizedCustomerPhone,
+        value: finalPrice,
+        source,
+        status: initialStatus,
+        paymentStatus: initialPaymentStatus,
+        paymentMethod: payment_method,
+        boxId: source === "box" ? box_id : null,
+        createdAt: order.created_at
+      })
+    }
+
     if (payment_method === "cash" || payment_method === "mp_transfer") {
       return NextResponse.json({
         ok: true,
@@ -681,4 +772,3 @@ export async function POST(req: Request) {
     )
   }
 }
-
