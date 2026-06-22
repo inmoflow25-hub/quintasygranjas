@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import MercadoPagoConfig, { Preference } from "mercadopago"
+import { createHash } from "crypto"
 import { BOX_CATALOG } from "@/lib/boxes"
 
 const supabase = createClient(
@@ -373,6 +374,98 @@ async function syncConfirmedOrderToGhl({
   }
 }
 
+function sha256(value: string) {
+  return createHash("sha256").update(value).digest("hex")
+}
+
+function normalizeMetaPhone(phone: string) {
+  return String(phone || "").replace(/\D/g, "")
+}
+
+async function sendPurchaseEventToMeta({
+  orderId,
+  userId,
+  customerEmail,
+  customerPhone,
+  value,
+  source
+}: {
+  orderId: string
+  userId: string | null
+  customerEmail: string
+  customerPhone: string
+  value: number
+  source: string
+}) {
+  const accessToken = process.env.META_PAGE_ACCESS_TOKEN
+  const datasetId = process.env.META_DATASET_ID || "899097899619057"
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://quintasygranjas.com"
+
+  if (!accessToken) {
+    console.warn("META_PAGE_ACCESS_TOKEN no configurado")
+    return
+  }
+
+  if (!datasetId) {
+    console.warn("META_DATASET_ID no configurado")
+    return
+  }
+
+  const normalizedEmail = normalizeEmail(customerEmail)
+  const normalizedPhone = normalizeMetaPhone(customerPhone)
+
+  const payload: any = {
+    data: [
+      {
+        event_name: "Purchase",
+        event_time: Math.floor(Date.now() / 1000),
+        event_id: orderId,
+        action_source: "website",
+        event_source_url: `${baseUrl}/checkout`,
+        user_data: {
+          em: normalizedEmail ? [sha256(normalizedEmail)] : [],
+          ph: normalizedPhone ? [sha256(normalizedPhone)] : [],
+          external_id: userId ? [sha256(String(userId))] : []
+        },
+        custom_data: {
+          currency: "ARS",
+          value: Number(value || 0),
+          order_id: orderId,
+          source: source || "web_app"
+        }
+      }
+    ]
+  }
+
+  if (process.env.META_TEST_EVENT_CODE) {
+    payload.test_event_code = process.env.META_TEST_EVENT_CODE
+  }
+
+  try {
+    const response = await fetch(
+      `https://graph.facebook.com/v20.0/${datasetId}/events?access_token=${accessToken}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      }
+    )
+
+    const resultText = await response.text().catch(() => "")
+
+    if (!response.ok) {
+      console.error("meta capi error", response.status, resultText)
+      return
+    }
+
+    console.log("meta capi ok", resultText)
+  } catch (error) {
+    console.error("meta capi fetch error", error)
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json()
@@ -536,9 +629,7 @@ export async function POST(req: Request) {
       completedPurchases
     })
 
-    const discountAmount = Math.round(
-      subtotal * (discountPercent / 100)
-    )
+    const discountAmount = Math.round(subtotal * (discountPercent / 100))
 
     const loyaltyDiscountAmount =
       loyaltyDiscountPercent > 0
@@ -586,7 +677,7 @@ export async function POST(req: Request) {
         { onConflict: "user_id" }
       )
 
-     const initialStatus = "confirmed"
+    const initialStatus = "confirmed"
 
     const initialPaymentStatus =
       payment_method === "cash"
@@ -694,6 +785,15 @@ export async function POST(req: Request) {
         boxId: source === "box" ? box_id : null,
         createdAt: order.created_at
       })
+
+      await sendPurchaseEventToMeta({
+        orderId: order.id,
+        userId,
+        customerEmail: normalizedCustomerEmail,
+        customerPhone: normalizedCustomerPhone,
+        value: finalPrice,
+        source
+      })
     }
 
     if (payment_method === "cash" || payment_method === "mp_transfer") {
@@ -771,3 +871,5 @@ export async function POST(req: Request) {
     )
   }
 }
+
+
