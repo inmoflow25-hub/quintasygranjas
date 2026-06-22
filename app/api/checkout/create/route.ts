@@ -586,8 +586,7 @@ export async function POST(req: Request) {
         { onConflict: "user_id" }
       )
 
-    const initialStatus =
-      payment_method === "mercadopago" ? "pending_payment" : "confirmed"
+     const initialStatus = "confirmed"
 
     const initialPaymentStatus =
       payment_method === "cash"
