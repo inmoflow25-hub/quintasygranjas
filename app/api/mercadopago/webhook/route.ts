@@ -171,34 +171,31 @@ async function processWebhook(request: NextRequest) {
 
     const mpStatus = String(paymentData?.status || "").toLowerCase()
 
-    let nextStatus = "pending_payment"
-    let nextPaymentStatus = mpStatus || "pending"
+    let nextStatus = "confirmed"
+let nextPaymentStatus = mpStatus || "pending"
 
-    if (mpStatus === "approved") {
-      nextStatus = "confirmed"
-      nextPaymentStatus = "approved"
-    } else if (
-      mpStatus === "rejected" ||
-      mpStatus === "cancelled" ||
-      mpStatus === "refunded" ||
-      mpStatus === "charged_back"
-    ) {
-      nextStatus = "cancelled"
-      nextPaymentStatus = mpStatus
-    } else {
-      nextStatus = "pending_payment"
-      nextPaymentStatus = mpStatus || "pending"
-    }
+if (mpStatus === "approved") {
+  nextPaymentStatus = "approved"
+} else if (
+  mpStatus === "rejected" ||
+  mpStatus === "cancelled" ||
+  mpStatus === "refunded" ||
+  mpStatus === "charged_back"
+) {
+  nextPaymentStatus = mpStatus
+} else {
+  nextPaymentStatus = mpStatus || "pending"
+}
 
-    const { error } = await supabase
-      .from("orders")
-      .update({
-        status: nextStatus,
-        payment_status: nextPaymentStatus,
-        mp_payment_id: String(paymentData?.id || paymentId),
-        payment_method: "mercadopago"
-      })
-      .eq("id", orderId)
+  const { error } = await supabase
+  .from("orders")
+  .update({
+    status: nextStatus,
+    payment_status: nextPaymentStatus,
+    mp_payment_id: String(paymentData?.id || paymentId),
+    payment_method: "mercadopago"
+  })
+  .eq("id", orderId)
 
     if (error) {
       console.error("webhook update error", error)
