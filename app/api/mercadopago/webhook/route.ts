@@ -54,6 +54,82 @@ async function markUsedBenefits(orderId: string) {
   }
 }
 
+async function syncConfirmedOrderToGhl(orderId: string) {
+  const ghlWebhookUrl = process.env.GHL_ORDER_WEBHOOK_URL
+
+  if (!ghlWebhookUrl) {
+    console.warn("GHL_ORDER_WEBHOOK_URL no configurado")
+    return
+  }
+
+  const { data: order, error: orderError } = await supabase
+    .from("orders")
+    .select(`
+      id,
+      order_number,
+      user_id,
+      customer_name,
+      customer_email,
+      customer_phone,
+      price,
+      final_price,
+      source,
+      status,
+      payment_status,
+      payment_method,
+      box_id,
+      created_at
+    `)
+    .eq("id", orderId)
+    .maybeSingle()
+
+  if (orderError || !order) {
+    console.error("ghl sync order lookup error", orderError)
+    return
+  }
+
+  const payload = {
+    order_id: order.id,
+    order_number: order.order_number ?? null,
+    user_id: order.user_id ?? null,
+
+    customer_name: order.customer_name ?? "",
+    customer_email: order.customer_email ?? "",
+    customer_phone: order.customer_phone ?? "",
+
+    value: Number(order.final_price ?? order.price ?? 0),
+    price: Number(order.final_price ?? order.price ?? 0),
+
+    source: order.source || "web_app",
+    status: order.status,
+    payment_status: order.payment_status,
+    payment_method: order.payment_method,
+
+    order_type: order.box_id ? "box" : "cart",
+    box_id: order.box_id ?? null,
+
+    created_at: order.created_at,
+    event_time: Math.floor(Date.now() / 1000)
+  }
+
+  try {
+    const ghlRes = await fetch(ghlWebhookUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    })
+
+    if (!ghlRes.ok) {
+      const text = await ghlRes.text().catch(() => "")
+      console.error("ghl order sync error", ghlRes.status, text)
+    }
+  } catch (error) {
+    console.error("ghl order sync fetch error", error)
+  }
+}
+
 async function processWebhook(request: NextRequest) {
   try {
     const url = new URL(request.url)
@@ -81,6 +157,16 @@ async function processWebhook(request: NextRequest) {
 
     if (!orderId) {
       return NextResponse.json({ ok: true })
+    }
+
+    const { data: previousOrder, error: previousOrderError } = await supabase
+      .from("orders")
+      .select("id, status, payment_status")
+      .eq("id", orderId)
+      .maybeSingle()
+
+    if (previousOrderError) {
+      console.error("previous order lookup error", previousOrderError)
     }
 
     const mpStatus = String(paymentData?.status || "").toLowerCase()
@@ -119,8 +205,16 @@ async function processWebhook(request: NextRequest) {
       return NextResponse.json({ error: "db error" }, { status: 500 })
     }
 
+    const wasAlreadyConfirmed =
+      previousOrder?.status === "confirmed" &&
+      String(previousOrder?.payment_status || "").toLowerCase() === "approved"
+
     if (mpStatus === "approved") {
       await markUsedBenefits(orderId)
+
+      if (!wasAlreadyConfirmed) {
+        await syncConfirmedOrderToGhl(orderId)
+      }
     }
 
     return NextResponse.json({ ok: true })
