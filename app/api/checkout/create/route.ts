@@ -112,11 +112,13 @@ function isValidConfirmedOrder(order: PreviousOrderRow) {
 async function getCompletedPurchasesForCustomer({
   userId,
   email,
-  phone
+  phone,
+  excludeOrderId
 }: {
   userId: string
   email: string
   phone: string
+  excludeOrderId?: string | null
 }) {
   const { data: orders, error } = await supabase
     .from("orders")
@@ -138,6 +140,7 @@ async function getCompletedPurchasesForCustomer({
   }
 
   const matchedOrders = (orders || []).filter((order: PreviousOrderRow) => {
+    if (excludeOrderId && order.id === excludeOrderId) return false
     if (!isValidConfirmedOrder(order)) return false
 
     const orderEmail = normalizeEmail(order.customer_email)
@@ -185,96 +188,116 @@ function getIndividualDiscount({
   }
 }
 
-function buildOrderDetailMessage({
-  orderNumber,
-  customerName,
-  items,
-  subtotal,
-  discountAmount,
-  propina,
-  finalPrice,
-  paymentMethod,
-  deliveryAddress,
-  deliveryCity
-}: {
-  orderNumber: string | number
-  customerName: string
+function buildItemsSummary(
   items: Array<{
     title: string
     quantity: number
     unit_price: number
   }>
-  subtotal: number
-  discountAmount: number
-  propina: number
-  finalPrice: number
-  paymentMethod: string
+) {
+  return items
+    .map((item) => `• ${item.title} x${Number(item.quantity || 1)}`)
+    .join("\n")
+}
+
+function buildCycleProgress({
+  completedPurchasesBeforeOrder,
+  benefitStatus,
+  discountPercent
+}: {
+  completedPurchasesBeforeOrder: number
+  benefitStatus: string
+  discountPercent: number
+}) {
+  const cyclePosition = String((completedPurchasesBeforeOrder % 4) + 1)
+
+  if (cyclePosition === "1") {
+    if (benefitStatus === "first_purchase" && discountPercent > 0) {
+      return {
+        cyclePosition,
+        cycleBenefitMessage:
+          "Esta fue tu compra 1 de 4. Además, en este pedido recibiste tu 10% de bienvenida."
+      }
+    }
+
+    return {
+      cyclePosition,
+      cycleBenefitMessage:
+        "Esta fue tu compra 1 de 4. En la compra 4 accedés a un 10% de descuento."
+    }
+  }
+
+  if (cyclePosition === "2") {
+    return {
+      cyclePosition,
+      cycleBenefitMessage:
+        "Ya vas por la compra 2 de 4. Estás a 2 compras de tu 10% de descuento."
+    }
+  }
+
+  if (cyclePosition === "3") {
+    return {
+      cyclePosition,
+      cycleBenefitMessage:
+        "Ya vas por la compra 3 de 4. En tu próxima compra accedés al 10% de descuento."
+    }
+  }
+
+  return {
+    cyclePosition,
+    cycleBenefitMessage:
+      "¡Esta fue tu compra 4 y ya recibiste tu 10% de descuento en este pedido!"
+  }
+}
+
+async function sendPostPurchaseTemplate({
+  orderId,
+  orderNumber,
+  customerName,
+  customerEmail,
+  customerPhone,
+  itemsSummary,
+  totalFormatted,
+  paymentMethodLabel,
+  cyclePosition,
+  cycleBenefitMessage,
+  deliveryAddress,
+  deliveryCity
+}: {
+  orderId: string
+  orderNumber: string | number
+  customerName: string
+  customerEmail: string
+  customerPhone: string
+  itemsSummary: string
+  totalFormatted: string
+  paymentMethodLabel: string
+  cyclePosition: string
+  cycleBenefitMessage: string
   deliveryAddress: string
   deliveryCity: string
 }) {
-  const cleanName = String(customerName || "").trim()
-
-  const itemsText = items
-    .map((item) => {
-      const quantity = Number(item.quantity || 1)
-      const unitPrice = Number(item.unit_price || 0)
-      const lineTotal = unitPrice * quantity
-
-      return `• ${item.title} x${quantity} — ${formatMoney(lineTotal)}`
-    })
-    .join("\n")
-
-  const lines = [
-    `¡Gracias por tu pedido en Quintas y Granjas! 🥬`,
-    cleanName ? `${cleanName}, recibimos tu pedido correctamente.` : `Recibimos tu pedido correctamente.`,
-    ``,
-    `Pedido #${orderNumber}`,
-    ``,
-    `Detalle del pedido:`,
-    itemsText,
-    ``,
-    `Subtotal: ${formatMoney(subtotal)}`
-  ]
-
-  if (discountAmount > 0) {
-    lines.push(`Descuento: -${formatMoney(discountAmount)}`)
-  }
-
-  if (propina > 0) {
-    lines.push(`Propina: ${formatMoney(propina)}`)
-  }
-
-  lines.push(
-    `Total: ${formatMoney(finalPrice)}`,
-    `Forma de pago elegida: ${formatPaymentMethod(paymentMethod)}`,
-    ``,
-    `Dirección de entrega:`,
-    `${deliveryAddress}, ${deliveryCity}`,
-    ``,
-    `Te vamos a escribir por este medio si necesitamos confirmar algún dato.`
-  )
-
-  return lines.filter((line) => line !== null && line !== undefined).join("\n")
-}
-
-async function sendPostPurchaseMessage({
-  phone,
-  name,
-  message,
-  orderId,
-  orderNumber
-}: {
-  phone: string
-  name: string
-  message: string
-  orderId: string
-  orderNumber: string | number
-}) {
-  const webhookUrl = process.env.GHL_SEND_MESSAGE_WEBHOOK_URL
+  const webhookUrl = process.env.GHL_POST_PURCHASE_TEMPLATE_WEBHOOK_URL
 
   if (!webhookUrl) {
-    console.warn("GHL_SEND_MESSAGE_WEBHOOK_URL no configurado")
+    console.warn("GHL_POST_PURCHASE_TEMPLATE_WEBHOOK_URL no configurado")
     return
+  }
+
+  const payload = {
+    order_id: orderId,
+    order_number: String(orderNumber),
+    customer_name: customerName,
+    customer_email: customerEmail,
+    customer_phone: customerPhone,
+    items_summary: itemsSummary,
+    order_detail_message: itemsSummary,
+    total_formatted: totalFormatted,
+    payment_method_label: paymentMethodLabel,
+    cycle_position: cyclePosition,
+    cycle_benefit_message: cycleBenefitMessage,
+    delivery_address: deliveryAddress,
+    delivery_city: deliveryCity
   }
 
   try {
@@ -283,21 +306,15 @@ async function sendPostPurchaseMessage({
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        phone,
-        name,
-        message,
-        order_id: orderId,
-        order_number: orderNumber
-      })
+      body: JSON.stringify(payload)
     })
 
     if (!response.ok) {
       const text = await response.text().catch(() => "")
-      console.error("post purchase message webhook error", response.status, text)
+      console.error("post purchase template webhook error", response.status, text)
     }
   } catch (error) {
-    console.error("post purchase message error", error)
+    console.error("post purchase template fetch error", error)
   }
 }
 
@@ -615,7 +632,7 @@ export async function POST(req: Request) {
       )
     }
 
-    const completedPurchases = await getCompletedPurchasesForCustomer({
+    const completedPurchasesBeforeOrder = await getCompletedPurchasesForCustomer({
       userId,
       email: normalizedCustomerEmail,
       phone: normalizedCustomerPhone
@@ -626,7 +643,7 @@ export async function POST(req: Request) {
       benefitStatus,
       loyaltyDiscountPercent
     } = getIndividualDiscount({
-      completedPurchases
+      completedPurchases: completedPurchasesBeforeOrder
     })
 
     const discountAmount = Math.round(subtotal * (discountPercent / 100))
@@ -748,26 +765,32 @@ export async function POST(req: Request) {
       )
     }
 
-    const postPurchaseMessage = buildOrderDetailMessage({
-      orderNumber: order.order_number || order.id,
-      customerName: customer_name,
-      items: normalizedItems,
-      subtotal,
-      discountAmount,
-      propina,
-      finalPrice,
-      paymentMethod: payment_method,
-      deliveryAddress: delivery_address,
-      deliveryCity: delivery_city
+    const { cyclePosition, cycleBenefitMessage } = buildCycleProgress({
+      completedPurchasesBeforeOrder,
+      benefitStatus,
+      discountPercent
     })
 
-    await sendPostPurchaseMessage({
-      phone: normalizedCustomerPhone,
-      name: customer_name,
-      message: postPurchaseMessage,
-      orderId: order.id,
-      orderNumber: order.order_number || order.id
-    })
+    const itemsSummary = buildItemsSummary(normalizedItems)
+    const totalFormatted = formatMoney(finalPrice)
+    const paymentMethodLabel = formatPaymentMethod(payment_method)
+
+    if (payment_method === "cash" || payment_method === "mp_transfer") {
+      await sendPostPurchaseTemplate({
+        orderId: order.id,
+        orderNumber: order.order_number || order.id,
+        customerName: customer_name,
+        customerEmail: normalizedCustomerEmail,
+        customerPhone: normalizedCustomerPhone,
+        itemsSummary,
+        totalFormatted,
+        paymentMethodLabel,
+        cyclePosition,
+        cycleBenefitMessage,
+        deliveryAddress: delivery_address,
+        deliveryCity: delivery_city
+      })
+    }
 
     if (initialStatus === "confirmed") {
       await syncConfirmedOrderToGhl({
@@ -805,7 +828,9 @@ export async function POST(req: Request) {
         discount_amount: discountAmount,
         propina,
         final_price: finalPrice,
-        completed_purchases_before_order: completedPurchases,
+        completed_purchases_before_order: completedPurchasesBeforeOrder,
+        cycle_position: cyclePosition,
+        cycle_benefit_message: cycleBenefitMessage,
         redirect_to: `/success?order_id=${order.id}&order_number=${order.order_number}&payment=${payment_method}`
       })
     }
@@ -859,7 +884,9 @@ export async function POST(req: Request) {
       discount_amount: discountAmount,
       propina,
       final_price: finalPrice,
-      completed_purchases_before_order: completedPurchases,
+      completed_purchases_before_order: completedPurchasesBeforeOrder,
+      cycle_position: cyclePosition,
+      cycle_benefit_message: cycleBenefitMessage,
       init_point: result.init_point
     })
   } catch (error: any) {
@@ -871,5 +898,4 @@ export async function POST(req: Request) {
     )
   }
 }
-
 
