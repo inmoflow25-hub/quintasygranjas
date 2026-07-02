@@ -756,7 +756,7 @@ export default function Cart({ products }: { products?: Product[] }) {
             }}
             className="px-4 py-1 rounded-full bg-gray-200 text-sm whitespace-nowrap hover:bg-green-600 hover:text-white transition"
           >
-            {cat.replaceAll("_", " ")}
+            {category.replace(/_/g, " ")}
           </button>
         ))}
       </div>
