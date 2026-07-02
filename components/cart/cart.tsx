@@ -756,7 +756,7 @@ export default function Cart({ products }: { products?: Product[] }) {
             }}
             className="px-4 py-1 rounded-full bg-gray-200 text-sm whitespace-nowrap hover:bg-green-600 hover:text-white transition"
           >
-            {cat.replace("_", " ")}
+            {cat.replaceAll("_", " ")}
           </button>
         ))}
       </div>
@@ -775,7 +775,7 @@ export default function Cart({ products }: { products?: Product[] }) {
                 className="mb-10 scroll-mt-32"
               >
                 <h3 className="text-xl font-bold mb-3 capitalize">
-                  {category.replace("_", " ")}
+                  {category.replaceAll("_", " ")}
                 </h3>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
