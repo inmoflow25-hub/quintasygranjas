@@ -412,6 +412,94 @@ const FALLBACK_PRODUCTS: Product[] = [
     image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nuggets.jpeg",
     category: "congelados"
   }
+    {
+    id: "milanesa-soja-rellena-cheddar",
+    slug: "milanesa-soja-rellena-cheddar",
+    name: "Milanesa de soja rellena cheddar",
+    description: "Paquete de 2 unidades. Rellena con cheddar.",
+    price: 7200,
+    type: "unit",
+    unit_label: "paquete x2",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mila%20entera%20cadrada.png",
+    category: "comidas_listas_para_horno"
+  },
+  {
+    id: "milanesa-soja-rellena-caprese",
+    slug: "milanesa-soja-rellena-caprese",
+    name: "Milanesa de soja rellena caprese",
+    description: "Paquete de 2 unidades. Rellena con muzzarella, tomate y albahaca.",
+    price: 7200,
+    type: "unit",
+    unit_label: "paquete x2",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mila%20plato%20azul%20cuadrada.png",
+    category: "comidas_listas_para_horno"
+  },
+  {
+    id: "milanesa-soja-rellena-roquefort",
+    slug: "milanesa-soja-rellena-roquefort",
+    name: "Milanesa de soja rellena roquefort",
+    description: "Paquete de 2 unidades. Rellena con muzzarella, roquefort y nueces.",
+    price: 7200,
+    type: "unit",
+    unit_label: "paquete x2",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mila%20varias%20cuadrada.png",
+    category: "comidas_listas_para_horno"
+  },
+  {
+    id: "milanesa-soja-rellena-verdura",
+    slug: "milanesa-soja-rellena-verdura",
+    name: "Milanesa de soja rellena verdura",
+    description: "Paquete de 2 unidades. Rellena con muzzarella, acelga, choclo y verdeo.",
+    price: 7200,
+    type: "unit",
+    unit_label: "paquete x2",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mila%20verdura%20cuadrada.png",
+    category: "comidas_listas_para_horno"
+  },
+  {
+    id: "milanesa-soja-rellena-queso",
+    slug: "milanesa-soja-rellena-queso",
+    name: "Milanesa de soja rellena queso",
+    description: "Paquete de 2 unidades. Rellena con muzzarella y orégano.",
+    price: 7200,
+    type: "unit",
+    unit_label: "paquete x2",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mila%20entera%20vertical.png",
+    category: "comidas_listas_para_horno"
+  },
+  {
+    id: "milanesa-soja-rellena-calabaza",
+    slug: "milanesa-soja-rellena-calabaza",
+    name: "Milanesa de soja rellena calabaza",
+    description: "Paquete de 2 unidades. Rellena con muzzarella y calabaza asada.",
+    price: 7200,
+    type: "unit",
+    unit_label: "paquete x2",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mila%20plato%20azul%20vertical.png",
+    category: "comidas_listas_para_horno"
+  },
+  {
+    id: "milanesa-soja-rellena-cebolla",
+    slug: "milanesa-soja-rellena-cebolla",
+    name: "Milanesa de soja rellena cebolla",
+    description: "Paquete de 2 unidades. Rellena con muzzarella y cebolla caramelizada.",
+    price: 7200,
+    type: "unit",
+    unit_label: "paquete x2",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mila%20%20cebolla%20cuadrado.png",
+    category: "comidas_listas_para_horno"
+  },
+  {
+    id: "milanesa-soja-rellena-aceituna",
+    slug: "milanesa-soja-rellena-aceituna",
+    name: "Milanesa de soja rellena aceituna",
+    description: "Paquete de 2 unidades. Rellena con muzzarella y aceitunas verdes.",
+    price: 7200,
+    type: "unit",
+    unit_label: "paquete x2",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mila%20varias%20vertical.png",
+    category: "comidas_listas_para_horno"
+  },
 ]
 
 
