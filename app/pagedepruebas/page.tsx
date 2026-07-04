@@ -3,7 +3,8 @@
 import { Header } from "@/components/landing/header"
 import { DeliveryZones } from "@/components/landing/delivery-zones"
 import { Footer } from "@/components/landing/footer"
-import CartMobileStickyTest from "@/components/cart/cart-mobile-sticky-test"import { ArrowRight, CheckCircle2, Truck, ShoppingBasket, Leaf } from "lucide-react"
+import CartMobileStickyTest from "@/components/cart/cart-mobile-sticky-test"
+import { ArrowRight, CheckCircle2, Truck, ShoppingBasket, Leaf } from "lucide-react"
 
 export default function PageDePruebas() {
   function onWhatsAppClick() {
