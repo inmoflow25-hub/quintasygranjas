@@ -743,23 +743,24 @@ export default function Cart({ products }: { products?: Product[] }) {
         </p>
       )}
 
-      {/* 🟢 PILLS DE CATEGORÍAS */}
-      <div className="flex gap-2 mb-6 overflow-x-auto">
-        {Array.from(new Set(PRODUCTS.map((p) => p.category))).map((cat) => (
-          <button
-            key={cat}
-            onClick={() => {
-              const el = document.getElementById(`cat-${cat}`)
-              if (el) {
-                el.scrollIntoView({ behavior: "smooth" })
-              }
-            }}
-            className="px-4 py-1 rounded-full bg-gray-200 text-sm whitespace-nowrap hover:bg-green-600 hover:text-white transition"
-          >
-            {category.replace(/_/g, " ")}
-          </button>
-        ))}
-      </div>
+     {/* 🟢 PILLS DE CATEGORÍAS */}
+<div className="flex gap-2 mb-6 overflow-x-auto">
+  {Array.from(new Set(PRODUCTS.map((p) => p.category))).map((cat) => (
+    <button
+      key={cat}
+      type="button"
+      onClick={() => {
+        const el = document.getElementById(`cat-${cat}`)
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" })
+        }
+      }}
+      className="px-4 py-1 rounded-full bg-gray-200 text-sm whitespace-nowrap hover:bg-green-600 hover:text-white transition"
+    >
+      {cat.replace(/_/g, " ")}
+    </button>
+  ))}
+</div>
 
       {/* 🔥 LAYOUT */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
