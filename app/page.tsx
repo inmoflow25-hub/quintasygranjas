@@ -9,8 +9,7 @@ import { DeliveryZones } from "@/components/landing/delivery-zones"
 import { FinalCTA } from "@/components/landing/final-cta"
 import { Footer } from "@/components/landing/footer"
 import { Header } from "@/components/landing/header"
-import Cart from "@/components/cart/cart"
-
+import CartMobileStickyTest from "@/components/cart/cart-mobile-sticky-test"
 type BoxType = "veggie" | "campo" | "granja"
 
 const BOX_DB_IDS: Record<BoxType, string> = {
@@ -40,8 +39,8 @@ export default function Home() {
       {/*<HowItWorks />*/}
 
       <div id="cart" className="scroll-mt-32">
-        <Cart />
-      </div>
+  <CartMobileStickyTest />
+</div>
 
       {/*<BoxesSection onSelectBox={onSelectBox} />*/}
       {/*<SocialProof />*/}
