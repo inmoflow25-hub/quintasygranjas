@@ -133,11 +133,11 @@ export default function PageDePruebas() {
 
       {/* CATÁLOGO */}
       <div id="cart" className="scroll-mt-32">
-        <Cart />
+         <CartMobileStickyTest />
       </div>
 
       <DeliveryZones />
-      <CartMobileStickyTest />
+     
 
       <Footer onWhatsAppClick={onWhatsAppClick} />
     </main>
