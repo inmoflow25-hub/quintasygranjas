@@ -364,19 +364,19 @@ export default function CartMobileStickyTest({
         </p>
       )}
 
-      {/* PILLS DE CATEGORÍAS */}
-      <div className="flex gap-2 mb-6 overflow-x-auto">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            type="button"
-            onClick={() => scrollToCategory(cat)}
-            className="px-4 py-1 rounded-full bg-gray-200 text-sm whitespace-nowrap hover:bg-green-600 hover:text-white transition"
-          >
-            {categoryLabel(cat)}
-          </button>
-        ))}
-      </div>
+    {/* CATEGORÍAS MOBILE + DESKTOP */}
+<div className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-3 md:flex md:overflow-x-auto">
+  {categories.map((cat) => (
+    <button
+      key={cat}
+      type="button"
+      onClick={() => scrollToCategory(cat)}
+      className="rounded-full bg-gray-200 px-3 py-2 text-center text-sm font-medium leading-tight text-black transition hover:bg-green-600 hover:text-white md:whitespace-nowrap md:px-4 md:py-1"
+    >
+      {categoryLabel(cat)}
+    </button>
+  ))}
+</div>
 
       {/* LAYOUT */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
