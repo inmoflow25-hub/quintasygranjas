@@ -48,17 +48,18 @@ function normalizeArgentinaPhone(rawPhone: string | null | undefined) {
 }
 
 function cleanText(value: unknown) {
-  return String(value || "").trim()
+  return String(value || "").replace(/\s+/g, " ").trim()
 }
 
-function buildAddressKey(addressRow: any) {
-  if (addressRow.user_id) return String(addressRow.user_id)
+function normalizeComparableText(value: unknown) {
+  return cleanText(value).toLowerCase()
+}
 
-  const phone = normalizeArgentinaPhone(addressRow.phone)
+function buildCustomerKey(order: any) {
+  const phone = normalizeArgentinaPhone(order.customer_phone)
+  const email = normalizeEmail(order.customer_email)
 
-  if (phone) return phone
-
-  return String(addressRow.id)
+  return phone || email || String(order.user_id || order.id)
 }
 
 function buildLocationKeys(location: any) {
@@ -79,61 +80,29 @@ export async function POST() {
   try {
     await requireAdmin()
 
-    const { data: addresses, error: addressesError } = await supabase
-      .from("addresses")
+    const { data: orders, error: ordersError } = await supabase
+      .from("orders")
       .select(`
         id,
         user_id,
-        address,
-        city,
-        notes,
-        phone,
-        created_at
+        customer_name,
+        customer_email,
+        customer_phone,
+        delivery_address,
+        delivery_city,
+        delivery_notes,
+        created_at,
+        is_test
       `)
-      .not("address", "is", null)
+      .eq("is_test", false)
+      .not("delivery_address", "is", null)
       .order("created_at", { ascending: false })
 
-    if (addressesError) {
-      console.error("sync addresses error", addressesError)
+    if (ordersError) {
+      console.error("sync orders error", ordersError)
 
       return NextResponse.json(
-        { error: "No se pudieron leer los domicilios" },
-        { status: 500 }
-      )
-    }
-
-    const { data: users, error: usersError } = await supabase
-      .from("users")
-      .select(`
-        id,
-        email,
-        name
-      `)
-
-    if (usersError) {
-      console.error("sync users error", usersError)
-
-      return NextResponse.json(
-        { error: "No se pudieron leer los usuarios" },
-        { status: 500 }
-      )
-    }
-
-    const { data: profiles, error: profilesError } = await supabase
-      .from("profiles")
-      .select(`
-        id,
-        name,
-        full_name,
-        email,
-        phone
-      `)
-
-    if (profilesError) {
-      console.error("sync profiles error", profilesError)
-
-      return NextResponse.json(
-        { error: "No se pudieron leer los perfiles" },
+        { error: "No se pudieron leer las órdenes" },
         { status: 500 }
       )
     }
@@ -145,6 +114,8 @@ export async function POST() {
         customer_key,
         customer_email,
         customer_phone,
+        address,
+        city,
         lat,
         lng,
         geocoding_status,
@@ -160,17 +131,7 @@ export async function POST() {
       )
     }
 
-    const usersById = new Map<string, any>()
-    const profilesById = new Map<string, any>()
     const existingByKey = new Map<string, any>()
-
-    for (const user of users || []) {
-      if (user.id) usersById.set(String(user.id), user)
-    }
-
-    for (const profile of profiles || []) {
-      if (profile.id) profilesById.set(String(profile.id), profile)
-    }
 
     for (const location of existingLocations || []) {
       for (const key of buildLocationKeys(location)) {
@@ -186,69 +147,57 @@ export async function POST() {
       }
     }
 
-    const rows = (addresses || [])
-      .map((addressRow: any) => {
-        const customerKey = buildAddressKey(addressRow)
-        const user = addressRow.user_id
-          ? usersById.get(String(addressRow.user_id))
-          : null
-        const profile = addressRow.user_id
-          ? profilesById.get(String(addressRow.user_id))
-          : null
+    const latestByCustomer = new Map<string, any>()
 
-        const customerName =
-          cleanText(profile?.full_name) ||
-          cleanText(profile?.name) ||
-          cleanText(user?.name) ||
-          cleanText(addressRow.notes) ||
-          normalizeArgentinaPhone(addressRow.phone) ||
-          "Cliente"
+    for (const order of orders || []) {
+      const customerKey = buildCustomerKey(order)
 
-        const customerEmail =
-          normalizeEmail(profile?.email) ||
-          normalizeEmail(user?.email) ||
-          null
+      if (!customerKey) continue
+      if (latestByCustomer.has(customerKey)) continue
 
-        const customerPhone =
-          normalizeArgentinaPhone(addressRow.phone) ||
-          normalizeArgentinaPhone(profile?.phone) ||
-          null
+      const phone = normalizeArgentinaPhone(order.customer_phone)
+      const email = normalizeEmail(order.customer_email)
+      const address = cleanText(order.delivery_address)
 
-        const existing =
-          existingByKey.get(customerKey) ||
-          existingByKey.get(customerPhone || "") ||
-          existingByKey.get(customerEmail || "")
+      if (!address) continue
 
-        return {
-          existing_id: existing?.id || null,
-          customer_key: customerKey,
-          customer_name: customerName,
-          customer_email: customerEmail,
-          customer_phone: customerPhone,
-          address: cleanText(addressRow.address),
-          city: cleanText(addressRow.city) || "Buenos Aires",
-          lat: existing?.lat ?? null,
-          lng: existing?.lng ?? null,
-          geocoding_status:
-            existing?.lat !== null && existing?.lng !== null
-              ? existing?.geocoding_status || "ok"
-              : "pending",
-          notes:
-            existing?.lat !== null && existing?.lng !== null
-              ? existing?.notes || `Domicilio sincronizado desde addresses: ${addressRow.id}`
-              : `Domicilio pendiente desde addresses: ${addressRow.id}`,
-          updated_at: new Date().toISOString()
-        }
+      latestByCustomer.set(customerKey, {
+        customer_key: customerKey,
+        customer_name: cleanText(order.customer_name) || phone || email || "Cliente",
+        customer_email: email || null,
+        customer_phone: phone || null,
+        address,
+        city: cleanText(order.delivery_city) || "Buenos Aires",
+        notes: cleanText(order.delivery_notes),
+        source_order_id: order.id,
+        source_order_created_at: order.created_at,
+        updated_at: new Date().toISOString()
       })
-      .filter((row: any) => row.customer_key && row.address)
+    }
+
+    const rows = Array.from(latestByCustomer.values())
 
     let inserted = 0
     let updated = 0
+    let addressChanged = 0
     let failed = 0
     const errors: string[] = []
 
     for (const row of rows) {
-      if (row.existing_id) {
+      const existing =
+        existingByKey.get(row.customer_key) ||
+        existingByKey.get(row.customer_phone || "") ||
+        existingByKey.get(row.customer_email || "")
+
+      if (existing?.id) {
+        const existingAddress = normalizeComparableText(existing.address)
+        const existingCity = normalizeComparableText(existing.city)
+        const nextAddress = normalizeComparableText(row.address)
+        const nextCity = normalizeComparableText(row.city)
+
+        const changedAddress =
+          existingAddress !== nextAddress || existingCity !== nextCity
+
         const updatePayload: any = {
           customer_key: row.customer_key,
           customer_name: row.customer_name,
@@ -256,20 +205,25 @@ export async function POST() {
           customer_phone: row.customer_phone,
           address: row.address,
           city: row.city,
+          notes: row.notes || existing.notes,
           updated_at: row.updated_at
         }
 
-        if (row.lat === null || row.lng === null) {
+        if (changedAddress) {
           updatePayload.lat = null
           updatePayload.lng = null
           updatePayload.geocoding_status = "pending"
           updatePayload.notes = row.notes
+            ? `Domicilio actualizado desde order ${row.source_order_id}. ${row.notes}`
+            : `Domicilio actualizado desde order ${row.source_order_id}`
+
+          addressChanged += 1
         }
 
         const { error: updateError } = await supabase
           .from("customer_locations")
           .update(updatePayload)
-          .eq("id", row.existing_id)
+          .eq("id", existing.id)
 
         if (updateError) {
           failed += 1
@@ -286,10 +240,12 @@ export async function POST() {
           customer_phone: row.customer_phone,
           address: row.address,
           city: row.city,
-          lat: row.lat,
-          lng: row.lng,
-          geocoding_status: row.geocoding_status,
-          notes: row.notes,
+          lat: null,
+          lng: null,
+          geocoding_status: "pending",
+          notes: row.notes
+            ? `Domicilio creado desde order ${row.source_order_id}. ${row.notes}`
+            : `Domicilio creado desde order ${row.source_order_id}`,
           updated_at: row.updated_at
         }
 
@@ -309,24 +265,26 @@ export async function POST() {
 
     return NextResponse.json({
       ok: true,
-      source: "addresses",
-      addresses_read: addresses?.length || 0,
-      domicilios: rows.length,
+      source: "orders",
+      orders_read: orders?.length || 0,
+      unique_customers: rows.length,
       inserted,
       updated,
+      address_changed: addressChanged,
       synced: inserted + updated,
       failed,
       errors: errors.slice(0, 10),
 
-      read_orders: addresses?.length || 0,
-      usable_orders: rows.length,
-      unique_customers: rows.length
+      read_orders: orders?.length || 0,
+      usable_orders: orders?.length || 0,
+      domicilios: rows.length,
+      addresses_read: orders?.length || 0
     })
   } catch (error: any) {
-    console.error("sync customer locations from addresses error", error)
+    console.error("sync customer locations from orders error", error)
 
     return NextResponse.json(
-      { error: error?.message || "Error sincronizando domicilios al mapa" },
+      { error: error?.message || "Error sincronizando órdenes al mapa" },
       { status: 500 }
     )
   }
