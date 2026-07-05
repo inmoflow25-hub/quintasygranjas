@@ -85,7 +85,9 @@ function isGoodEnoughGoogleResult(result: any) {
 
   return [
     "ROOFTOP",
-    "RANGE_INTERPOLATED"
+    "RANGE_INTERPOLATED",
+    "GEOMETRIC_CENTER",
+    "APPROXIMATE"
   ].includes(locationType)
 }
 
