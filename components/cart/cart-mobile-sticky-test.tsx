@@ -50,11 +50,11 @@ const FALLBACK_PRODUCTS: Product[] = [
       "tomate 1/2 kg",
       "zanahoria 1/2 kg",
       "manzana 1/2 kg",
-      "cítricos 1 kg",
+      "citricos (naranja + limon) 1 kg",
       "banana 1 kg",
       "mandarina 1/2 kg",
       "palta 2 unidades",
-      "pera 1/2 kg",
+      "pera 1/2kg",
       "espinaca 2 atados",
       "lechuga 1 planta"
     ]
@@ -77,15 +77,17 @@ const FALLBACK_PRODUCTS: Product[] = [
       "tomate 1/2 kg",
       "zanahoria 1/2 kg",
       "manzana 1/2 kg",
-      "cítricos 1 kg",
+      "citricos (naranja + limon) 1 kg",
       "banana 1 kg",
       "mandarina 1/2 kg",
       "palta 2 unidades",
-      "pera 1/2 kg",
+      "pera 1/2kg",
       "lechuga 1 planta",
       "espinaca 2 atados",
       "30 huevos de campo",
-      "1 kg suprema de pollo congelado"
+      "1 kg suprema de pollo congelado",
+      "perfecta para dos personas",
+      "ideal si queres cocinar y tener stock"
     ]
   },
   {
@@ -106,7 +108,7 @@ const FALLBACK_PRODUCTS: Product[] = [
       "tomate 1/2 kg",
       "zanahoria 1/2 kg",
       "manzana 1/2 kg",
-      "cítricos 1 kg",
+      "citricos (naranja + limon) 1 kg",
       "banana 1 kg",
       "mandarina 1/2 kg",
       "palta 2 unidades",
@@ -115,186 +117,456 @@ const FALLBACK_PRODUCTS: Product[] = [
       "espinaca 2 atados",
       "30 huevos de campo",
       "1 kg suprema de pollo congelado",
-      "1/2 kg de miel pura",
-      "1 pan de campo grande"
+      "1/2 kg de miel de abejas real pura",
+      "1 pan de campo grande",
+      "le agrega nutrientes a tus desayunos",
+      "pensada para toda la familia"
     ]
+  },
+  {
+    id: "zapallo-anco",
+    slug: "zapallo-anco",
+    name: "Zapallo Anco",
+    description: "Ideal para horno, puré o sopa.",
+    price: 1800,
+    type: "unit",
+    unit_label: "unidad",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/WhatsApp%20Image%202026-04-12%20at%2014.21.43.jpeg",
+    category: "verduras"
+  },
+  {
+    id: "cebolla",
+    slug: "cebolla",
+    name: "Cebolla",
+    description: "Base para guisos, salsas y salteados.",
+    price: 700,
+    type: "weight_500g",
+    unit_label: "500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cebollas.jpg",
+    category: "verduras"
+  },
+  {
+    id: "papa-negra-cepillada",
+    slug: "papa-negra-cepillada",
+    name: "Papa negra cepillada",
+    description: "Ideal para horno, puré o fritas.",
+    price: 800,
+    type: "weight_500g",
+    unit_label: "500g",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/papas%20negras.jpg",
+    category: "verduras"
+  },
+  {
+    id: "tomate-perita",
+    slug: "tomate-perita",
+    name: "Tomate perita",
+    description: "Fresco, ideal para ensaladas o salsa.",
+    price: 1200,
+    type: "weight_500g",
+    unit_label: "500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/tomates.jpg",
+    category: "verduras"
+  },
+  {
+    id: "zanahoria",
+    slug: "zanahoria",
+    name: "Zanahoria",
+    description: "Dulce y crocante, ideal cruda o cocida.",
+    price: 800,
+    type: "weight_500g",
+    unit_label: "500g",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/zanahorias.jpg",
+    category: "verduras"
+  },
+  {
+    id: "lechuga",
+    slug: "lechuga",
+    name: "Lechuga",
+    description: "Fresca y crocante, ideal para ensaladas.",
+    price: 1300,
+    type: "unit",
+    unit_label: "unidad",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/lechugas.jpg",
+    category: "verduras"
+  },
+  {
+    id: "espinaca",
+    slug: "espinaca",
+    name: "Espinaca",
+    description: "Hojas tiernas, ideal para tartas o salteados.",
+    price: 1900,
+    type: "unit",
+    unit_label: "unidad",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/espinacas.jpg",
+    category: "verduras"
+  },
+  {
+    id: "apio",
+    slug: "apio",
+    name: "Apio",
+    description: "Fresco, ideal para ensaladas, caldos o jugos.",
+    price: 1800,
+    type: "unit",
+    unit_label: "unidad",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/apio.jpg",
+    category: "verduras"
+  },
+  {
+    id: "morrones",
+    slug: "morrones",
+    name: "Morrones",
+    description: "Ideal para rellenos, salteados o ensaladas.",
+    price: 1800,
+    type: "weight_500g",
+    unit_label: "500g",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/morrones.jpg",
+    category: "verduras"
+  },
+  {
+    id: "manzana-red-delicious",
+    slug: "manzana-red-delicious",
+    name: "Manzana red delicious",
+    description: "Dulce y crocante, ideal para todo momento.",
+    price: 2900,
+    type: "weight_500g",
+    unit_label: "500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/manzanas.jpg",
+    category: "frutas"
+  },
+  {
+    id: "naranja-jugo",
+    slug: "naranja-jugo",
+    name: "Naranja jugo",
+    description: "Jugosa, ideal para exprimir.",
+    price: 1500,
+    type: "weight_500g",
+    unit_label: "500g",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/naranja%20jugo.jpg",
+    category: "frutas"
+  },
+  {
+    id: "limon",
+    slug: "limon",
+    name: "Limón",
+    description: "Ácido y fresco, ideal para comidas o bebidas.",
+    price: 1100,
+    type: "weight_500g",
+    unit_label: "500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/limones.jpg",
+    category: "frutas"
+  },
+  {
+    id: "banana",
+    slug: "banana",
+    name: "Banana",
+    description: "Suave y energética, ideal para colaciones.",
+    price: 1350,
+    type: "weight_500g",
+    unit_label: "500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/banana.jpg",
+    category: "frutas"
+  },
+  {
+    id: "pera",
+    slug: "pera",
+    name: "Pera",
+    description: "Dulce y fresca, ideal para todos los días.",
+    price: 1900,
+    type: "weight_500g",
+    unit_label: "500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/peraok.jpg",
+    category: "frutas"
+  },
+  {
+    id: "mandarina",
+    slug: "mandarina",
+    name: "Mandarina",
+    description: "Fresca, dulce y fácil de pelar.",
+    price: 1000,
+    type: "weight_500g",
+    unit_label: "500g",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mandarina.jpg",
+    category: "frutas"
+  },
+  {
+    id: "kiwi",
+    slug: "kiwi",
+    name: "Kiwi",
+    description: "Fresco, ácido y nutritivo.",
+    price: 1800,
+    type: "weight_500g",
+    unit_label: "500g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/kiwi.jpg",
+    category: "frutas"
+  },
+  {
+    id: "palta",
+    slug: "palta",
+    name: "Palta",
+    description: "Cremosa, ideal para ensaladas, tostadas o comidas frescas.",
+    price: 1800,
+    type: "unit",
+    unit_label: "unidad",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/palta.jpg",
+    category: "frutas"
+  },
+  {
+    id: "nueces",
+    slug: "nueces",
+    name: "Nueces",
+    description: "Nueces listas para consumir.",
+    price: 1600,
+    type: "weight_100g",
+    unit_label: "100g",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nueces.jpg",
+    category: "frutos_secos"
+  },
+  {
+    id: "almendras",
+    slug: "almendras",
+    name: "Almendras",
+    description: "Almendras naturales.",
+    price: 3200,
+    type: "weight_100g",
+    unit_label: "100g",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/almendras.jpg",
+    category: "frutos_secos"
+  },
+  {
+    id: "castanas",
+    slug: "castanas",
+    name: "Castañas",
+    description: "Castañas listas para consumir.",
+    price: 2400,
+    type: "weight_100g",
+    unit_label: "100g",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/castan%CC%83as%20de%20caju.jpg",
+    category: "frutos_secos"
+  },
+  {
+    id: "pan",
+    slug: "pan",
+    name: "Pan",
+    description: "Pan de campo, ideal para acompañar comidas.",
+    price: 1300,
+    type: "unit",
+    unit_label: "unidad",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pan%20de%20campo.jpg",
+    category: "otros"
+  },
+  {
+    id: "miel",
+    slug: "miel",
+    name: "Miel",
+    description: "Natural y dulce, ideal para infusiones o tostadas.",
+    price: 6500,
+    type: "unit",
+    unit_label: "unidad",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/miel.jpg",
+    category: "otros"
+  },
+  {
+    id: "huevos",
+    slug: "huevos",
+    name: "Huevos",
+    description: "Maple completo, ideal para consumo diario.",
+    price: 6000,
+    type: "unit",
+    unit_label: "maple",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/huevos.jpg",
+    category: "otros"
+  },
+  {
+    id: "suprema",
+    slug: "suprema",
+    name: "Suprema",
+    description: "Descongelar y cocinar, ideal para milanesas o plancha.",
+    price: 11300,
+    type: "weight_1kg",
+    unit_label: "kg",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/pechugas%20.jpg",
+    category: "pollo"
+  },
+  {
+    id: "pata-y-muslo",
+    slug: "pata-y-muslo",
+    name: "Pata y muslo",
+    description: "Descongelar y cocinar, ideal horno o parrilla.",
+    price: 4500,
+    type: "weight_1kg",
+    unit_label: "kg",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/cuarto%20trasero.jpg",
+    category: "pollo"
+  },
+  {
+    id: "medallones-pollo",
+    slug: "medallones-pollo",
+    name: "Medallones pollo",
+    description: "Prácticos, ideales para una comida rápida.",
+    price: 9380,
+    type: "weight_1kg",
+    unit_label: "kg",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo%20sin%20espinaca.webp",
+    category: "congelados"
+  },
+  {
+    id: "medallones-pollo-con-espinaca",
+    slug: "medallones-pollo-con-espinaca",
+    name: "Medallones pollo con espinaca",
+    description: "Opción práctica con relleno de espinaca.",
+    price: 10250,
+    type: "weight_1kg",
+    unit_label: "kg",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/medallones%20de%20pollo.jpg",
+    category: "congelados"
+  },
+  {
+    id: "nuggets-pollo",
+    slug: "nuggets-pollo",
+    name: "Nuggets pollo",
+    description: "Crocantes y prácticos, ideales para chicos.",
+    price: 12300,
+    type: "weight_1kg",
+    unit_label: "kg",
+    image: "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/nuggets.jpeg",
+    category: "congelados"
+  },
+  {
+    id: "milanesa-soja-rellena-cheddar",
+    slug: "milanesa-soja-rellena-cheddar",
+    name: "Milanesa de soja rellena cheddar",
+    description: "Paquete de 2 unidades. Rellena con cheddar.",
+    price: 7200,
+    type: "unit",
+    unit_label: "paquete x2",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mila%20entera%20cadrada.png",
+    category: "comidas_listas_para_horno"
+  },
+  {
+    id: "milanesa-soja-rellena-caprese",
+    slug: "milanesa-soja-rellena-caprese",
+    name: "Milanesa de soja rellena caprese",
+    description: "Paquete de 2 unidades. Rellena con muzzarella, tomate y albahaca.",
+    price: 7200,
+    type: "unit",
+    unit_label: "paquete x2",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mila%20plato%20azul%20cuadrada.png",
+    category: "comidas_listas_para_horno"
+  },
+  {
+    id: "milanesa-soja-rellena-roquefort",
+    slug: "milanesa-soja-rellena-roquefort",
+    name: "Milanesa de soja rellena roquefort",
+    description: "Paquete de 2 unidades. Rellena con muzzarella, roquefort y nueces.",
+    price: 7200,
+    type: "unit",
+    unit_label: "paquete x2",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mila%20varias%20cuadrada.png",
+    category: "comidas_listas_para_horno"
+  },
+  {
+    id: "milanesa-soja-rellena-verdura",
+    slug: "milanesa-soja-rellena-verdura",
+    name: "Milanesa de soja rellena verdura",
+    description: "Paquete de 2 unidades. Rellena con muzzarella, acelga, choclo y verdeo.",
+    price: 7200,
+    type: "unit",
+    unit_label: "paquete x2",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mila%20verdura%20cuadrada.png",
+    category: "comidas_listas_para_horno"
+  },
+  {
+    id: "milanesa-soja-rellena-queso",
+    slug: "milanesa-soja-rellena-queso",
+    name: "Milanesa de soja rellena queso",
+    description: "Paquete de 2 unidades. Rellena con muzzarella y orégano.",
+    price: 7200,
+    type: "unit",
+    unit_label: "paquete x2",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mila%20entera%20vertical.png",
+    category: "comidas_listas_para_horno"
+  },
+  {
+    id: "milanesa-soja-rellena-calabaza",
+    slug: "milanesa-soja-rellena-calabaza",
+    name: "Milanesa de soja rellena calabaza",
+    description: "Paquete de 2 unidades. Rellena con muzzarella y calabaza asada.",
+    price: 7200,
+    type: "unit",
+    unit_label: "paquete x2",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mila%20plato%20azul%20vertical.png",
+    category: "comidas_listas_para_horno"
+  },
+  {
+    id: "milanesa-soja-rellena-cebolla",
+    slug: "milanesa-soja-rellena-cebolla",
+    name: "Milanesa de soja rellena cebolla",
+    description: "Paquete de 2 unidades. Rellena con muzzarella y cebolla caramelizada.",
+    price: 7200,
+    type: "unit",
+    unit_label: "paquete x2",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mila%20%20cebolla%20cuadrado.png",
+    category: "comidas_listas_para_horno"
+  },
+  {
+    id: "milanesa-soja-rellena-aceituna",
+    slug: "milanesa-soja-rellena-aceituna",
+    name: "Milanesa de soja rellena aceituna",
+    description: "Paquete de 2 unidades. Rellena con muzzarella y aceitunas verdes.",
+    price: 7200,
+    type: "unit",
+    unit_label: "paquete x2",
+    image:
+      "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/mila%20varias%20vertical.png",
+    category: "comidas_listas_para_horno"
   }
 ]
 
-const BOX_ITEMS_BY_SLUG: Record<string, string[]> = {
-  "caja-veggie": [
-    "1 zapallo anco",
-    "papa negra 2 kg",
-    "cebolla 1 kg y 1/2",
-    "tomate 1/2 kg",
-    "zanahoria 1/2 kg",
-    "manzana 1/2 kg",
-    "cítricos 1 kg",
-    "banana 1 kg",
-    "mandarina 1/2 kg",
-    "palta 2 unidades",
-    "pera 1/2 kg",
-    "espinaca 2 atados",
-    "lechuga 1 planta"
-  ],
-  "caja_veggie": [
-    "1 zapallo anco",
-    "papa negra 2 kg",
-    "cebolla 1 kg y 1/2",
-    "tomate 1/2 kg",
-    "zanahoria 1/2 kg",
-    "manzana 1/2 kg",
-    "cítricos 1 kg",
-    "banana 1 kg",
-    "mandarina 1/2 kg",
-    "palta 2 unidades",
-    "pera 1/2 kg",
-    "espinaca 2 atados",
-    "lechuga 1 planta"
-  ],
-  "caja-campo": [
-    "1 zapallo anco",
-    "papa negra 2 kg",
-    "cebolla 1 kg y 1/2",
-    "tomate 1/2 kg",
-    "zanahoria 1/2 kg",
-    "manzana 1/2 kg",
-    "cítricos 1 kg",
-    "banana 1 kg",
-    "mandarina 1/2 kg",
-    "palta 2 unidades",
-    "pera 1/2 kg",
-    "lechuga 1 planta",
-    "espinaca 2 atados",
-    "30 huevos de campo",
-    "1 kg suprema de pollo congelado"
-  ],
-  "caja_campo": [
-    "1 zapallo anco",
-    "papa negra 2 kg",
-    "cebolla 1 kg y 1/2",
-    "tomate 1/2 kg",
-    "zanahoria 1/2 kg",
-    "manzana 1/2 kg",
-    "cítricos 1 kg",
-    "banana 1 kg",
-    "mandarina 1/2 kg",
-    "palta 2 unidades",
-    "pera 1/2 kg",
-    "lechuga 1 planta",
-    "espinaca 2 atados",
-    "30 huevos de campo",
-    "1 kg suprema de pollo congelado"
-  ],
-  "caja-granja": [
-    "1 zapallo anco",
-    "papa negra 2 kg",
-    "cebolla 1 kg y 1/2",
-    "tomate 1/2 kg",
-    "zanahoria 1/2 kg",
-    "manzana 1/2 kg",
-    "cítricos 1 kg",
-    "banana 1 kg",
-    "mandarina 1/2 kg",
-    "palta 2 unidades",
-    "pera 1/2 kg",
-    "lechuga 1 planta",
-    "espinaca 2 atados",
-    "30 huevos de campo",
-    "1 kg suprema de pollo congelado",
-    "1/2 kg de miel pura",
-    "1 pan de campo grande"
-  ],
-  "caja_granja": [
-    "1 zapallo anco",
-    "papa negra 2 kg",
-    "cebolla 1 kg y 1/2",
-    "tomate 1/2 kg",
-    "zanahoria 1/2 kg",
-    "manzana 1/2 kg",
-    "cítricos 1 kg",
-    "banana 1 kg",
-    "mandarina 1/2 kg",
-    "palta 2 unidades",
-    "pera 1/2 kg",
-    "lechuga 1 planta",
-    "espinaca 2 atados",
-    "30 huevos de campo",
-    "1 kg suprema de pollo congelado",
-    "1/2 kg de miel pura",
-    "1 pan de campo grande"
-  ]
-}
+function mergeProductWithFallback(product: Product): Product {
+  const fallback = FALLBACK_PRODUCTS.find((item) => {
+    return (
+      item.id === product.id ||
+      item.slug === product.slug ||
+      item.name.toLowerCase() === product.name.toLowerCase()
+    )
+  })
 
-const BOX_ITEMS_BY_NAME: Record<string, string[]> = {
-  "caja veggie": BOX_ITEMS_BY_SLUG["caja-veggie"],
-  "caja campo": BOX_ITEMS_BY_SLUG["caja-campo"],
-  "caja granja": BOX_ITEMS_BY_SLUG["caja-granja"]
-}
-
-function normalizeSlug(value: unknown) {
-  return String(value || "")
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[_\s]+/g, "-")
-}
-
-function normalizeName(value: unknown) {
-  return String(value || "")
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, " ")
-}
-
-function parseBoxItems(value: unknown): string[] | undefined {
-  if (Array.isArray(value)) {
-    return value.map((item) => String(item)).filter(Boolean)
+  return {
+    ...fallback,
+    ...product,
+    id: product.slug || product.id || fallback?.id || product.name,
+    image: product.image || fallback?.image || "",
+    description: product.description || fallback?.description || "",
+    category: product.category || fallback?.category || "otros",
+    type: product.type || fallback?.type || "unit",
+    unit_label: product.unit_label || fallback?.unit_label,
+    boxItems: product.boxItems || fallback?.boxItems
   }
-
-  if (typeof value === "string") {
-    const trimmed = value.trim()
-
-    if (!trimmed) return undefined
-
-    try {
-      const parsed = JSON.parse(trimmed)
-
-      if (Array.isArray(parsed)) {
-        return parsed.map((item) => String(item)).filter(Boolean)
-      }
-    } catch {
-      return trimmed
-        .split(/\n|,/)
-        .map((item) => item.trim())
-        .filter(Boolean)
-    }
-  }
-
-  return undefined
 }
 
 function normalizeProduct(product: any): Product {
-  const rawSlug = String(product.slug || product.id || "")
-  const normalizedSlug = normalizeSlug(rawSlug)
-  const normalizedName = normalizeName(product.name || product.product_name)
-  const category = product.category || "otros"
-
-  const directBoxItems =
-    parseBoxItems(product.boxItems) ||
-    parseBoxItems(product.box_items) ||
-    parseBoxItems(product.items) ||
-    parseBoxItems(product.includes)
-
-  const fallbackBoxItems =
-    BOX_ITEMS_BY_SLUG[rawSlug] ||
-    BOX_ITEMS_BY_SLUG[normalizedSlug] ||
-    BOX_ITEMS_BY_NAME[normalizedName]
-
-  return {
+  const normalizedProduct: Product = {
     id: String(product.slug || product.id || product.name),
     slug: product.slug,
     name: String(product.name || product.product_name || "Producto"),
@@ -302,10 +574,12 @@ function normalizeProduct(product: any): Product {
     type: product.type || "unit",
     unit_label: product.unit_label,
     image: product.image || "",
-    category,
+    category: product.category || "otros",
     description: product.description || "",
-    boxItems: directBoxItems || fallbackBoxItems || undefined
+    boxItems: product.boxItems || product.box_items || undefined
   }
+
+  return mergeProductWithFallback(normalizedProduct)
 }
 
 function categoryLabel(category: string) {
@@ -813,3 +1087,4 @@ export default function CartMobileStickyTest({
     </div>
   )
 }
+
