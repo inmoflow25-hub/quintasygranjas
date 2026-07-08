@@ -121,7 +121,179 @@ const FALLBACK_PRODUCTS: Product[] = [
   }
 ]
 
+const BOX_ITEMS_BY_SLUG: Record<string, string[]> = {
+  "caja-veggie": [
+    "1 zapallo anco",
+    "papa negra 2 kg",
+    "cebolla 1 kg y 1/2",
+    "tomate 1/2 kg",
+    "zanahoria 1/2 kg",
+    "manzana 1/2 kg",
+    "cítricos 1 kg",
+    "banana 1 kg",
+    "mandarina 1/2 kg",
+    "palta 2 unidades",
+    "pera 1/2 kg",
+    "espinaca 2 atados",
+    "lechuga 1 planta"
+  ],
+  "caja_veggie": [
+    "1 zapallo anco",
+    "papa negra 2 kg",
+    "cebolla 1 kg y 1/2",
+    "tomate 1/2 kg",
+    "zanahoria 1/2 kg",
+    "manzana 1/2 kg",
+    "cítricos 1 kg",
+    "banana 1 kg",
+    "mandarina 1/2 kg",
+    "palta 2 unidades",
+    "pera 1/2 kg",
+    "espinaca 2 atados",
+    "lechuga 1 planta"
+  ],
+  "caja-campo": [
+    "1 zapallo anco",
+    "papa negra 2 kg",
+    "cebolla 1 kg y 1/2",
+    "tomate 1/2 kg",
+    "zanahoria 1/2 kg",
+    "manzana 1/2 kg",
+    "cítricos 1 kg",
+    "banana 1 kg",
+    "mandarina 1/2 kg",
+    "palta 2 unidades",
+    "pera 1/2 kg",
+    "lechuga 1 planta",
+    "espinaca 2 atados",
+    "30 huevos de campo",
+    "1 kg suprema de pollo congelado"
+  ],
+  "caja_campo": [
+    "1 zapallo anco",
+    "papa negra 2 kg",
+    "cebolla 1 kg y 1/2",
+    "tomate 1/2 kg",
+    "zanahoria 1/2 kg",
+    "manzana 1/2 kg",
+    "cítricos 1 kg",
+    "banana 1 kg",
+    "mandarina 1/2 kg",
+    "palta 2 unidades",
+    "pera 1/2 kg",
+    "lechuga 1 planta",
+    "espinaca 2 atados",
+    "30 huevos de campo",
+    "1 kg suprema de pollo congelado"
+  ],
+  "caja-granja": [
+    "1 zapallo anco",
+    "papa negra 2 kg",
+    "cebolla 1 kg y 1/2",
+    "tomate 1/2 kg",
+    "zanahoria 1/2 kg",
+    "manzana 1/2 kg",
+    "cítricos 1 kg",
+    "banana 1 kg",
+    "mandarina 1/2 kg",
+    "palta 2 unidades",
+    "pera 1/2 kg",
+    "lechuga 1 planta",
+    "espinaca 2 atados",
+    "30 huevos de campo",
+    "1 kg suprema de pollo congelado",
+    "1/2 kg de miel pura",
+    "1 pan de campo grande"
+  ],
+  "caja_granja": [
+    "1 zapallo anco",
+    "papa negra 2 kg",
+    "cebolla 1 kg y 1/2",
+    "tomate 1/2 kg",
+    "zanahoria 1/2 kg",
+    "manzana 1/2 kg",
+    "cítricos 1 kg",
+    "banana 1 kg",
+    "mandarina 1/2 kg",
+    "palta 2 unidades",
+    "pera 1/2 kg",
+    "lechuga 1 planta",
+    "espinaca 2 atados",
+    "30 huevos de campo",
+    "1 kg suprema de pollo congelado",
+    "1/2 kg de miel pura",
+    "1 pan de campo grande"
+  ]
+}
+
+const BOX_ITEMS_BY_NAME: Record<string, string[]> = {
+  "caja veggie": BOX_ITEMS_BY_SLUG["caja-veggie"],
+  "caja campo": BOX_ITEMS_BY_SLUG["caja-campo"],
+  "caja granja": BOX_ITEMS_BY_SLUG["caja-granja"]
+}
+
+function normalizeSlug(value: unknown) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[_\s]+/g, "-")
+}
+
+function normalizeName(value: unknown) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+}
+
+function parseBoxItems(value: unknown): string[] | undefined {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item)).filter(Boolean)
+  }
+
+  if (typeof value === "string") {
+    const trimmed = value.trim()
+
+    if (!trimmed) return undefined
+
+    try {
+      const parsed = JSON.parse(trimmed)
+
+      if (Array.isArray(parsed)) {
+        return parsed.map((item) => String(item)).filter(Boolean)
+      }
+    } catch {
+      return trimmed
+        .split(/\n|,/)
+        .map((item) => item.trim())
+        .filter(Boolean)
+    }
+  }
+
+  return undefined
+}
+
 function normalizeProduct(product: any): Product {
+  const rawSlug = String(product.slug || product.id || "")
+  const normalizedSlug = normalizeSlug(rawSlug)
+  const normalizedName = normalizeName(product.name || product.product_name)
+  const category = product.category || "otros"
+
+  const directBoxItems =
+    parseBoxItems(product.boxItems) ||
+    parseBoxItems(product.box_items) ||
+    parseBoxItems(product.items) ||
+    parseBoxItems(product.includes)
+
+  const fallbackBoxItems =
+    BOX_ITEMS_BY_SLUG[rawSlug] ||
+    BOX_ITEMS_BY_SLUG[normalizedSlug] ||
+    BOX_ITEMS_BY_NAME[normalizedName]
+
   return {
     id: String(product.slug || product.id || product.name),
     slug: product.slug,
@@ -130,9 +302,9 @@ function normalizeProduct(product: any): Product {
     type: product.type || "unit",
     unit_label: product.unit_label,
     image: product.image || "",
-    category: product.category || "otros",
+    category,
     description: product.description || "",
-    boxItems: product.boxItems || product.box_items || undefined
+    boxItems: directBoxItems || fallbackBoxItems || undefined
   }
 }
 
@@ -364,19 +536,19 @@ export default function CartMobileStickyTest({
         </p>
       )}
 
-    {/* CATEGORÍAS MOBILE + DESKTOP */}
-<div className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-3 md:flex md:overflow-x-auto">
-  {categories.map((cat) => (
-    <button
-      key={cat}
-      type="button"
-      onClick={() => scrollToCategory(cat)}
-      className="rounded-full bg-gray-200 px-3 py-2 text-center text-sm font-medium leading-tight text-black transition hover:bg-green-600 hover:text-white md:whitespace-nowrap md:px-4 md:py-1"
-    >
-      {categoryLabel(cat)}
-    </button>
-  ))}
-</div>
+      {/* CATEGORÍAS MOBILE + DESKTOP */}
+      <div className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-3 md:flex md:overflow-x-auto">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            type="button"
+            onClick={() => scrollToCategory(cat)}
+            className="rounded-full bg-gray-200 px-3 py-2 text-center text-sm font-medium leading-tight text-black transition hover:bg-green-600 hover:text-white md:whitespace-nowrap md:px-4 md:py-1"
+          >
+            {categoryLabel(cat)}
+          </button>
+        ))}
+      </div>
 
       {/* LAYOUT */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -400,6 +572,7 @@ export default function CartMobileStickyTest({
                     const quantity = getQuantity(p.id)
                     const isBox = p.category === "cajas_armadas"
                     const isExpanded = expandedBoxId === p.id
+                    const boxItems = p.boxItems || []
 
                     return (
                       <div
@@ -440,17 +613,23 @@ export default function CartMobileStickyTest({
                           </button>
                         )}
 
-                        {isBox && isExpanded && p.boxItems && (
+                        {isBox && isExpanded && (
                           <div className="mb-3 rounded-xl bg-white p-4 shadow-lg border border-gray-300">
                             <p className="text-sm font-bold mb-3">
                               Esta caja trae:
                             </p>
 
-                            <ul className="text-sm text-gray-700 space-y-2 leading-6">
-                              {p.boxItems.map((item, index) => (
-                                <li key={`${p.id}-item-${index}`}>• {item}</li>
-                              ))}
-                            </ul>
+                            {boxItems.length > 0 ? (
+                              <ul className="text-sm text-gray-700 space-y-2 leading-6">
+                                {boxItems.map((item, index) => (
+                                  <li key={`${p.id}-item-${index}`}>• {item}</li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="text-sm text-gray-600">
+                                No hay detalle cargado para esta caja.
+                              </p>
+                            )}
                           </div>
                         )}
 
