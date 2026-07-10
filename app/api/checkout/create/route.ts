@@ -28,6 +28,16 @@ type PreviousOrderRow = {
   is_test: boolean | null
 }
 
+type AppContext = "web" | "pwa"
+
+type RedemptionQuote = {
+  points_requested: number
+  raw_discount: number
+  max_allowed_discount: number
+  applied_discount: number
+  points_needed_for_applied_discount: number
+}
+
 function normalizeMoney(value: unknown) {
   const numberValue = Number(value || 0)
 
@@ -36,6 +46,20 @@ function normalizeMoney(value: unknown) {
   }
 
   return Math.round(numberValue)
+}
+
+function normalizePoints(value: unknown) {
+  const numberValue = Number(value || 0)
+
+  if (!Number.isFinite(numberValue) || numberValue < 0) {
+    return 0
+  }
+
+  return Math.floor(numberValue)
+}
+
+function normalizeAppContext(value: unknown): AppContext {
+  return value === "pwa" ? "pwa" : "web"
 }
 
 function normalizeEmail(email: string | null | undefined) {
@@ -186,6 +210,77 @@ function getIndividualDiscount({
     benefitStatus: "none",
     loyaltyDiscountPercent: 0
   }
+}
+
+async function getAvailablePoints(userId: string) {
+  const { data, error } = await supabase
+    .from("user_points_app_summary")
+    .select("available_points")
+    .eq("user_id", userId)
+    .maybeSingle()
+
+  if (error) {
+    console.error("available points lookup error", error)
+    throw new Error("No se pudieron consultar los puntos disponibles")
+  }
+
+  return Number(data?.available_points || 0)
+}
+
+async function calculateRedemptionQuote({
+  pointsToSpend,
+  subtotal
+}: {
+  pointsToSpend: number
+  subtotal: number
+}): Promise<RedemptionQuote> {
+  if (pointsToSpend <= 0) {
+    return {
+      points_requested: 0,
+      raw_discount: 0,
+      max_allowed_discount: 0,
+      applied_discount: 0,
+      points_needed_for_applied_discount: 0
+    }
+  }
+
+  const { data, error } = await supabase.rpc(
+    "calculate_points_redemption_discount",
+    {
+      p_points_to_spend: pointsToSpend,
+      p_subtotal: subtotal
+    }
+  )
+
+  if (error) {
+    console.error("redemption quote error", error)
+    throw new Error("No se pudo calcular el descuento por puntos")
+  }
+
+  const quote = Array.isArray(data) ? data[0] : data
+
+  return {
+    points_requested: Number(quote?.points_requested || 0),
+    raw_discount: Number(quote?.raw_discount || 0),
+    max_allowed_discount: Number(quote?.max_allowed_discount || 0),
+    applied_discount: Number(quote?.applied_discount || 0),
+    points_needed_for_applied_discount: Number(
+      quote?.points_needed_for_applied_discount || 0
+    )
+  }
+}
+
+async function processConfirmedOrderPoints(orderId: string) {
+  const { data, error } = await supabase.rpc("process_confirmed_order_points", {
+    p_order_id: orderId
+  })
+
+  if (error) {
+    console.error("process confirmed order points error", error)
+    throw new Error("No se pudieron procesar los puntos del pedido")
+  }
+
+  return data
 }
 
 function buildItemsSummary(
@@ -500,6 +595,10 @@ export async function POST(req: Request) {
       delivery_notes
     } = body
 
+    const appContext = normalizeAppContext(body.app_context)
+    const requestedPointsToSpend =
+      appContext === "pwa" ? normalizePoints(body.points_to_spend) : 0
+
     const propina = normalizeMoney(body.propina)
     const normalizedCustomerEmail = normalizeEmail(customer_email)
     const normalizedCustomerPhone = normalizeArgentinaPhone(customer_phone)
@@ -653,7 +752,59 @@ export async function POST(req: Request) {
         ? Math.round(subtotal * (loyaltyDiscountPercent / 100))
         : 0
 
-    const finalPrice = Math.max(0, subtotal - discountAmount + propina)
+    let availablePoints = 0
+    let pointsToSpend = 0
+    let rewardDiscountAmount = 0
+    let rewardDescription: string | null = null
+    let redemptionQuote: RedemptionQuote | null = null
+
+    if (appContext === "pwa" && requestedPointsToSpend > 0) {
+      availablePoints = await getAvailablePoints(userId)
+
+      if (availablePoints <= 0) {
+        return NextResponse.json(
+          { error: "No tenés puntos disponibles para usar" },
+          { status: 400 }
+        )
+      }
+
+      const pointsForQuote = Math.min(requestedPointsToSpend, availablePoints)
+
+      redemptionQuote = await calculateRedemptionQuote({
+        pointsToSpend: pointsForQuote,
+        subtotal
+      })
+
+      pointsToSpend = redemptionQuote.points_needed_for_applied_discount
+      rewardDiscountAmount = Math.round(redemptionQuote.applied_discount)
+
+      if (pointsToSpend > availablePoints) {
+        return NextResponse.json(
+          { error: "No tenés puntos suficientes para este canje" },
+          { status: 400 }
+        )
+      }
+
+      if (rewardDiscountAmount <= 0 || pointsToSpend <= 0) {
+        return NextResponse.json(
+          { error: "No se pudo aplicar descuento con puntos" },
+          { status: 400 }
+        )
+      }
+
+      rewardDescription = `Canje de ${pointsToSpend} puntos por ${formatMoney(
+        rewardDiscountAmount
+      )} de descuento`
+    }
+
+    const finalPrice = subtotal - discountAmount - rewardDiscountAmount + propina
+
+    if (finalPrice <= 0) {
+      return NextResponse.json(
+        { error: "No se permite confirmar un pedido gratis" },
+        { status: 400 }
+      )
+    }
 
     await supabase
       .from("profiles")
@@ -676,6 +827,9 @@ export async function POST(req: Request) {
       propina > 0 ? `Propina: ${formatMoney(propina)}` : "",
       discountPercent > 0
         ? `Descuento individual aplicado: ${discountPercent}% (${benefitStatus})`
+        : "",
+      rewardDiscountAmount > 0 && rewardDescription
+        ? `Puntos aplicados: ${rewardDescription}`
         : ""
     ]
       .filter(Boolean)
@@ -709,6 +863,8 @@ export async function POST(req: Request) {
         user_id: userId,
         box_id: source === "box" ? box_id : null,
         source,
+        app_context: appContext,
+
         status: initialStatus,
         payment_method,
         payment_status: initialPaymentStatus,
@@ -722,6 +878,10 @@ export async function POST(req: Request) {
         discount_amount: discountAmount,
         loyalty_discount_percent: loyaltyDiscountPercent,
         loyalty_discount_amount: loyaltyDiscountAmount,
+
+        reward_discount_amount: rewardDiscountAmount,
+        reward_description: rewardDescription,
+        points_spent: pointsToSpend,
 
         benefit_status: benefitStatus,
         propina,
@@ -747,9 +907,11 @@ export async function POST(req: Request) {
 
     const orderItems = normalizedItems.map((item) => ({
       order_id: order.id,
+      product_id: item.id || null,
       product_name: item.title,
       quantity: item.quantity,
-      price: item.unit_price
+      price: item.unit_price,
+      source_type: "product"
     }))
 
     const { error: itemsError } = await supabase
@@ -763,6 +925,23 @@ export async function POST(req: Request) {
         { error: "No se pudieron guardar los items" },
         { status: 500 }
       )
+    }
+
+    let pointsProcessingResult: any = null
+
+    if (initialStatus === "confirmed") {
+      try {
+        pointsProcessingResult = await processConfirmedOrderPoints(order.id)
+      } catch (error) {
+        console.error("points processing failed", error)
+
+        if (pointsToSpend > 0) {
+          return NextResponse.json(
+            { error: "No se pudo aplicar el canje de puntos" },
+            { status: 500 }
+          )
+        }
+      }
     }
 
     const { cyclePosition, cycleBenefitMessage } = buildCycleProgress({
@@ -819,18 +998,28 @@ export async function POST(req: Request) {
       })
     }
 
+    const baseResponse = {
+      ok: true,
+      order_id: order.id,
+      subtotal,
+      discount_percent: discountPercent,
+      discount_amount: discountAmount,
+      reward_discount_amount: rewardDiscountAmount,
+      reward_description: rewardDescription,
+      points_spent: pointsToSpend,
+      points_processing_result: pointsProcessingResult,
+      redemption_quote: redemptionQuote,
+      app_context: appContext,
+      propina,
+      final_price: finalPrice,
+      completed_purchases_before_order: completedPurchasesBeforeOrder,
+      cycle_position: cyclePosition,
+      cycle_benefit_message: cycleBenefitMessage
+    }
+
     if (payment_method === "cash" || payment_method === "mp_transfer") {
       return NextResponse.json({
-        ok: true,
-        order_id: order.id,
-        subtotal,
-        discount_percent: discountPercent,
-        discount_amount: discountAmount,
-        propina,
-        final_price: finalPrice,
-        completed_purchases_before_order: completedPurchasesBeforeOrder,
-        cycle_position: cyclePosition,
-        cycle_benefit_message: cycleBenefitMessage,
+        ...baseResponse,
         redirect_to: `/success?order_id=${order.id}&order_number=${order.order_number}&payment=${payment_method}`
       })
     }
@@ -877,16 +1066,7 @@ export async function POST(req: Request) {
       .eq("id", order.id)
 
     return NextResponse.json({
-      ok: true,
-      order_id: order.id,
-      subtotal,
-      discount_percent: discountPercent,
-      discount_amount: discountAmount,
-      propina,
-      final_price: finalPrice,
-      completed_purchases_before_order: completedPurchasesBeforeOrder,
-      cycle_position: cyclePosition,
-      cycle_benefit_message: cycleBenefitMessage,
+      ...baseResponse,
       init_point: result.init_point
     })
   } catch (error: any) {
