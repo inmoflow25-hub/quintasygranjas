@@ -295,14 +295,15 @@ function CheckoutContent() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          source,
-          box_id: boxId,
-          items,
-          payment_method: paymentMethod,
-          propina,
-          ...form
-        })
+      body: JSON.stringify({
+  source,
+  app_context: "web",
+  box_id: boxId,
+  items,
+  payment_method: paymentMethod,
+  propina,
+  ...form
+})
       })
 
       const data = await res.json()
