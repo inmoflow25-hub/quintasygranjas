@@ -634,10 +634,9 @@ export default function CartMobileStickyTest({
   const [repeatEmail, setRepeatEmail] = useState("")
   const [repeatLoading, setRepeatLoading] = useState(false)
 
-  const PRODUCTS = useMemo(() => {
-    if (dbProducts.length > 0) return dbProducts.map(normalizeProduct)
-    return FALLBACK_PRODUCTS
-  }, [dbProducts])
+ const PRODUCTS = useMemo(() => {
+  return dbProducts.map(normalizeProduct)
+}, [dbProducts])
 
   const categories = useMemo(() => {
     return Array.from(new Set(PRODUCTS.map((p) => p.category)))
