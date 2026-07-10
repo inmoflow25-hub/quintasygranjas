@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
+import InstallAppButton from "@/components/pwa/install-app-button"
 
 type Product = {
   id: string
