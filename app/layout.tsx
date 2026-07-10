@@ -1,8 +1,8 @@
-import type { Metadata } from 'next'
-import { Playfair_Display } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
+import type { Metadata, Viewport } from "next"
+import { Playfair_Display } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
 import Script from "next/script"
-import './globals.css'
+import "./globals.css"
 import "leaflet/dist/leaflet.css"
 
 const playfair = Playfair_Display({
@@ -10,19 +10,33 @@ const playfair = Playfair_Display({
   variable: "--font-playfair"
 })
 
-
 export const metadata: Metadata = {
-  title: 'Quintas y Granjas | Cajas semanales de frutas, verduras y productos de granja',
-  description: 'Recibí frutas, verduras y productos de granja frescos directo en tu casa todas las semanas. Sin supermercado. Sin filas. Entrega en zona norte del Gran Buenos Aires.',
-  generator: 'v0.app',
+  title:
+    "Quintas y Granjas | Cajas semanales de frutas, verduras y productos de granja",
+  description:
+    "Recibí frutas, verduras y productos de granja frescos directo en tu casa todas las semanas. Sin supermercado. Sin filas. Entrega en zona norte del Gran Buenos Aires.",
+  generator: "v0.app",
+  manifest: "/manifest.json",
   icons: {
     icon: "/favicon.png",
     apple: "/favicon.png"
   },
+  appleWebApp: {
+    capable: true,
+    title: "Quintas y Granjas",
+    statusBarStyle: "default"
+  }
+}
+
+export const viewport: Viewport = {
+  themeColor: "#15803d",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1
 }
 
 export default function RootLayout({
-  children,
+  children
 }: {
   children: React.ReactNode
 }) {
@@ -32,8 +46,7 @@ export default function RootLayout({
         className="antialiased"
         style={{ fontFamily: "var(--font-playfair)" }}
       >
-
-        {/* 🔥 META PIXEL */}
+        {/* META PIXEL */}
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
             !function(f,b,e,v,n,t,s)
@@ -55,14 +68,30 @@ export default function RootLayout({
             width="1"
             style={{ display: "none" }}
             src="https://www.facebook.com/tr?id=899097899619057&ev=PageView&noscript=1"
+            alt=""
           />
         </noscript>
 
-        {/* 🔥 MERCADOPAGO SDK */}
+        {/* MERCADOPAGO SDK */}
         <Script
           src="https://sdk.mercadopago.com/js/v2"
           strategy="beforeInteractive"
         />
+
+        {/* PWA SERVICE WORKER */}
+        <Script id="register-service-worker" strategy="afterInteractive">
+          {`
+            if ("serviceWorker" in navigator) {
+              window.addEventListener("load", function () {
+                navigator.serviceWorker
+                  .register("/sw.js")
+                  .catch(function (error) {
+                    console.error("Service worker registration failed:", error);
+                  });
+              });
+            }
+          `}
+        </Script>
 
         {children}
         <Analytics />
@@ -70,4 +99,3 @@ export default function RootLayout({
     </html>
   )
 }
-
