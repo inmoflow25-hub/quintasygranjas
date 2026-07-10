@@ -555,8 +555,17 @@ function mergeProductWithFallback(product: Product): Product {
   return {
     ...fallback,
     ...product,
-    id: product.id || product.slug || fallback?.id || product.name,
-    image: product.image || "",
+
+    // IMPORTANTE:
+    // El id real debe venir primero de DB.
+    // No pisarlo con slug porque después se usa para carrito / checkout.
+    id: product.id || fallback?.id || product.slug || product.name,
+
+    // IMPORTANTE:
+    // La imagen viene SOLO de Supabase/R2.
+    // No usamos fallback para imagen.
+    image: String(product.image || "").trim(),
+
     description: product.description || fallback?.description || "",
     category: product.category || fallback?.category || "otros",
     type: product.type || fallback?.type || "unit",
@@ -567,13 +576,20 @@ function mergeProductWithFallback(product: Product): Product {
 
 function normalizeProduct(product: any): Product {
   const normalizedProduct: Product = {
-    id: String(product.slug || product.id || product.name),
+    // IMPORTANTE:
+    // Primero id real de DB. Después slug solo como respaldo.
+    id: String(product.id || product.slug || product.name),
+
     slug: product.slug,
     name: String(product.name || product.product_name || "Producto"),
     price: Number(product.price || 0),
     type: product.type || "unit",
     unit_label: product.unit_label,
-    image: product.image || "",
+
+    // IMPORTANTE:
+    // Imagen directa de DB. Si está vacía, queda vacía.
+    image: String(product.image || "").trim(),
+
     category: product.category || "otros",
     description: product.description || "",
     boxItems: product.boxItems || product.box_items || undefined
