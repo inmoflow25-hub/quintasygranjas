@@ -555,8 +555,8 @@ function mergeProductWithFallback(product: Product): Product {
   return {
     ...fallback,
     ...product,
-    id: product.slug || product.id || fallback?.id || product.name,
-    image: product.image || fallback?.image || "",
+    id: product.id || product.slug || fallback?.id || product.name,
+    image: product.image || "",
     description: product.description || fallback?.description || "",
     category: product.category || fallback?.category || "otros",
     type: product.type || fallback?.type || "unit",
