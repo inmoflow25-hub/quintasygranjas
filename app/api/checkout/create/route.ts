@@ -62,6 +62,12 @@ function normalizeAppContext(value: unknown): AppContext {
   return value === "pwa" ? "pwa" : "web"
 }
 
+function isUuid(value: string | null | undefined) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    String(value || "")
+  )
+}
+
 function normalizeEmail(email: string | null | undefined) {
   return String(email || "").trim().toLowerCase()
 }
