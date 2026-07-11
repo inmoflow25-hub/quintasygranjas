@@ -911,14 +911,14 @@ export async function POST(req: Request) {
       )
     }
 
-    const orderItems = normalizedItems.map((item) => ({
-      order_id: order.id,
-      product_id: item.id || null,
-      product_name: item.title,
-      quantity: item.quantity,
-      price: item.unit_price,
-      source_type: "product"
-    }))
+   const orderItems = normalizedItems.map((item) => ({
+  order_id: order.id,
+  product_id: isUuid(item.id) ? item.id : null,
+  product_name: item.title,
+  quantity: item.quantity,
+  price: item.unit_price,
+  source_type: "product"
+}))
 
     const { error: itemsError } = await supabase
       .from("order_items")
