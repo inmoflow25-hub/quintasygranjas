@@ -165,7 +165,6 @@ export default function AppHomePage() {
   return (
     <main className="min-h-screen bg-green-50 px-4 py-6">
       <div className="mx-auto max-w-5xl space-y-6">
-        <InstallAppButton />
         <section className="rounded-3xl bg-white p-6 shadow">
           <p className="text-sm font-semibold text-green-700">
             Quintas y Granjas App
