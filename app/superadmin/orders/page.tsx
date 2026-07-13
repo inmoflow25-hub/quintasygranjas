@@ -73,6 +73,7 @@ export default async function SuperAdminOrdersPage() {
       user_id,
       created_at,
       source,
+      app_context,
       status,
       payment_method,
       payment_status,
