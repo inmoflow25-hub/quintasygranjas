@@ -212,7 +212,14 @@ export default async function SuperAdminOrdersPage() {
                       {formatItems(order.order_items)}
                     </td>
 
-                    <td className="px-4 py-4">{order.source || "-"}</td>
+                   <td className="px-4 py-4">
+  <div className="font-medium">
+    {order.app_context === "pwa" ? "App" : "Web"}
+  </div>
+  <div className="text-xs text-gray-500">
+    {order.source || "-"}
+  </div>
+</td>
 
                     <td className="px-4 py-4">
                       <div>{order.payment_method || "-"}</div>
