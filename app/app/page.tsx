@@ -47,7 +47,7 @@ function money(value: number) {
 
 export default function AppHomePage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
+
   
   const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
