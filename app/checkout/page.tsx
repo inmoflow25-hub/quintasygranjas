@@ -291,18 +291,24 @@ function CheckoutContent() {
     setLoading(true)
 
     try {
-      const res = await fetch("/api/checkout/create", {
+  const attribution = getStoredAttribution()
+
+  const res = await fetch("/api/checkout/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-      body: JSON.stringify({
+   body: JSON.stringify({
   source,
   app_context: "web",
   box_id: boxId,
   items,
   payment_method: paymentMethod,
   propina,
+  affiliate_slug: attribution.affiliate_slug,
+  campaign_source: attribution.campaign_source,
+  landing_path: attribution.landing_path,
+  attribution_label: attribution.attribution_label,
   ...form
 })
       })
