@@ -47,7 +47,8 @@ function money(value: number) {
 
 export default function AppHomePage() {
   const router = useRouter()
-
+  const searchParams = useSearchParams()
+  
   const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
   const [user, setUser] = useState<AppUser | null>(null)
@@ -60,19 +61,26 @@ export default function AppHomePage() {
     return cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
   }, [cart])
 
-  useEffect(() => {
-    const savedEmail = localStorage.getItem("qyg_app_email") || ""
-    const savedPhone = localStorage.getItem("qyg_app_phone") || ""
+ useEffect(() => {
+  const params = new URLSearchParams(window.location.search)
+  const affiliate = params.get("affiliate")
 
-    setEmail(savedEmail)
-    setPhone(savedPhone)
+  if (affiliate === "candela-baez") {
+    saveAttribution(CANDELA_ATTRIBUTION)
+  }
 
-    fetchProducts()
+  const savedEmail = localStorage.getItem("qyg_app_email") || ""
+  const savedPhone = localStorage.getItem("qyg_app_phone") || ""
 
-    if (savedEmail || savedPhone) {
-      identifyCustomer(savedEmail, savedPhone)
-    }
-  }, [])
+  setEmail(savedEmail)
+  setPhone(savedPhone)
+
+  fetchProducts()
+
+  if (savedEmail || savedPhone) {
+    identifyCustomer(savedEmail, savedPhone)
+  }
+}, [])
 
   async function fetchProducts() {
     const res = await fetch("/api/app/products")
