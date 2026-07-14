@@ -220,6 +220,14 @@ status,
           }))} />
         </Panel>
 
+        <Panel title="Ventas por proveniencia">
+  <List rows={Object.values(salesByAttribution).map((item: any) => ({
+    left: item.label,
+    sub: `${item.count} pedidos · descuento ${money(item.discount)}`,
+    right: money(item.total)
+  }))} />
+</Panel>
+        
         <Panel title="Pagos">
           <List rows={Object.values(salesByPayment).map((item: any) => ({
             left: item.method,
