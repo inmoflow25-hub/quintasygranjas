@@ -896,8 +896,11 @@ const affiliateDiscountAmount =
         : "",
       propina > 0 ? `Propina: ${formatMoney(propina)}` : "",
       discountPercent > 0
-        ? `Descuento individual aplicado: ${discountPercent}% (${benefitStatus})`
-        : "",
+  ? `Descuento aplicado: ${discountPercent}% (${benefitStatus})`
+  : "",
+attribution.affiliate_slug
+  ? `Proveniencia: ${attribution.attribution_label} (${attribution.affiliate_slug})`
+  : "",
       rewardDiscountAmount > 0 && rewardDescription
         ? `Puntos aplicados: ${rewardDescription}`
         : ""
@@ -932,8 +935,15 @@ const affiliateDiscountAmount =
       .insert({
         user_id: userId,
         box_id: source === "box" ? box_id : null,
-        source,
-        app_context: appContext,
+       source,
+app_context: appContext,
+
+affiliate_slug: attribution.affiliate_slug,
+campaign_source: attribution.campaign_source,
+landing_path: attribution.landing_path,
+attribution_label: attribution.attribution_label,
+affiliate_discount_percent: affiliateDiscountPercent,
+affiliate_discount_amount: affiliateDiscountAmount,
 
         status: initialStatus,
         payment_method,
@@ -952,7 +962,7 @@ const affiliateDiscountAmount =
         reward_discount_amount: rewardDiscountAmount,
         reward_description: rewardDescription,
         points_spent: pointsToSpend,
-
+        points_processed: isAffiliateOrder ? true : false,
         benefit_status: benefitStatus,
         propina,
 
