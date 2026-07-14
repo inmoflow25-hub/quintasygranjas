@@ -30,6 +30,14 @@ type PreviousOrderRow = {
 
 type AppContext = "web" | "pwa"
 
+type Attribution = {
+  affiliate_slug: string | null
+  campaign_source: string | null
+  landing_path: string | null
+  attribution_label: string | null
+  affiliate_discount_percent: number
+}
+
 type RedemptionQuote = {
   points_requested: number
   raw_discount: number
@@ -60,6 +68,38 @@ function normalizePoints(value: unknown) {
 
 function normalizeAppContext(value: unknown): AppContext {
   return value === "pwa" ? "pwa" : "web"
+}
+
+function normalizeText(value: unknown) {
+  return String(value || "").trim()
+}
+
+function normalizeSlug(value: unknown) {
+  return normalizeText(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9-_]/g, "")
+}
+
+function getAttribution(body: any): Attribution {
+  const affiliateSlug = normalizeSlug(body.affiliate_slug)
+
+  if (affiliateSlug === "candela-baez") {
+    return {
+      affiliate_slug: "candela-baez",
+      campaign_source: normalizeText(body.campaign_source) || "influencer",
+      landing_path: normalizeText(body.landing_path) || "/candela-baez",
+      attribution_label: normalizeText(body.attribution_label) || "Candela Báez",
+      affiliate_discount_percent: 10
+    }
+  }
+
+  return {
+    affiliate_slug: null,
+    campaign_source: normalizeText(body.campaign_source) || null,
+    landing_path: normalizeText(body.landing_path) || null,
+    attribution_label: normalizeText(body.attribution_label) || null,
+    affiliate_discount_percent: 0
+  }
 }
 
 function isUuid(value: string | null | undefined) {
