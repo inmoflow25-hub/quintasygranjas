@@ -133,22 +133,43 @@ status,
   const customers = Array.from(customersMap.values()).sort((a, b) => b.total - a.total)
   const repeatCustomers = customers.filter((c) => c.orders >= 2)
 
-  const salesBySource = confirmed.reduce((acc: Record<string, any>, order: any) => {
-    const source = order.source || "sin-source"
+const salesBySource = confirmed.reduce((acc: Record<string, any>, order: any) => {
+  const source = order.app_context === "pwa" ? "App" : "Web"
 
-    if (!acc[source]) {
-      acc[source] = {
-        source,
-        count: 0,
-        total: 0
-      }
+  if (!acc[source]) {
+    acc[source] = {
+      source,
+      count: 0,
+      total: 0
     }
+  }
 
-    acc[source].count += 1
-    acc[source].total += Number(order.price || 0)
+  acc[source].count += 1
+  acc[source].total += Number(order.price || 0)
 
-    return acc
-  }, {})
+  return acc
+}, {})
+
+const salesByAttribution = confirmed.reduce((acc: Record<string, any>, order: any) => {
+  const key = order.affiliate_slug || "sin-atribucion"
+  const label = order.attribution_label || "Sin atribución"
+
+  if (!acc[key]) {
+    acc[key] = {
+      key,
+      label,
+      count: 0,
+      total: 0,
+      discount: 0
+    }
+  }
+
+  acc[key].count += 1
+  acc[key].total += Number(order.price || 0)
+  acc[key].discount += Number(order.affiliate_discount_amount || 0)
+
+  return acc
+}, {})
 
   const salesByPayment = confirmed.reduce((acc: Record<string, any>, order: any) => {
     const method = order.payment_method || "sin-método"
