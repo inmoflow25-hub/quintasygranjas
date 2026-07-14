@@ -231,6 +231,14 @@ export default function AppHomePage() {
           </section>
         )}
 
+      {user && (
+  <PushPermissionCard
+    email={user.email || email}
+    phone={user.phone || phone}
+  />
+)}
+
+        
         <section className="flex gap-3">
           <button
             onClick={() => router.push("/app/orders")}
