@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { BOX_CATALOG } from "@/lib/boxes"
+import { getStoredAttribution } from "@/lib/attribution"
 
 type CheckoutItem = {
   id?: string
