@@ -368,7 +368,7 @@ useEffect(() => {
             ))}
           </div>
 
-          {points && (
+          {points && !isCandelaOrder && (
             <div className="mt-6 rounded-2xl bg-green-50 p-4">
               <p className="font-bold text-green-800">
                 {points.current_level_name}
