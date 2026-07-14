@@ -45,7 +45,9 @@ export default function AppCheckoutPage() {
   const [pointsNeeded, setPointsNeeded] = useState(0)
   const [paymentMethod, setPaymentMethod] = useState<"mercadopago" | "cash" | "mp_transfer">("mercadopago")
   const [loading, setLoading] = useState(false)
+  const [isCandelaOrder, setIsCandelaOrder] = useState(false)
 
+  
   const [form, setForm] = useState({
     customer_name: "",
     customer_email: "",
@@ -62,21 +64,29 @@ export default function AppCheckoutPage() {
     )
   }, [items])
 
-  const finalTotal = Math.max(subtotal - appliedDiscount, 1)
+  const candelaDiscount = isCandelaOrder ? Math.round(subtotal * 0.1) : 0
+const finalTotal = Math.max(subtotal - candelaDiscount - appliedDiscount, 1)
 
-  useEffect(() => {
-    const savedCart = localStorage.getItem("qyg_app_cart")
-    const parsedCart = savedCart ? JSON.parse(savedCart) : []
-    setItems(parsedCart)
+useEffect(() => {
+  const savedCart = localStorage.getItem("qyg_app_cart")
+  const parsedCart = savedCart ? JSON.parse(savedCart) : []
+  setItems(parsedCart)
 
-    const email = localStorage.getItem("qyg_app_email") || ""
-    const phone = localStorage.getItem("qyg_app_phone") || ""
+  const attribution = getStoredAttribution()
+  const candelaOrder = isCandelaAttribution(attribution)
+  setIsCandelaOrder(candelaOrder)
 
-    if (email || phone) {
-      loadUser(email, phone)
+  const email = localStorage.getItem("qyg_app_email") || ""
+  const phone = localStorage.getItem("qyg_app_phone") || ""
+
+  if (email || phone) {
+    loadUser(email, phone)
+
+    if (!candelaOrder) {
       loadPoints(email, phone)
     }
-  }, [])
+  }
+}, [])
 
   async function loadUser(email: string, phone: string) {
     const res = await fetch("/api/app/me", {
