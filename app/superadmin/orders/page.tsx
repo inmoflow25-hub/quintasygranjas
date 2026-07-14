@@ -218,13 +218,27 @@ status,
                       {formatItems(order.order_items)}
                     </td>
 
-                   <td className="px-4 py-4">
+    <td className="px-4 py-4">
   <div className="font-medium">
     {order.app_context === "pwa" ? "App" : "Web"}
   </div>
+
   <div className="text-xs text-gray-500">
     {order.source || "-"}
   </div>
+
+  {order.affiliate_slug && (
+    <div className="mt-2 rounded-full bg-green-100 px-2 py-1 text-xs font-bold text-green-800">
+      {order.attribution_label || order.affiliate_slug}
+    </div>
+  )}
+
+  {Number(order.affiliate_discount_percent || 0) > 0 && (
+    <div className="mt-1 text-xs font-semibold text-green-700">
+      {Number(order.affiliate_discount_percent || 0)}% off ·{" "}
+      {money(order.affiliate_discount_amount)}
+    </div>
+  )}
 </td>
 
                     <td className="px-4 py-4">
