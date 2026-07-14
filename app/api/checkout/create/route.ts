@@ -641,9 +641,14 @@ export async function POST(req: Request) {
       delivery_notes
     } = body
 
-    const appContext = normalizeAppContext(body.app_context)
-    const requestedPointsToSpend =
-      appContext === "pwa" ? normalizePoints(body.points_to_spend) : 0
+   const appContext = normalizeAppContext(body.app_context)
+const attribution = getAttribution(body)
+const isAffiliateOrder = Boolean(attribution.affiliate_slug)
+
+const requestedPointsToSpend =
+  appContext === "pwa" && !isAffiliateOrder
+    ? normalizePoints(body.points_to_spend)
+    : 0
 
     const propina = normalizeMoney(body.propina)
     const normalizedCustomerEmail = normalizeEmail(customer_email)
