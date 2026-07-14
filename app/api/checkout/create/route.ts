@@ -788,20 +788,39 @@ const requestedPointsToSpend =
       phone: normalizedCustomerPhone
     })
 
-    const {
-      discountPercent,
-      benefitStatus,
-      loyaltyDiscountPercent
-    } = getIndividualDiscount({
-      completedPurchases: completedPurchasesBeforeOrder
-    })
+   const individualDiscount = getIndividualDiscount({
+  completedPurchases: completedPurchasesBeforeOrder
+})
 
-    const discountAmount = Math.round(subtotal * (discountPercent / 100))
+const affiliateDiscountPercent = attribution.affiliate_discount_percent
 
-    const loyaltyDiscountAmount =
-      loyaltyDiscountPercent > 0
-        ? Math.round(subtotal * (loyaltyDiscountPercent / 100))
-        : 0
+const discountPercent = Math.max(
+  individualDiscount.discountPercent,
+  affiliateDiscountPercent
+)
+
+const benefitStatus =
+  affiliateDiscountPercent > individualDiscount.discountPercent
+    ? `affiliate_${attribution.affiliate_slug}`
+    : individualDiscount.benefitStatus
+
+const loyaltyDiscountPercent =
+  individualDiscount.loyaltyDiscountPercent > 0 &&
+  individualDiscount.discountPercent >= affiliateDiscountPercent
+    ? individualDiscount.loyaltyDiscountPercent
+    : 0
+
+const discountAmount = Math.round(subtotal * (discountPercent / 100))
+
+const loyaltyDiscountAmount =
+  loyaltyDiscountPercent > 0
+    ? Math.round(subtotal * (loyaltyDiscountPercent / 100))
+    : 0
+
+const affiliateDiscountAmount =
+  affiliateDiscountPercent > 0
+    ? Math.round(subtotal * (affiliateDiscountPercent / 100))
+    : 0
 
     let availablePoints = 0
     let pointsToSpend = 0
