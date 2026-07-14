@@ -188,19 +188,25 @@ useEffect(() => {
 
     setLoading(true)
 
-    try {
-      const res = await fetch("/api/checkout/create", {
+   try {
+  const attribution = getStoredAttribution()
+
+  const res = await fetch("/api/checkout/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          source: "cart",
-          app_context: "pwa",
-          items,
-          payment_method: paymentMethod,
-          propina: 0,
-          points_to_spend: pointsNeeded,
-          ...form
-        })
+       body: JSON.stringify({
+  source: "cart",
+  app_context: "pwa",
+  items,
+  payment_method: paymentMethod,
+  propina: 0,
+  points_to_spend: isCandelaOrder ? 0 : pointsNeeded,
+  affiliate_slug: attribution.affiliate_slug,
+  campaign_source: attribution.campaign_source,
+  landing_path: attribution.landing_path,
+  attribution_label: attribution.attribution_label,
+  ...form
+})
       })
 
       const data = await res.json()
