@@ -408,7 +408,11 @@ useEffect(() => {
 
           <div className="mt-6 space-y-3 border-t pt-4">
             <Row label="Subtotal" value={money(subtotal)} />
+            {candelaDiscount > 0 && (
+  <Row label="Beneficio Candela" value={`-${money(candelaDiscount)}`} />
+)}
 
+            
             {appliedDiscount > 0 && (
               <Row label="Puntos" value={`-${money(appliedDiscount)}`} />
             )}
