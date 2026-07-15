@@ -12,40 +12,34 @@ export function Header({
   ctaLabel = "Pedí ahora"
 }: HeaderProps) {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <a href="/" className="flex items-center gap-3">
-          <div className="w-10 h-10 flex items-center justify-center">
-            <img
-              src="/logho quintas nuevo.svg"
-              alt="Quintas y Granjas"
-              className="h-8 w-auto"
-            />
-          </div>
-
-          <span className="text-xl font-bold text-foreground tracking-tight">
-            Quintas y Granjas
-          </span>
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-[#e8e1d6] bg-[#fff8f0]/95 backdrop-blur-sm">
+      <div className="container mx-auto flex h-20 items-center justify-between px-4">
+        <a href="/" className="flex items-center">
+          <img
+            src="/brand/qyg-logo.svg"
+            alt="Quintas y Granjas"
+            className="h-14 w-auto"
+          />
         </a>
 
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden items-center gap-8 md:flex">
           <a
             href={tiendaHref}
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="text-sm font-semibold text-[#12351f] transition-colors hover:text-[#1f7a3a]"
           >
             Tienda
           </a>
 
           <a
             href={zonasHref}
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="text-sm font-semibold text-[#12351f] transition-colors hover:text-[#1f7a3a]"
           >
             Zonas de entrega
           </a>
 
           <a
             href={ctaHref}
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="rounded-full bg-[#12351f] px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#1f7a3a]"
           >
             {ctaLabel}
           </a>
@@ -54,4 +48,3 @@ export function Header({
     </header>
   )
 }
-
