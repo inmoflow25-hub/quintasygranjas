@@ -19,6 +19,7 @@ type OrderRow = {
   customer_name: string | null
   customer_email: string | null
   customer_phone: string | null
+  delivery_city: string | null
   is_test: boolean | null
 }
 
@@ -62,6 +63,19 @@ function normalizeArgentinaPhone(rawPhone: string | null | undefined) {
   return `+54${phone}`
 }
 
+function normalizeText(value: string | null | undefined) {
+  return String(value || "").trim()
+}
+
+function slugifyTagPart(value: string | null | undefined) {
+  return normalizeText(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+}
+
 function getBuyerKey(order: OrderRow) {
   const phone = normalizeArgentinaPhone(order.customer_phone)
   const email = normalizeEmail(order.customer_email)
@@ -80,6 +94,12 @@ function getLoyaltyTag(totalOrders: number) {
   if (cyclePosition === 3) return "loyalty_3_de_4"
 
   return "loyalty_4_de_4"
+}
+
+function getBarrioTag(deliveryCity: string | null | undefined) {
+  const slug = slugifyTagPart(deliveryCity)
+  if (!slug) return null
+  return `barrio_${slug}`
 }
 
 async function upsertGhlContact({
@@ -147,6 +167,7 @@ export async function POST() {
         customer_name,
         customer_email,
         customer_phone,
+        delivery_city,
         is_test
       `)
       .eq("status", "confirmed")
@@ -161,13 +182,9 @@ export async function POST() {
       )
     }
 
-    const validOrders = (orders || []).filter((order: OrderRow) => {
-      if (order.payment_method === "mercadopago") {
-        return ["approved", "paid"].includes(String(order.payment_status || ""))
-      }
-
-      return true
-    })
+    // Ya NO filtramos por payment_status.
+    // Todo lo que esté confirmado en orders entra.
+    const validOrders = (orders || []) as OrderRow[]
 
     const buyers = new Map<string, {
       name: string
@@ -176,9 +193,10 @@ export async function POST() {
       totalOrders: number
       totalSpent: number
       lastOrderAt: string
+      deliveryCity: string
     }>()
 
-    for (const order of validOrders as OrderRow[]) {
+    for (const order of validOrders) {
       const key = getBuyerKey(order)
 
       if (!key) continue
@@ -186,17 +204,19 @@ export async function POST() {
       const phone = normalizeArgentinaPhone(order.customer_phone)
       const email = normalizeEmail(order.customer_email)
       const amount = Number(order.final_price || order.price || 0)
+      const deliveryCity = normalizeText(order.delivery_city)
 
       const existing = buyers.get(key)
 
       if (!existing) {
         buyers.set(key, {
-          name: String(order.customer_name || "").trim() || "Cliente",
+          name: normalizeText(order.customer_name) || "Cliente",
           email,
           phone,
           totalOrders: 1,
           totalSpent: amount,
-          lastOrderAt: order.created_at
+          lastOrderAt: order.created_at,
+          deliveryCity
         })
       } else {
         existing.totalOrders += 1
@@ -204,9 +224,10 @@ export async function POST() {
 
         if (new Date(order.created_at) > new Date(existing.lastOrderAt)) {
           existing.lastOrderAt = order.created_at
-          existing.name = String(order.customer_name || "").trim() || existing.name
+          existing.name = normalizeText(order.customer_name) || existing.name
           existing.email = email || existing.email
           existing.phone = phone || existing.phone
+          existing.deliveryCity = deliveryCity || existing.deliveryCity
         }
       }
     }
@@ -221,12 +242,19 @@ export async function POST() {
         getLoyaltyTag(buyer.totalOrders)
       ]
 
+      const barrioTag = getBarrioTag(buyer.deliveryCity)
+      if (barrioTag) {
+        tags.push(barrioTag)
+      }
+
+      const uniqueTags = [...new Set(tags)]
+
       try {
         await upsertGhlContact({
           name: buyer.name,
           email: buyer.email,
           phone: buyer.phone,
-          tags
+          tags: uniqueTags
         })
 
         synced += 1
@@ -258,3 +286,4 @@ export async function POST() {
     )
   }
 }
+
