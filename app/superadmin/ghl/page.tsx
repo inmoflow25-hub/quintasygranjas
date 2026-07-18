@@ -21,6 +21,9 @@ export default async function SuperAdminGhlPage() {
           <p>
             <strong>Loyalty:</strong> loyalty_1_de_4 · loyalty_2_de_4 · loyalty_3_de_4 · loyalty_4_de_4
           </p>
+          <p>
+            <strong>Barrios:</strong> barrio_{"{delivery_city_normalizado}"}
+          </p>
         </div>
       </div>
     </div>
