@@ -151,8 +151,6 @@ async function upsertGhlContact({
 
 export async function POST() {
   try {
-    await requireAdmin()
-
     const { data: orders, error } = await supabase
       .from("orders")
       .select(`
