@@ -508,6 +508,8 @@ async function syncConfirmedOrderToGhl({
     customer_name: customerName,
     customer_email: customerEmail,
     customer_phone: customerPhone,
+    delivery_address: deliveryAddress,
+    delivery_city: deliveryCity,
     value: Number(value || 0),
     price: Number(value || 0),
     source: source || "web_app",
