@@ -438,9 +438,7 @@ async function sendPostPurchaseTemplate({
     total_formatted: totalFormatted,
     payment_method_label: paymentMethodLabel,
     cycle_position: cyclePosition,
-    cycle_benefit_message: cycleBenefitMessage,
-    delivery_address: deliveryAddress,
-    delivery_city: deliveryCity
+    cycle_benefit_message: cycleBenefitMessage
   }
 
   try {
