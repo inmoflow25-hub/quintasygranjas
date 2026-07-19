@@ -172,10 +172,6 @@ function isValidConfirmedOrder(order: PreviousOrderRow) {
   if (order.status !== "confirmed") return false
   if (order.is_test === true) return false
 
-  if (order.payment_method === "mercadopago") {
-    return ["approved", "paid"].includes(String(order.payment_status || ""))
-  }
-
   return true
 }
 
