@@ -11,19 +11,19 @@ export default function BrandingPruebaPage() {
       className={`${mali.className} min-h-screen bg-[#fff8f0] text-[#06150a]`}
     >
       <header className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
-        <a href="/branding-prueba" className="flex items-center gap-3">
-          <img
-            src="/brand/qyg-logo.svg"
-            alt="Quintas y Granjas"
-            className="h-16 w-auto"
-          />
+      <a href="/branding-prueba" className="flex items-center gap-3">
+  <img
+    src="/logho quintas nuevo.svg"
+    alt=""
+    className="h-10 w-10 object-contain"
+  />
 
-          <img
-            src="/logho quintas nuevo.svg"
-            alt=""
-            className="h-10 w-10 object-contain"
-          />
-        </a>
+  <img
+    src="/brand/qyg-logo.svg"
+    alt="Quintas y Granjas"
+    className="h-16 w-auto"
+  />
+</a>
 
         <nav className="hidden items-center gap-8 md:flex">
           <a
