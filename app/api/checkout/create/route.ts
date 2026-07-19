@@ -540,18 +540,30 @@ function normalizeMetaPhone(phone: string) {
   return String(phone || "").replace(/\D/g, "")
 }
 
+function normalizeMetaText(value: string) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+}
+
 async function sendPurchaseEventToMeta({
   orderId,
   userId,
+  customerName,
   customerEmail,
   customerPhone,
+  deliveryCity,
   value,
   source
 }: {
   orderId: string
   userId: string | null
+  customerName: string
   customerEmail: string
   customerPhone: string
+  deliveryCity: string
   value: number
   source: string
 }) {
@@ -572,6 +584,13 @@ async function sendPurchaseEventToMeta({
   const normalizedEmail = normalizeEmail(customerEmail)
   const normalizedPhone = normalizeMetaPhone(customerPhone)
 
+  const normalizedName = normalizeMetaText(customerName)
+  const nameParts = normalizedName.split(/\s+/).filter(Boolean)
+  const firstName = nameParts[0] || ""
+  const lastName = nameParts.slice(1).join(" ")
+
+  const normalizedCity = normalizeMetaText(deliveryCity)
+
   const payload: any = {
     data: [
       {
@@ -583,6 +602,10 @@ async function sendPurchaseEventToMeta({
         user_data: {
           em: normalizedEmail ? [sha256(normalizedEmail)] : [],
           ph: normalizedPhone ? [sha256(normalizedPhone)] : [],
+          fn: firstName ? [sha256(firstName)] : [],
+          ln: lastName ? [sha256(lastName)] : [],
+          ct: normalizedCity ? [sha256(normalizedCity)] : [],
+          country: [sha256("ar")],
           external_id: userId ? [sha256(String(userId))] : []
         },
         custom_data: {
@@ -1073,6 +1096,8 @@ affiliate_discount_amount: affiliateDiscountAmount,
         userId,
         customerEmail: normalizedCustomerEmail,
         customerPhone: normalizedCustomerPhone,
+        customerName: customer_name,
+        deliveryCity: delivery_city,
         value: finalPrice,
         source
       })
