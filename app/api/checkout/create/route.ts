@@ -466,6 +466,8 @@ async function syncConfirmedOrderToGhl({
   customerName,
   customerEmail,
   customerPhone,
+  deliveryAddress,
+  deliveryCity,
   value,
   source,
   status,
@@ -1074,34 +1076,36 @@ affiliate_discount_amount: affiliateDiscountAmount,
       })
     }
 
-    if (initialStatus === "confirmed") {
-      await syncConfirmedOrderToGhl({
-        orderId: order.id,
-        orderNumber: order.order_number || order.id,
-        userId,
-        customerName: customer_name,
-        customerEmail: normalizedCustomerEmail,
-        customerPhone: normalizedCustomerPhone,
-        value: finalPrice,
-        source,
-        status: initialStatus,
-        paymentStatus: initialPaymentStatus,
-        paymentMethod: payment_method,
-        boxId: source === "box" ? box_id : null,
-        createdAt: order.created_at
-      })
+   if (initialStatus === "confirmed") {
+  await syncConfirmedOrderToGhl({
+    orderId: order.id,
+    orderNumber: order.order_number || order.id,
+    userId,
+    customerName: customer_name,
+    customerEmail: normalizedCustomerEmail,
+    customerPhone: normalizedCustomerPhone,
+    deliveryAddress: delivery_address,
+    deliveryCity: delivery_city,
+    value: finalPrice,
+    source,
+    status: initialStatus,
+    paymentStatus: initialPaymentStatus,
+    paymentMethod: payment_method,
+    boxId: source === "box" ? box_id : null,
+    createdAt: order.created_at
+  })
 
-      await sendPurchaseEventToMeta({
-        orderId: order.id,
-        userId,
-        customerEmail: normalizedCustomerEmail,
-        customerPhone: normalizedCustomerPhone,
-        customerName: customer_name,
-        deliveryCity: delivery_city,
-        value: finalPrice,
-        source
-      })
-    }
+  await sendPurchaseEventToMeta({
+    orderId: order.id,
+    userId,
+    customerEmail: normalizedCustomerEmail,
+    customerPhone: normalizedCustomerPhone,
+    customerName: customer_name,
+    deliveryCity: delivery_city,
+    value: finalPrice,
+    source
+  })
+}
 
     const baseResponse = {
       ok: true,
