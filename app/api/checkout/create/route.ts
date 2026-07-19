@@ -431,6 +431,8 @@ async function sendPostPurchaseTemplate({
     customer_name: customerName,
     customer_email: customerEmail,
     customer_phone: customerPhone,
+    delivery_address: deliveryAddress,
+    delivery_city: deliveryCity,
     items_summary: itemsSummary,
     order_detail_message: itemsSummary,
     total_formatted: totalFormatted,
