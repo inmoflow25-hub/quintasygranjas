@@ -7,22 +7,36 @@ const mali = Mali({
 
 export default function BrandingPruebaPage() {
   return (
-    <main className={`${mali.className} min-h-screen bg-[#fff8f0] text-[#06150a]`}>
+    <main
+      className={`${mali.className} min-h-screen bg-[#fff8f0] text-[#06150a]`}
+    >
       <header className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
-        <a href="/branding-prueba" className="flex items-center gap-4">
+        <a href="/branding-prueba" className="flex items-center gap-3">
           <img
             src="/brand/qyg-logo.svg"
             alt="Quintas y Granjas"
             className="h-16 w-auto"
           />
+
+          <img
+            src="/logho quintas nuevo.svg"
+            alt=""
+            className="h-10 w-10 object-contain"
+          />
         </a>
 
         <nav className="hidden items-center gap-8 md:flex">
-          <a href="#productos" className="text-base font-semibold text-[#06150a]/75">
+          <a
+            href="#productos"
+            className="text-base font-semibold text-[#06150a]/75"
+          >
             Tienda
           </a>
 
-          <a href="#zonas" className="text-base font-semibold text-[#06150a]/75">
+          <a
+            href="#zonas"
+            className="text-base font-semibold text-[#06150a]/75"
+          >
             Zonas
           </a>
 
@@ -37,15 +51,7 @@ export default function BrandingPruebaPage() {
 
       <section className="mx-auto grid max-w-7xl gap-10 px-6 pb-20 pt-8 md:grid-cols-[1fr_0.9fr] md:items-center">
         <div>
-          <div className="mb-5 inline-flex items-center gap-3 rounded-full bg-[#e7f2df] px-4 py-2 text-base font-bold text-[#0f3d22]">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm">
-              <img
-                src="/logho quintas nuevo.svg"
-                alt=""
-                className="h-6 w-6 object-contain"
-              />
-            </span>
-
+          <div className="mb-5 inline-flex items-center rounded-full bg-[#e7f2df] px-6 py-3 text-base font-bold text-[#0f3d22]">
             <span>Fresco · simple · directo a tu casa</span>
           </div>
 
