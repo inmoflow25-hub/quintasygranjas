@@ -482,6 +482,8 @@ async function syncConfirmedOrderToGhl({
   customerName: string
   customerEmail: string
   customerPhone: string
+  deliveryAddress: string
+  deliveryCity: string
   value: number
   source: string
   status: string
