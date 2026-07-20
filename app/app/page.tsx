@@ -177,46 +177,10 @@ export default function AppHomePage() {
   return (
     <main className="min-h-screen bg-green-50 px-4 py-6">
       <div className="mx-auto max-w-5xl space-y-6">
-        <section className="rounded-3xl bg-white p-6 shadow">
-          <p className="text-sm font-semibold text-green-700">
-            Quintas y Granjas App
-          </p>
-
-          <h1 className="mt-1 text-3xl font-bold text-gray-900">
-            Hola{user?.name ? `, ${user.name.split(" ")[0]}` : ""}
-          </h1>
-
-          <p className="mt-2 text-gray-600">
-            Comprá más rápido, acumulá puntos y repetí tus pedidos.
-          </p>
-
-          {!user && (
-            <div className="mt-5 grid gap-3 md:grid-cols-3">
-              <input
-                className="rounded-xl border px-4 py-3"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-
-              <input
-                className="rounded-xl border px-4 py-3"
-                placeholder="WhatsApp"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-
-              <button
-                onClick={() => identifyCustomer()}
-                disabled={loading}
-                className="rounded-xl bg-green-700 px-4 py-3 font-semibold text-white disabled:opacity-60"
-              >
-                {loading ? "Buscando..." : "Entrar"}
-              </button>
-            </div>
-          )}
-        </section>
-
+     <AppRewardsHero
+  userName={user?.name}
+  points={points}
+/>
         {points && (
           <section className="grid gap-4 md:grid-cols-3">
             <div className="rounded-3xl bg-white p-5 shadow">
