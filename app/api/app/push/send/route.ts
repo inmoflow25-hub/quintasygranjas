@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import webPush from "web-push"
+import {
+  getPushTemplate,
+  type PushTemplateKey
+} from "@/lib/push-templates"
 
 export const runtime = "nodejs"
 
@@ -17,13 +21,59 @@ if (vapidPublicKey && vapidPrivateKey) {
   webPush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey)
 }
 
+function normalizeEmail(email: string | null | undefined) {
+  return String(email || "").trim().toLowerCase()
+}
+
+function normalizePhone(phone: string | null | undefined) {
+  return String(phone || "").replace(/\D/g, "")
+}
+
+async function findUserId({
+  email,
+  phone
+}: {
+  email: string
+  phone: string
+}) {
+  if (email) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("email", email)
+      .maybeSingle()
+
+    if (data?.id) return data.id
+  }
+
+  if (phone) {
+    const possiblePhones = [
+      phone,
+      `+54${phone}`,
+      `+549${phone}`,
+      phone.startsWith("11") ? `+549${phone}` : phone
+    ]
+
+    const { data } = await supabase
+      .from("profiles")
+      .select("id")
+      .in("phone", possiblePhones)
+      .maybeSingle()
+
+    if (data?.id) return data.id
+  }
+
+  return null
+}
+
 export async function POST(req: Request) {
   try {
     if (!vapidPublicKey || !vapidPrivateKey) {
       return NextResponse.json(
         {
           error: "Faltan variables VAPID",
-          detail: "Revisá NEXT_PUBLIC_VAPID_PUBLIC_KEY y VAPID_PRIVATE_KEY en Vercel."
+          detail:
+            "Revisá NEXT_PUBLIC_VAPID_PUBLIC_KEY y VAPID_PRIVATE_KEY en Vercel."
         },
         { status: 500 }
       )
@@ -31,35 +81,37 @@ export async function POST(req: Request) {
 
     const body = await req.json().catch(() => ({}))
 
-    const title = body.title || "Quintas y Granjas"
-    const message =
-      body.message || "Tenés novedades importantes en la app."
-    const url = body.url || "/app"
+    const type = String(body.type || "welcome") as PushTemplateKey
+    const email = normalizeEmail(body.email)
+    const phone = normalizePhone(body.phone)
 
-    const email = String(body.email || "").trim().toLowerCase()
-    const phone = String(body.phone || "").replace(/\D/g, "")
+    const deliveryWindow = String(body.deliveryWindow || "").trim()
+    const pointsValue = Number(body.pointsValue || 0)
 
-    let userId: string | null = null
+    const template = getPushTemplate(type, {
+      deliveryWindow,
+      pointsValue
+    })
 
-    if (email) {
-      const { data } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("email", email)
-        .maybeSingle()
-
-      userId = data?.id || null
+    if (!template) {
+      return NextResponse.json(
+        {
+          error: "Tipo de push inválido",
+          allowed_types: [
+            "welcome",
+            "order_confirmed",
+            "order_on_the_way",
+            "order_delivered",
+            "points_expiring",
+            "abandoned_cart",
+            "weekly_reorder"
+          ]
+        },
+        { status: 400 }
+      )
     }
 
-    if (!userId && phone) {
-      const { data } = await supabase
-        .from("profiles")
-        .select("id")
-        .or(`phone.eq.${phone},phone.eq.+54${phone},phone.eq.+549${phone}`)
-        .maybeSingle()
-
-      userId = data?.id || null
-    }
+    const userId = await findUserId({ email, phone })
 
     let query = supabase
       .from("push_subscriptions")
@@ -85,21 +137,18 @@ export async function POST(req: Request) {
     }
 
     if (!subscriptions?.length) {
-      return NextResponse.json(
-        {
-          ok: false,
-          sent: 0,
-          failed: 0,
-          message: "No hay suscripciones activas para enviar."
-        },
-        { status: 200 }
-      )
+      return NextResponse.json({
+        ok: false,
+        sent: 0,
+        failed: 0,
+        message: "No hay suscripciones activas para enviar."
+      })
     }
 
     const payload = JSON.stringify({
-      title,
-      body: message,
-      url
+      title: body.title || template.title,
+      body: body.message || template.message,
+      url: body.url || template.url
     })
 
     let sent = 0
@@ -153,9 +202,11 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       ok: true,
+      type,
       sent,
       failed,
       total: subscriptions.length,
+      template,
       results
     })
   } catch (error: any) {
