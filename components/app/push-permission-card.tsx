@@ -85,15 +85,23 @@ export default function PushPermissionCard({
         return
       }
 
-      const registration = await Promise.race([
-        navigator.serviceWorker.ready,
-        new Promise<never>((_, reject) =>
-          setTimeout(
-            () => reject(new Error("El service worker no quedó listo. Probá recargar la app.")),
-            10000
-          )
-        )
-      ])
+     let registration = await navigator.serviceWorker.getRegistration("/")
+
+if (!registration) {
+  registration = await navigator.serviceWorker.register("/sw.js", {
+    scope: "/"
+  })
+}
+
+await registration.update()
+
+if (!registration.active) {
+  await new Promise((resolve) => setTimeout(resolve, 1500))
+}
+
+if (!registration.active) {
+  throw new Error("No se pudo activar el sistema de avisos. Cerrá y abrí la app una vez más.")
+}
 
       const existingSubscription =
         await registration.pushManager.getSubscription()
