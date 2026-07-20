@@ -127,9 +127,14 @@ if (!registration.active) {
 
       const result = await response.json().catch(() => null)
 
-      if (!response.ok) {
-        throw new Error(result?.error || `No se pudo guardar la suscripción. Status ${response.status}`)
-      }
+     if (!response.ok) {
+  throw new Error(
+    result?.detail ||
+      result?.hint ||
+      result?.error ||
+      `No se pudo guardar la suscripción. Status ${response.status}`
+  )
+}
 
       setMessage("Listo. Notificaciones activadas y guardadas.")
     } catch (error: any) {
