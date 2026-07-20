@@ -120,24 +120,29 @@ export async function POST(req: Request) {
 
     const userAgent = req.headers.get("user-agent") || ""
 
-    const { data, error } = await supabase
-      .from("push_subscriptions")
-      .upsert(
-        {
-          user_id: userId,
-          endpoint: subscription.endpoint,
-          p256dh,
-          auth,
-          user_agent: userAgent,
-          is_active: true,
-          last_seen_at: new Date().toISOString()
-        },
-        {
-          onConflict: "endpoint"
-        }
-      )
-      .select("id")
-      .single()
+  const now = new Date().toISOString()
+
+const { data, error } = await supabase
+  .from("push_subscriptions")
+  .upsert(
+    {
+      user_id: userId,
+      endpoint: subscription.endpoint,
+      p256dh,
+      auth,
+      user_agent: userAgent,
+      app_context: "qyg_app",
+      permission_status: "granted",
+      active: true,
+      last_seen_at: now,
+      updated_at: now
+    },
+    {
+      onConflict: "endpoint"
+    }
+  )
+  .select("id")
+  .single()
     
 if (error) {
   console.error("push subscribe upsert error", error)
