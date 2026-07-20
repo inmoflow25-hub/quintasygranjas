@@ -181,30 +181,7 @@ export default function AppHomePage() {
   userName={user?.name}
   points={points}
 />
-        {points && (
-          <section className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-3xl bg-white p-5 shadow">
-              <p className="text-sm text-gray-500">Tus puntos</p>
-              <p className="mt-1 text-3xl font-bold text-green-700">
-                {points.available_points}
-              </p>
-            </div>
-
-            <div className="rounded-3xl bg-white p-5 shadow">
-              <p className="text-sm text-gray-500">Valor disponible</p>
-              <p className="mt-1 text-3xl font-bold text-green-700">
-                {money(points.available_discount_value)}
-              </p>
-            </div>
-
-            <div className="rounded-3xl bg-white p-5 shadow">
-              <p className="text-sm text-gray-500">Nivel</p>
-              <p className="mt-1 text-xl font-bold text-green-700">
-                {points.current_level_name}
-              </p>
-            </div>
-          </section>
-        )}
+      
 
       {user && (
   <PushPermissionCard
