@@ -131,11 +131,10 @@ const { data, error } = await supabase
       p256dh,
       auth,
       user_agent: userAgent,
-      app_context: "qyg_app",
+      app_context: "pwa",
       permission_status: "granted",
       active: true,
-      last_seen_at: now,
-      updated_at: now
+      last_seen_at: now
     },
     {
       onConflict: "endpoint"
