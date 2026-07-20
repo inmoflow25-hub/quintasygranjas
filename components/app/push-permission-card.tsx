@@ -73,7 +73,7 @@ export default function PushPermissionCard({
       const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
 
       if (!vapidPublicKey) {
-        setMessage("Falta configurar la clave pública de notificaciones.")
+        setMessage("Falta configurar NEXT_PUBLIC_VAPID_PUBLIC_KEY.")
         return
       }
 
@@ -85,7 +85,15 @@ export default function PushPermissionCard({
         return
       }
 
-      const registration = await navigator.serviceWorker.ready
+      const registration = await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise<never>((_, reject) =>
+          setTimeout(
+            () => reject(new Error("El service worker no quedó listo. Probá recargar la app.")),
+            10000
+          )
+        )
+      ])
 
       const existingSubscription =
         await registration.pushManager.getSubscription()
@@ -112,10 +120,10 @@ export default function PushPermissionCard({
       const result = await response.json().catch(() => null)
 
       if (!response.ok) {
-        throw new Error(result?.error || "No se pudo guardar la suscripción")
+        throw new Error(result?.error || `No se pudo guardar la suscripción. Status ${response.status}`)
       }
 
-      setMessage("Listo. Te vamos a avisar novedades importantes de tu pedido y beneficios.")
+      setMessage("Listo. Notificaciones activadas y guardadas.")
     } catch (error: any) {
       console.error("push activation error", error)
       setMessage(error?.message || "No se pudieron activar las notificaciones.")
@@ -168,18 +176,27 @@ export default function PushPermissionCard({
             o puntos por vencer.
           </p>
 
-          <button
-            type="button"
-            onClick={activatePush}
-            disabled={isLoading || permission === "granted"}
-            className="mt-4 rounded-2xl bg-green-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-green-800 disabled:cursor-not-allowed disabled:bg-stone-300"
-          >
-            {isLoading
-              ? "Activando..."
-              : permission === "granted"
-                ? "Notificaciones activas"
-                : "Activar avisos"}
-          </button>
+          {permission !== "granted" && (
+            <button
+              type="button"
+              onClick={activatePush}
+              disabled={isLoading}
+              className="mt-4 rounded-2xl bg-green-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-green-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+            >
+              {isLoading ? "Activando..." : "Activar avisos"}
+            </button>
+          )}
+
+          {permission === "granted" && (
+            <button
+              type="button"
+              onClick={activatePush}
+              disabled={isLoading}
+              className="mt-4 rounded-2xl bg-green-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-green-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+            >
+              {isLoading ? "Guardando..." : "Guardar avisos"}
+            </button>
+          )}
 
           {message && (
             <p className="mt-3 text-sm leading-relaxed text-stone-600">
