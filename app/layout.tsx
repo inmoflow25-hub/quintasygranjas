@@ -78,20 +78,21 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
 
-        {/* PWA SERVICE WORKER */}
-        <Script id="register-service-worker" strategy="afterInteractive">
-          {`
-            if ("serviceWorker" in navigator) {
-              window.addEventListener("load", function () {
-                navigator.serviceWorker
-                  .register("/sw.js")
-                  .catch(function (error) {
-                    console.error("Service worker registration failed:", error);
-                  });
-              });
-            }
-          `}
-        </Script>
+       {/* PWA SERVICE WORKER */}
+<Script id="register-service-worker" strategy="afterInteractive">
+  {`
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js", { scope: "/" })
+        .then(function (registration) {
+          console.log("Service worker registered:", registration.scope);
+        })
+        .catch(function (error) {
+          console.error("Service worker registration failed:", error);
+        });
+    }
+  `}
+</Script>
 
         {children}
         <Analytics />
