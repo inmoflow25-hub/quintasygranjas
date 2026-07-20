@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import PushPermissionCard from "@/components/app/push-permission-card"
 import { CANDELA_ATTRIBUTION, saveAttribution } from "@/lib/attribution"
+import CartMobileStickyTest from "@/components/cart/cart-mobile-sticky-test"
 
 type Product = {
   id: string
