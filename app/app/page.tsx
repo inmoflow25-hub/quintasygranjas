@@ -265,84 +265,9 @@ export default function AppHomePage() {
           </button>
         </section>
 
-        <section className="rounded-3xl bg-white p-6 shadow">
-          <h2 className="mb-4 text-2xl font-bold">Productos app</h2>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            {products.map((product) => {
-              const cartItem = cart.find((item) => item.id === product.id)
-
-              return (
-                <div
-                  key={product.id}
-                  className="rounded-2xl border bg-white p-4"
-                >
-                  {product.image && (
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="mb-3 h-36 w-full rounded-xl object-cover"
-                    />
-                  )}
-
-                  <div className="mb-2 flex gap-2">
-                    {product.app_exclusive && (
-                      <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800">
-                        Exclusivo app
-                      </span>
-                    )}
-
-                    {product.app_promo && (
-                      <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-800">
-                        {product.promo_label || "Promo"}
-                      </span>
-                    )}
-                  </div>
-
-                  <h3 className="font-bold">{product.name}</h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    {product.description}
-                  </p>
-
-                  <div className="mt-4 flex items-center justify-between">
-                    <p className="text-lg font-bold text-green-700">
-                      {money(product.price)}
-                    </p>
-
-                    {cartItem ? (
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => removeFromCart(product.id)}
-                          className="h-8 w-8 rounded-full border font-bold"
-                        >
-                          -
-                        </button>
-
-                        <span className="font-semibold">
-                          {cartItem.quantity}
-                        </span>
-
-                        <button
-                          onClick={() => addToCart(product)}
-                          className="h-8 w-8 rounded-full bg-green-700 font-bold text-white"
-                        >
-                          +
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => addToCart(product)}
-                        className="rounded-xl bg-green-700 px-3 py-2 text-sm font-semibold text-white"
-                      >
-                        Agregar
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </section>
+   <section id="cart" className="scroll-mt-32">
+  <CartMobileStickyTest />
+</section>
 
         {cart.length > 0 && (
           <div className="sticky bottom-4 rounded-2xl bg-green-800 p-4 text-white shadow-xl">
