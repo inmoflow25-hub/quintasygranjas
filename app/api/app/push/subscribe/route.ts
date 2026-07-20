@@ -138,15 +138,20 @@ export async function POST(req: Request) {
       )
       .select("id")
       .single()
+    
+if (error) {
+  console.error("push subscribe upsert error", error)
 
-    if (error) {
-      console.error("push subscribe upsert error", error)
-
-      return NextResponse.json(
-        { error: "No se pudo guardar la suscripción" },
-        { status: 500 }
-      )
-    }
+  return NextResponse.json(
+    {
+      error: "No se pudo guardar la suscripción",
+      detail: error.message,
+      code: error.code,
+      hint: error.hint
+    },
+    { status: 500 }
+  )
+}
 
     return NextResponse.json({
       ok: true,
