@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { AppDownloadSection } from "@/components/landing/app-download-section"
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>
