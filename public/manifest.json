@@ -1,6 +1,6 @@
 {
   "name": "Quintas y Granjas",
-  "short_name": "QyG",
+  "short_name": "Quintas y Granjas",
   "description": "Pedí frutas, verduras, productos de granja y alimentos saludables listos para cocinar desde tu celular.",
   "start_url": "/app?source=pwa",
   "scope": "/",
