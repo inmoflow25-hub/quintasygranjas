@@ -12,65 +12,36 @@ type BeforeInstallPromptEvent = Event & {
 
 declare global {
   interface Window {
-    deferredInstallPrompt?: BeforeInstallPromptEvent
+    qygInstallPrompt?: BeforeInstallPromptEvent | null
   }
 }
 
 export default function AppPruebaChaioPage() {
-  const [installPrompt, setInstallPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null)
-
+  const [installReady, setInstallReady] = useState(false)
   const [selectedSystem, setSelectedSystem] =
     useState<"android" | "ios" | null>(null)
 
   useEffect(() => {
-    async function preparePwa() {
-      if (!("serviceWorker" in navigator)) return
-
-      try {
-        const registration = await navigator.serviceWorker.register("/sw.js", {
-          scope: "/"
-        })
-
-        await navigator.serviceWorker.ready
-        await registration.update()
-      } catch (error) {
-        console.error("Service worker error:", error)
-      }
+    function syncInstallPrompt() {
+      setInstallReady(Boolean(window.qygInstallPrompt))
     }
 
-    function onBeforeInstallPrompt(event: Event) {
-      event.preventDefault()
+    syncInstallPrompt()
 
-      const promptEvent = event as BeforeInstallPromptEvent
-
-      window.deferredInstallPrompt = promptEvent
-      setInstallPrompt(promptEvent)
-    }
-
-    preparePwa()
-
-    if (window.deferredInstallPrompt) {
-      setInstallPrompt(window.deferredInstallPrompt)
-    }
-
-    window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt)
-
-    window.addEventListener("appinstalled", () => {
-      window.location.href = "/app?source=installed"
-    })
+    window.addEventListener("qyg-install-ready", syncInstallPrompt)
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt)
+      window.removeEventListener("qyg-install-ready", syncInstallPrompt)
     }
   }, [])
 
   async function installAndroid() {
     setSelectedSystem("android")
 
-    const promptEvent = installPrompt || window.deferredInstallPrompt
+    const promptEvent = window.qygInstallPrompt
 
     if (!promptEvent) {
+      setInstallReady(false)
       return
     }
 
@@ -78,8 +49,8 @@ export default function AppPruebaChaioPage() {
 
     const choice = await promptEvent.userChoice
 
-    window.deferredInstallPrompt = undefined
-    setInstallPrompt(null)
+    window.qygInstallPrompt = null
+    setInstallReady(false)
 
     if (choice.outcome === "accepted") {
       window.location.href = "/app?source=android-installed"
@@ -114,7 +85,7 @@ export default function AppPruebaChaioPage() {
             </h1>
 
             <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/85 md:text-xl">
-              Tocá tu sistema operativo para instalar el ícono de la app en tu
+              Tocá tu sistema operativo para guardar el ícono de la app en tu
               pantalla principal.
             </p>
 
@@ -133,7 +104,9 @@ export default function AppPruebaChaioPage() {
                 </span>
 
                 <span className="mt-2 block text-sm leading-relaxed text-white/85">
-                  Abre el instalador para guardar el ícono en tu celular.
+                  {installReady
+                    ? "Tocá acá y Chrome va a abrir el instalador."
+                    : "Si no abre, tocá Instalar en la barra de Chrome."}
                 </span>
               </button>
 
@@ -151,20 +124,22 @@ export default function AppPruebaChaioPage() {
                 </span>
 
                 <span className="mt-2 block text-sm leading-relaxed text-green-950/75">
-                  Guardala en la pantalla de inicio desde Safari.
+                  Guardala en pantalla de inicio desde Safari.
                 </span>
               </button>
             </div>
 
-            {selectedSystem === "android" && !installPrompt && (
+            {selectedSystem === "android" && !installReady && (
               <div className="mt-6 rounded-3xl bg-white p-5 text-green-950 shadow-xl">
                 <p className="text-xl font-black">
-                  Si no se abrió el instalador
+                  Chrome ya permite instalarla
                 </p>
 
                 <p className="mt-2 text-base leading-relaxed text-green-950/75">
-                  En Chrome tocá el botón <strong>Instalar</strong> que aparece
-                  arriba en la barra del navegador. En tu captura ya aparece.
+                  Tocá el botón <strong>Instalar</strong> que aparece arriba en
+                  la barra de Chrome. En Android aparece en el menú de los tres
+                  puntitos como <strong>Instalar app</strong> o{" "}
+                  <strong>Agregar a pantalla principal</strong>.
                 </p>
               </div>
             )}
