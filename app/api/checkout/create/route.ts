@@ -1063,10 +1063,11 @@ affiliate_discount_amount: affiliateDiscountAmount,
 }
 
     const { cyclePosition, cycleBenefitMessage } = buildCycleProgress({
-      completedPurchasesBeforeOrder,
-      benefitStatus,
-      discountPercent
-    })
+  completedPurchasesBeforeOrder,
+  benefitStatus,
+  discountPercent,
+  appContext
+})
 
     const itemsSummary = buildItemsSummary(normalizedItems)
     const totalFormatted = formatMoney(finalPrice)
