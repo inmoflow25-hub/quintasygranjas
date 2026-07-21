@@ -17,10 +17,10 @@ export const metadata: Metadata = {
     "Recibí frutas, verduras y productos de granja frescos directo en tu casa todas las semanas. Sin supermercado. Sin filas. Entrega en zona norte del Gran Buenos Aires.",
   generator: "v0.app",
   manifest: "/manifest.json",
-  icons: {
-    icon: "/favicon.png",
-    apple: "/favicon.png"
-  },
+icons: {
+  icon: "/icons/push-icon-192.png?v=10",
+  apple: "/icons/push-icon-192.png?v=10"
+},
   appleWebApp: {
     capable: true,
     title: "Quintas y Granjas",
