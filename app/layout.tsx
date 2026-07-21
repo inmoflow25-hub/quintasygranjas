@@ -12,9 +12,9 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title:
-    "Quintas y Granjas | Cajas semanales de frutas, verduras y productos de granja",
+    "Quintas y Granjas | Alimentos de verdad directo a tu domicilio",
   description:
-    "Recibí frutas, verduras y productos de granja frescos directo en tu casa todas las semanas. Sin supermercado. Sin filas. Entrega en zona norte del Gran Buenos Aires.",
+    "Simepre sumás puntos y ganás desceuntos usando la app de Quintas y Granjas. Sin supermercado. Sin filas. Entregas sin costo.",
   generator: "v0.app",
   manifest: "/manifest.json",
 icons: {
