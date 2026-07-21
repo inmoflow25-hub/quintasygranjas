@@ -243,7 +243,7 @@ function getIndividualDiscount({
     return {
       discountPercent: 10,
       benefitStatus: "loyalty_4_cycle",
-      loyaltyDiscountPercent: 10
+      loyaltyDiscountPercent: 5
     }
   }
 
@@ -353,14 +353,14 @@ function buildCycleProgress({
       return {
         cyclePosition,
         cycleBenefitMessage:
-          "Esta fue tu compra 1 de 4. Además, en este pedido recibiste tu 10% de bienvenida."
+          "Esta fue tu compra 1 de 4. Además, en este pedido recibiste tu 5% de bienvenida."
       }
     }
 
     return {
       cyclePosition,
       cycleBenefitMessage:
-        "Esta fue tu compra 1 de 4. En la compra 4 accedés a un 10% de descuento."
+        "Esta fue tu compra 1 de 4. En la compra 4 accedés a un 5% de descuento."
     }
   }
 
@@ -368,7 +368,7 @@ function buildCycleProgress({
     return {
       cyclePosition,
       cycleBenefitMessage:
-        "Ya vas por la compra 2 de 4. Estás a 2 compras de tu 10% de descuento."
+        "Ya vas por la compra 2 de 4. Estás a 2 compras de tu 5% de descuento."
     }
   }
 
@@ -376,14 +376,14 @@ function buildCycleProgress({
     return {
       cyclePosition,
       cycleBenefitMessage:
-        "Ya vas por la compra 3 de 4. En tu próxima compra accedés al 10% de descuento."
+        "Ya vas por la compra 3 de 4. En tu próxima compra accedés al 5% de descuento."
     }
   }
 
   return {
     cyclePosition,
     cycleBenefitMessage:
-      "¡Esta fue tu compra 4 y ya recibiste tu 10% de descuento en este pedido!"
+      "¡Esta fue tu compra 4 y ya recibiste tu 5% de descuento en este pedido!"
   }
 }
 
