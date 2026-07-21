@@ -78,7 +78,25 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
 
-       {/* PWA SERVICE WORKER */}
+   {/* PWA INSTALL + SERVICE WORKER */}
+<Script id="pwa-install-handler" strategy="beforeInteractive">
+  {`
+    window.qygInstallPrompt = null;
+
+    window.addEventListener("beforeinstallprompt", function (event) {
+      event.preventDefault();
+      window.qygInstallPrompt = event;
+      window.dispatchEvent(new Event("qyg-install-ready"));
+      console.log("QYG install prompt ready");
+    });
+
+    window.addEventListener("appinstalled", function () {
+      window.qygInstallPrompt = null;
+      window.location.href = "/app?source=pwa-installed";
+    });
+  `}
+</Script>
+
 <Script id="register-service-worker" strategy="afterInteractive">
   {`
     if ("serviceWorker" in navigator) {
@@ -86,6 +104,7 @@ export default function RootLayout({
         .register("/sw.js", { scope: "/" })
         .then(function (registration) {
           console.log("Service worker registered:", registration.scope);
+          registration.update();
         })
         .catch(function (error) {
           console.error("Service worker registration failed:", error);
