@@ -825,8 +825,9 @@ const requestedPointsToSpend =
       phone: normalizedCustomerPhone
     })
 
-   const individualDiscount = getIndividualDiscount({
-  completedPurchases: completedPurchasesBeforeOrder
+ const individualDiscount = getIndividualDiscount({
+  completedPurchases: completedPurchasesBeforeOrder,
+  appContext
 })
 
 const affiliateDiscountPercent = attribution.affiliate_discount_percent
