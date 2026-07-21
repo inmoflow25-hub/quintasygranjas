@@ -342,20 +342,30 @@ function buildItemsSummary(
 function buildCycleProgress({
   completedPurchasesBeforeOrder,
   benefitStatus,
-  discountPercent
+  discountPercent,
+  appContext
 }: {
   completedPurchasesBeforeOrder: number
   benefitStatus: string
   discountPercent: number
+  appContext: AppContext
 }) {
   const cyclePosition = String((completedPurchasesBeforeOrder % 4) + 1)
+
+  if (appContext === "pwa") {
+    return {
+      cyclePosition,
+      cycleBenefitMessage:
+        "Sumaste puntos con este pedido para usar como descuento en tu próxima compra desde la app."
+    }
+  }
 
   if (cyclePosition === "1") {
     if (benefitStatus === "first_purchase" && discountPercent > 0) {
       return {
         cyclePosition,
         cycleBenefitMessage:
-          "Esta fue tu compra 1 de 4. Además, en este pedido recibiste tu 5% de bienvenida."
+          "Esta fue tu compra 1 de 4. Además, en este pedido recibiste tu 10% de bienvenida."
       }
     }
 
