@@ -223,9 +223,11 @@ async function getCompletedPurchasesForCustomer({
 }
 
 function getIndividualDiscount({
-  completedPurchases
+  completedPurchases,
+  appContext
 }: {
   completedPurchases: number
+  appContext: AppContext
 }) {
   const nextPurchaseNumber = completedPurchases + 1
   const isFirstPurchase = nextPurchaseNumber === 1
@@ -239,9 +241,9 @@ function getIndividualDiscount({
     }
   }
 
-  if (isFourthPurchaseCycle) {
+  if (appContext === "web" && isFourthPurchaseCycle) {
     return {
-      discountPercent: 10,
+      discountPercent: 5,
       benefitStatus: "loyalty_4_cycle",
       loyaltyDiscountPercent: 5
     }
