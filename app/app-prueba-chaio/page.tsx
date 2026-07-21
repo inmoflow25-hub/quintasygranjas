@@ -10,6 +10,12 @@ type BeforeInstallPromptEvent = Event & {
   }>
 }
 
+declare global {
+  interface Window {
+    deferredInstallPrompt?: BeforeInstallPromptEvent
+  }
+}
+
 export default function AppPruebaChaioPage() {
   const [installPrompt, setInstallPrompt] =
     useState<BeforeInstallPromptEvent | null>(null)
@@ -22,8 +28,12 @@ export default function AppPruebaChaioPage() {
       if (!("serviceWorker" in navigator)) return
 
       try {
-        await navigator.serviceWorker.register("/sw.js", { scope: "/" })
+        const registration = await navigator.serviceWorker.register("/sw.js", {
+          scope: "/"
+        })
+
         await navigator.serviceWorker.ready
+        await registration.update()
       } catch (error) {
         console.error("Service worker error:", error)
       }
@@ -31,41 +41,52 @@ export default function AppPruebaChaioPage() {
 
     function onBeforeInstallPrompt(event: Event) {
       event.preventDefault()
-      setInstallPrompt(event as BeforeInstallPromptEvent)
-    }
 
-    function onInstalled() {
-      window.location.href = "/app?source=chaio-installed"
+      const promptEvent = event as BeforeInstallPromptEvent
+
+      window.deferredInstallPrompt = promptEvent
+      setInstallPrompt(promptEvent)
     }
 
     preparePwa()
 
+    if (window.deferredInstallPrompt) {
+      setInstallPrompt(window.deferredInstallPrompt)
+    }
+
     window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt)
-    window.addEventListener("appinstalled", onInstalled)
+
+    window.addEventListener("appinstalled", () => {
+      window.location.href = "/app?source=installed"
+    })
 
     return () => {
       window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt)
-      window.removeEventListener("appinstalled", onInstalled)
     }
   }, [])
 
-  async function handleAndroidInstall() {
+  async function installAndroid() {
     setSelectedSystem("android")
 
-    if (!installPrompt) return
+    const promptEvent = installPrompt || window.deferredInstallPrompt
 
-    await installPrompt.prompt()
+    if (!promptEvent) {
+      return
+    }
 
-    const choice = await installPrompt.userChoice
+    await promptEvent.prompt()
+
+    const choice = await promptEvent.userChoice
+
+    window.deferredInstallPrompt = undefined
+    setInstallPrompt(null)
 
     if (choice.outcome === "accepted") {
       window.location.href = "/app?source=android-installed"
     }
-
-    setInstallPrompt(null)
   }
 
-  function handleIosInstall() {
+  function installIphone() {
     setSelectedSystem("ios")
   }
 
@@ -93,84 +114,64 @@ export default function AppPruebaChaioPage() {
             </h1>
 
             <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/85 md:text-xl">
-              Tené la app en tu pantalla principal para pedir más rápido, sumar
-              puntos y recibir avisos importantes sobre tus entregas.
+              Tocá tu sistema operativo para instalar el ícono de la app en tu
+              pantalla principal.
             </p>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
               <button
                 type="button"
-                onClick={handleAndroidInstall}
+                onClick={installAndroid}
                 className="rounded-3xl bg-green-600 px-6 py-6 text-left shadow-2xl transition hover:bg-green-500 active:scale-[0.98]"
               >
                 <span className="block text-sm font-black uppercase tracking-[0.16em] text-green-100">
-                  Android
+                  Android / Chrome
                 </span>
 
                 <span className="mt-1 block text-2xl font-black">
-                  Tengo Android
+                  Descargar app
                 </span>
 
                 <span className="mt-2 block text-sm leading-relaxed text-white/85">
-                  Instalá desde Chrome y dejala en tu pantalla principal.
+                  Abre el instalador para guardar el ícono en tu celular.
                 </span>
               </button>
 
               <button
                 type="button"
-                onClick={handleIosInstall}
+                onClick={installIphone}
                 className="rounded-3xl bg-white px-6 py-6 text-left text-green-950 shadow-2xl transition hover:bg-green-50 active:scale-[0.98]"
               >
                 <span className="block text-sm font-black uppercase tracking-[0.16em] text-green-700">
-                  iPhone
+                  iPhone / Safari
                 </span>
 
                 <span className="mt-1 block text-2xl font-black">
-                  Tengo iPhone
+                  Descargar app
                 </span>
 
                 <span className="mt-2 block text-sm leading-relaxed text-green-950/75">
-                  Agregala desde Safari a tu pantalla de inicio.
+                  Guardala en la pantalla de inicio desde Safari.
                 </span>
               </button>
             </div>
 
-            {selectedSystem === "android" && (
+            {selectedSystem === "android" && !installPrompt && (
               <div className="mt-6 rounded-3xl bg-white p-5 text-green-950 shadow-xl">
-                <p className="text-xl font-black">Cómo instalar en Android</p>
+                <p className="text-xl font-black">
+                  Si no se abrió el instalador
+                </p>
 
-                {installPrompt ? (
-                  <p className="mt-2 text-base leading-relaxed text-green-950/75">
-                    Chrome va a mostrar el cartel de instalación. Confirmá{" "}
-                    <strong>Instalar</strong> y después abrí la app desde el
-                    ícono.
-                  </p>
-                ) : (
-                  <ol className="mt-3 space-y-2 text-base leading-relaxed text-green-950/80">
-                    <li>
-                      <strong>1.</strong> Abrí esta página desde{" "}
-                      <strong>Chrome</strong>.
-                    </li>
-                    <li>
-                      <strong>2.</strong> Tocá los{" "}
-                      <strong>tres puntitos</strong>.
-                    </li>
-                    <li>
-                      <strong>3.</strong> Elegí{" "}
-                      <strong>Instalar app</strong> o{" "}
-                      <strong>Agregar a pantalla principal</strong>.
-                    </li>
-                    <li>
-                      <strong>4.</strong> Abrí Quintas y Granjas desde el ícono.
-                    </li>
-                  </ol>
-                )}
+                <p className="mt-2 text-base leading-relaxed text-green-950/75">
+                  En Chrome tocá el botón <strong>Instalar</strong> que aparece
+                  arriba en la barra del navegador. En tu captura ya aparece.
+                </p>
               </div>
             )}
 
             {selectedSystem === "ios" && (
               <div className="mt-6 rounded-3xl bg-white p-5 text-green-950 shadow-xl">
-                <p className="text-xl font-black">Cómo instalar en iPhone</p>
+                <p className="text-xl font-black">En iPhone</p>
 
                 <ol className="mt-3 space-y-2 text-base leading-relaxed text-green-950/80">
                   <li>
@@ -178,16 +179,14 @@ export default function AppPruebaChaioPage() {
                     <strong>Safari</strong>.
                   </li>
                   <li>
-                    <strong>2.</strong> Tocá el botón de{" "}
-                    <strong>Compartir</strong>.
+                    <strong>2.</strong> Tocá <strong>Compartir</strong>.
                   </li>
                   <li>
                     <strong>3.</strong> Elegí{" "}
                     <strong>Agregar a pantalla de inicio</strong>.
                   </li>
                   <li>
-                    <strong>4.</strong> Confirmá y abrí Quintas y Granjas desde
-                    el nuevo ícono.
+                    <strong>4.</strong> Confirmá y abrí la app desde el ícono.
                   </li>
                 </ol>
               </div>
