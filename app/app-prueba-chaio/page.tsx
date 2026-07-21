@@ -201,6 +201,13 @@ export default function AppPruebaChaioPage() {
           )}
         </div>
       </section>
+      <div id="cart" className="scroll-mt-32">
+  <CartMobileStickyTest />
+</div>
+
+<AppDownloadSection />
+
+<DeliveryZones />
     </main>
   )
 }
