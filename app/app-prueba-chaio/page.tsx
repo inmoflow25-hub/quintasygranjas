@@ -1,9 +1,7 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
-import { AppDownloadSection } from "@/components/landing/app-download-section"
+import { useEffect, useState } from "react"
 import CartMobileStickyTest from "@/components/cart/cart-mobile-sticky-test"
-
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>
@@ -13,45 +11,12 @@ type BeforeInstallPromptEvent = Event & {
   }>
 }
 
-type DeviceType = "android" | "ios" | "mac" | "windows" | "other"
-
-function getDeviceType(): DeviceType {
-  if (typeof navigator === "undefined") return "other"
-
-  const ua = navigator.userAgent.toLowerCase()
-  const platform = navigator.platform?.toLowerCase() || ""
-
-  if (/android/.test(ua)) return "android"
-
-  if (
-    /iphone|ipad|ipod/.test(ua) ||
-    (platform.includes("mac") && "ontouchend" in document)
-  ) {
-    return "ios"
-  }
-
-  if (platform.includes("mac")) return "mac"
-  if (platform.includes("win")) return "windows"
-
-  return "other"
-}
-
-function isStandaloneMode() {
-  if (typeof window === "undefined") return false
-
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    (window.navigator as any).standalone === true
-  )
-}
-
 export default function AppPruebaChaioPage() {
   const [installPrompt, setInstallPrompt] =
     useState<BeforeInstallPromptEvent | null>(null)
 
-  const [showHelp, setShowHelp] = useState(false)
-  const [installed, setInstalled] = useState(false)
-  const device = useMemo(() => getDeviceType(), [])
+  const [selectedSystem, setSelectedSystem] =
+    useState<"android" | "ios" | null>(null)
 
   useEffect(() => {
     async function preparePwa() {
@@ -71,17 +36,10 @@ export default function AppPruebaChaioPage() {
     }
 
     function onInstalled() {
-      setInstalled(true)
       window.location.href = "/app?source=chaio-installed"
     }
 
     preparePwa()
-
-    if (isStandaloneMode()) {
-      setInstalled(true)
-      window.location.href = "/app?source=chaio-standalone"
-      return
-    }
 
     window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt)
     window.addEventListener("appinstalled", onInstalled)
@@ -92,124 +50,180 @@ export default function AppPruebaChaioPage() {
     }
   }, [])
 
-  async function installApp() {
-    if (installed) {
-      window.location.href = "/app?source=chaio-installed-open"
-      return
+  async function handleAndroidInstall() {
+    setSelectedSystem("android")
+
+    if (!installPrompt) return
+
+    await installPrompt.prompt()
+
+    const choice = await installPrompt.userChoice
+
+    if (choice.outcome === "accepted") {
+      window.location.href = "/app?source=android-installed"
     }
 
-    if (installPrompt) {
-      await installPrompt.prompt()
+    setInstallPrompt(null)
+  }
 
-      const choice = await installPrompt.userChoice
-
-      if (choice.outcome === "accepted") {
-        window.location.href = "/app?source=chaio-installed"
-        return
-      }
-
-      setShowHelp(true)
-      return
-    }
-
-    setShowHelp(true)
+  function handleIosInstall() {
+    setSelectedSystem("ios")
   }
 
   return (
-    <main className="min-h-screen bg-[#fff8f0] px-5 py-8 text-[#07170b]">
-      <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-md flex-col justify-center">
-        <div className="rounded-[2rem] bg-white p-5 shadow-xl">
-          <div className="mb-5 overflow-hidden rounded-[1.5rem]">
-            <img
-              src="https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/FOTO%20CAJAVEGGIE.png"
-              alt="Quintas y Granjas"
-              className="h-56 w-full object-cover"
-            />
-          </div>
+    <main className="min-h-screen bg-[#fff8f0] text-[#07170b]">
+      <section className="relative overflow-hidden bg-green-950 text-white">
+        <div className="absolute inset-0">
+          <img
+            src="https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/CAJA%20CAMPO.png"
+            alt="Quintas y Granjas App"
+            className="h-full w-full object-cover opacity-40"
+          />
 
-          <h1 className="text-3xl font-black leading-tight">
-            Quintas y Granjas App
-          </h1>
+          <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-green-950/80 to-black/50" />
+        </div>
 
-          <p className="mt-2 text-base leading-relaxed text-stone-600">
-            Instalá la app para hacer tu pedido desde el celular.
-          </p>
+        <div className="relative z-10 mx-auto max-w-6xl px-5 py-16 md:py-24">
+          <div className="max-w-3xl">
+            <p className="mb-4 inline-flex rounded-full bg-green-600 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-white shadow-lg">
+              Prueba privada
+            </p>
 
-          <button
-            type="button"
-            onClick={installApp}
-            className="mt-6 w-full rounded-3xl bg-green-700 px-8 py-6 text-center text-2xl font-black text-white shadow-xl active:scale-[0.98]"
-          >
-            Instalar app
-          </button>
+            <h1 className="text-4xl font-black leading-tight md:text-6xl">
+              Pedí más rápido desde la app de Quintas y Granjas
+            </h1>
 
-          {showHelp && (
-            <div className="mt-5 rounded-2xl bg-green-50 p-4 text-sm leading-relaxed text-green-950">
-              {device === "ios" && (
-                <>
-                  <p className="font-black">En iPhone:</p>
-                  <p className="mt-2">
-                    Abrí esta página en <strong>Safari</strong>, tocá el botón{" "}
-                    <strong>Compartir</strong> y elegí{" "}
-                    <strong>Agregar a pantalla de inicio</strong>.
-                  </p>
-                </>
-              )}
+            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/85 md:text-xl">
+              Instalá la app en tu celular, armá tu pedido en minutos, sumá
+              puntos con tus compras y recibí avisos importantes sobre la
+              entrega.
+            </p>
 
-              {device === "android" && (
-                <>
-                  <p className="font-black">En Android:</p>
-                  <p className="mt-2">
-                    Abrí esta página en <strong>Chrome</strong>, tocá los tres
-                    puntitos y elegí <strong>Instalar app</strong> o{" "}
-                    <strong>Agregar a pantalla principal</strong>.
-                  </p>
-                </>
-              )}
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={handleAndroidInstall}
+                className="rounded-3xl bg-green-600 px-6 py-6 text-left shadow-2xl transition hover:bg-green-500 active:scale-[0.98]"
+              >
+                <span className="block text-sm font-black uppercase tracking-[0.16em] text-green-100">
+                  Android
+                </span>
 
-              {device === "mac" && (
-                <>
-                  <p className="font-black">En Mac:</p>
-                  <p className="mt-2">
-                    Usá <strong>Chrome</strong>. En la barra de dirección tocá
-                    el ícono de instalación y confirmá{" "}
-                    <strong>Instalar</strong>.
-                  </p>
-                </>
-              )}
+                <span className="mt-1 block text-2xl font-black">
+                  Tengo Android
+                </span>
 
-              {device === "windows" && (
-                <>
-                  <p className="font-black">En Windows:</p>
-                  <p className="mt-2">
-                    Usá <strong>Chrome</strong>. En la barra de dirección tocá
-                    el ícono de instalación y confirmá{" "}
-                    <strong>Instalar</strong>.
-                  </p>
-                </>
-              )}
+                <span className="mt-2 block text-sm leading-relaxed text-white/85">
+                  Instalá la app desde Chrome y dejala en tu pantalla principal.
+                </span>
+              </button>
 
-              {device === "other" && (
-                <>
-                  <p className="font-black">Para instalar:</p>
-                  <p className="mt-2">
-                    Usá Chrome y buscá la opción{" "}
-                    <strong>Instalar app</strong> o{" "}
-                    <strong>Agregar a pantalla principal</strong>.
-                  </p>
-                </>
-              )}
+              <button
+                type="button"
+                onClick={handleIosInstall}
+                className="rounded-3xl bg-white px-6 py-6 text-left text-green-950 shadow-2xl transition hover:bg-green-50 active:scale-[0.98]"
+              >
+                <span className="block text-sm font-black uppercase tracking-[0.16em] text-green-700">
+                  iPhone
+                </span>
+
+                <span className="mt-1 block text-2xl font-black">
+                  Tengo iPhone
+                </span>
+
+                <span className="mt-2 block text-sm leading-relaxed text-green-950/75">
+                  Agregala a tu pantalla de inicio desde Safari.
+                </span>
+              </button>
             </div>
-          )}
+
+            {selectedSystem === "android" && (
+              <div className="mt-6 rounded-3xl bg-white p-5 text-green-950 shadow-xl">
+                <p className="text-xl font-black">
+                  Cómo instalar en Android
+                </p>
+
+                {installPrompt ? (
+                  <p className="mt-2 text-base leading-relaxed text-green-950/75">
+                    Tocá <strong>Tengo Android</strong> y Chrome va a mostrar el
+                    cartel de instalación de la app.
+                  </p>
+                ) : (
+                  <ol className="mt-3 space-y-2 text-base leading-relaxed text-green-950/80">
+                    <li>
+                      <strong>1.</strong> Abrí esta página desde{" "}
+                      <strong>Chrome</strong>.
+                    </li>
+                    <li>
+                      <strong>2.</strong> Tocá los{" "}
+                      <strong>tres puntitos</strong> arriba a la derecha.
+                    </li>
+                    <li>
+                      <strong>3.</strong> Elegí{" "}
+                      <strong>Instalar app</strong> o{" "}
+                      <strong>Agregar a pantalla principal</strong>.
+                    </li>
+                    <li>
+                      <strong>4.</strong> Abrí Quintas y Granjas desde el ícono
+                      del celular.
+                    </li>
+                  </ol>
+                )}
+              </div>
+            )}
+
+            {selectedSystem === "ios" && (
+              <div className="mt-6 rounded-3xl bg-white p-5 text-green-950 shadow-xl">
+                <p className="text-xl font-black">
+                  Cómo instalar en iPhone
+                </p>
+
+                <ol className="mt-3 space-y-2 text-base leading-relaxed text-green-950/80">
+                  <li>
+                    <strong>1.</strong> Abrí esta página desde{" "}
+                    <strong>Safari</strong>.
+                  </li>
+                  <li>
+                    <strong>2.</strong> Tocá el botón de{" "}
+                    <strong>Compartir</strong>.
+                  </li>
+                  <li>
+                    <strong>3.</strong> Elegí{" "}
+                    <strong>Agregar a pantalla de inicio</strong>.
+                  </li>
+                  <li>
+                    <strong>4.</strong> Confirmá y abrí Quintas y Granjas desde
+                    el nuevo ícono.
+                  </li>
+                </ol>
+              </div>
+            )}
+          </div>
         </div>
       </section>
-      <div id="cart" className="scroll-mt-32">
-  <CartMobileStickyTest />
-</div>
 
-<AppDownloadSection />
+      <section className="bg-white px-5 py-10">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-8 rounded-3xl bg-green-50 p-6 text-green-950">
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-green-700">
+              Probá una compra real
+            </p>
 
-<DeliveryZones />
+            <h2 className="mt-2 text-3xl font-black leading-tight">
+              Armá tu pedido desde acá
+            </h2>
+
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-green-950/75">
+              Elegí una caja lista o sumá productos. El carrito queda fijo abajo
+              en celular para que puedas finalizar rápido.
+            </p>
+          </div>
+        </div>
+
+        <div id="cart" className="scroll-mt-32">
+          <CartMobileStickyTest />
+        </div>
+      </section>
     </main>
   )
 }
