@@ -7,8 +7,6 @@ type PointsSummary = {
   points_balance: number
   available_points: number
   lifetime_points: number
-  current_level: string
-  current_level_name: string
   available_discount_value: number
   next_expiration_at: string | null
   point_value_ars: number
