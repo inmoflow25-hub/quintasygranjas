@@ -40,7 +40,6 @@ export default function AppCheckoutPage() {
   const [items, setItems] = useState<CartItem[]>([])
   const [user, setUser] = useState<AppUser | null>(null)
   const [points, setPoints] = useState<PointsSummary | null>(null)
-  const [pointsToSpend, setPointsToSpend] = useState("")
   const [appliedDiscount, setAppliedDiscount] = useState(0)
   const [pointsNeeded, setPointsNeeded] = useState(0)
   const [paymentMethod, setPaymentMethod] = useState<"mercadopago" | "cash" | "mp_transfer">("mercadopago")
