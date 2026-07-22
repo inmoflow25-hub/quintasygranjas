@@ -171,7 +171,7 @@ export default function AppRewardsPage() {
               </h2>
 
               <p className="mt-2 text-gray-600">
-                En el checkout de la app vas a poder aplicar tus puntos disponibles como descuento.
+              Al pagar tu pedido desde la app, vas a poder usar tus puntos como descuento.
               </p>
 
               <p className="mt-2 text-sm text-gray-500">
