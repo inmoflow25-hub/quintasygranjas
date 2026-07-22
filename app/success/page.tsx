@@ -3,6 +3,42 @@
 import { useEffect, useMemo } from "react"
 import Link from "next/link"
 
+function getInstallTarget() {
+  if (typeof window === "undefined") {
+    return {
+      label: "Instalar app gratis",
+      href: "/app?source=success_web",
+      device: "general"
+    }
+  }
+
+  const ua = window.navigator.userAgent.toLowerCase()
+  const isIOS = /iphone|ipad|ipod/.test(ua)
+  const isAndroid = /android/.test(ua)
+
+  if (isIOS) {
+    return {
+      label: "Instalar en iPhone",
+      href: "/app?source=success_web_ios",
+      device: "ios"
+    }
+  }
+
+  if (isAndroid) {
+    return {
+      label: "Instalar app gratis",
+      href: "/app?source=success_web_android",
+      device: "android"
+    }
+  }
+
+  return {
+    label: "Abrir app",
+    href: "/app?source=success_web_desktop",
+    device: "desktop"
+  }
+}
+
 export default function SuccessPage() {
   const orderNumber = useMemo(() => {
     if (typeof window === "undefined") return null
@@ -24,6 +60,7 @@ export default function SuccessPage() {
 
   const isPwa = context === "pwa"
   const mpAlias = process.env.NEXT_PUBLIC_MP_ALIAS || ""
+  const installTarget = useMemo(() => getInstallTarget(), [])
 
   useEffect(() => {
     localStorage.removeItem("qyg_checkout_cart")
