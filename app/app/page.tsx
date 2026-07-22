@@ -182,6 +182,7 @@ export default function AppHomePage() {
   userName={user?.name}
   points={points}
 />
+        <InstallAppCard />
       
 
       {user && (
