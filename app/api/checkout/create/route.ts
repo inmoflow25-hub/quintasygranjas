@@ -1074,24 +1074,23 @@ if (initialStatus === "confirmed" && !isAffiliateOrder) {
     const itemsSummary = buildItemsSummary(normalizedItems)
     const totalFormatted = formatMoney(finalPrice)
     const paymentMethodLabel = formatPaymentMethod(payment_method)
-
-    if (payment_method === "cash" || payment_method === "mp_transfer") {
-      await sendPostPurchaseTemplate({
-        orderId: order.id,
-        orderNumber: order.order_number || order.id,
-        customerName: customer_name,
-        customerEmail: normalizedCustomerEmail,
-        customerPhone: normalizedCustomerPhone,
-        itemsSummary,
-        totalFormatted,
-        paymentMethodLabel,
-        cyclePosition,
-        cycleBenefitMessage,
-        deliveryAddress: delivery_address,
-        deliveryCity: delivery_city
-      })
-    }
-
+    
+if (initialStatus === "confirmed") {
+  await sendPostPurchaseTemplate({
+    orderId: order.id,
+    orderNumber: order.order_number || order.id,
+    customerName: customer_name,
+    customerEmail: normalizedCustomerEmail,
+    customerPhone: normalizedCustomerPhone,
+    itemsSummary,
+    totalFormatted,
+    paymentMethodLabel,
+    cyclePosition,
+    cycleBenefitMessage,
+    deliveryAddress: delivery_address,
+    deliveryCity: delivery_city
+  })
+}
    if (initialStatus === "confirmed") {
   await syncConfirmedOrderToGhl({
     orderId: order.id,
