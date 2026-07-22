@@ -68,6 +68,21 @@ export default function AppCheckoutPage() {
 const finalTotal = Math.max(subtotal - candelaDiscount - appliedDiscount, 1)
 
 useEffect(() => {
+  function resetLoading() {
+    setLoading(false)
+  }
+
+  window.addEventListener("pageshow", resetLoading)
+  window.addEventListener("focus", resetLoading)
+
+  return () => {
+    window.removeEventListener("pageshow", resetLoading)
+    window.removeEventListener("focus", resetLoading)
+  }
+}, [])
+
+  
+useEffect(() => {
   const savedCart = localStorage.getItem("qyg_app_cart")
   const parsedCart = savedCart ? JSON.parse(savedCart) : []
   setItems(parsedCart)
