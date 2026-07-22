@@ -249,11 +249,11 @@ useEffect(() => {
             ← Volver a la app
           </button>
 
-          <h1 className="text-3xl font-bold text-gray-900">Checkout app</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Finalizá tu pedido</h1>
 
-          <p className="mt-2 text-gray-600">
-            Confirmá tus datos y usá tus puntos si querés.
-          </p>
+<p className="mt-2 text-gray-600">
+  Confirmá tus datos, elegí cómo pagar y aplicá tus puntos si tenés disponibles.
+</p>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <input
