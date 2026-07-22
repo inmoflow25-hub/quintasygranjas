@@ -7,6 +7,7 @@ import InstallAppCard from "@/components/app/install-app-card"
 import { CANDELA_ATTRIBUTION, saveAttribution } from "@/lib/attribution"
 import CartMobileStickyTest from "@/components/cart/cart-mobile-sticky-test"
 import AppRewardsHero from "@/components/app/app-rewards-hero"
+import AppNav from "@/components/app/app-nav"
 
 type Product = {
   id: string
@@ -233,6 +234,7 @@ export default function AppHomePage() {
           </div>
         )}
       </div>
+      <AppNav />
     </main>
   )
 }
