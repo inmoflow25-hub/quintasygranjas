@@ -793,8 +793,14 @@ export default function CartMobileStickyTest({
 
     try {
       setLoading(true)
-      localStorage.setItem("qyg_checkout_cart", JSON.stringify(cart))
-      window.location.assign("/checkout?source=cart")
+     const isAppRoute = window.location.pathname.startsWith("/app")
+
+localStorage.setItem(
+  isAppRoute ? "qyg_app_cart" : "qyg_checkout_cart",
+  JSON.stringify(cart)
+)
+
+window.location.assign(isAppRoute ? "/app/checkout" : "/checkout?source=cart")
     } catch (err) {
       console.error(err)
       alert("No pudimos iniciar el checkout")
