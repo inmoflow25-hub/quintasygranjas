@@ -125,7 +125,7 @@ export default function AppRewardsPage() {
               </p>
 
               <p className="mt-3 text-green-50">
-                Equivalen a aproximadamente{" "}
+                Equivalen a{" "}
                 <span className="font-bold">
                   {money(points.available_discount_value)}
                 </span>{" "}
