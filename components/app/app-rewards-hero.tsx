@@ -72,7 +72,7 @@ export default function AppRewardsHero({
           próximos pedidos.
         </p>
 
-        <div className="mt-6 grid grid-cols-3 gap-2">
+        <div className="mt-6 grid grid-cols-2 gap-2">
           <div className="rounded-2xl bg-white/12 p-3 backdrop-blur">
             <p className="text-xs text-white/70">Puntos</p>
             <p className="mt-1 text-2xl font-black">
@@ -87,12 +87,7 @@ export default function AppRewardsHero({
             </p>
           </div>
 
-          <div className="rounded-2xl bg-white/12 p-3 backdrop-blur">
-            <p className="text-xs text-white/70">Nivel</p>
-            <p className="mt-1 text-sm font-black leading-tight">
-              {points?.current_level_name || "Nivel 1 — Semilla"}
-            </p>
-          </div>
+      
         </div>
 
         <div className="mt-5 rounded-2xl bg-white/95 p-4 text-green-950">
