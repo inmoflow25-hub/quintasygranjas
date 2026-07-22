@@ -56,43 +56,41 @@ async function findUserId({
   phone: string
 }) {
   if (userId) {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("profiles")
       .select("id")
       .eq("id", userId)
       .maybeSingle()
 
-    if (error) {
-      console.error("profile update user_id lookup error", error)
-    }
-
     if (data?.id) return data.id
   }
 
   if (email) {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("profiles")
       .select("id")
       .eq("email", email)
       .maybeSingle()
 
-    if (error) {
-      console.error("profile update email lookup error", error)
-    }
-
     if (data?.id) return data.id
   }
 
   if (phone) {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("profiles")
       .select("id")
       .eq("phone", phone)
       .maybeSingle()
 
-    if (error) {
-      console.error("profile update phone lookup error", error)
-    }
+    if (data?.id) return data.id
+  }
+
+  if (email) {
+    const { data } = await supabase
+      .from("users")
+      .select("id")
+      .eq("email", email)
+      .maybeSingle()
 
     if (data?.id) return data.id
   }
@@ -114,92 +112,121 @@ export async function POST(req: Request) {
 
     if (!email && !phone && !userIdFromBody) {
       return NextResponse.json(
-        { error: "Necesitamos usuario, email o WhatsApp para actualizar el perfil" },
+        { error: "Necesitamos email o WhatsApp para guardar tu perfil." },
         { status: 400 }
       )
     }
 
- let userId = await findUserId({
-  userId: userIdFromBody,
-  email,
-  phone
-})
-
-if (!userId) {
-  const newUserId = crypto.randomUUID()
-
-  const { data: createdUser, error: createUserError } = await supabase
-    .from("users")
-    .insert({
-      id: newUserId,
-      email: email || null,
-      name: name || ""
+    let userId = await findUserId({
+      userId: userIdFromBody,
+      email,
+      phone
     })
-    .select("id")
-    .single()
 
-  if (createUserError || !createdUser?.id) {
-    console.error("profile create user error", createUserError)
+    if (!userId) {
+      userId = crypto.randomUUID()
 
-    return NextResponse.json(
-      { error: "No se pudo crear el usuario para guardar el perfil" },
-      { status: 500 }
-    )
-  }
+      const { error: createUserError } = await supabase
+        .from("users")
+        .insert({
+          id: userId,
+          email: email || null,
+          name: name || ""
+        })
 
-  userId = createdUser.id
-}
+      if (createUserError) {
+        console.error("profile create user error", createUserError)
+
+        return NextResponse.json(
+          {
+            error:
+              createUserError.message ||
+              "No se pudo crear el usuario para guardar el perfil."
+          },
+          { status: 500 }
+        )
+      }
+    } else {
+      const userUpdatePayload: any = {}
+
+      if (email) userUpdatePayload.email = email
+      if (name) userUpdatePayload.name = name
+
+      if (Object.keys(userUpdatePayload).length > 0) {
+        await supabase
+          .from("users")
+          .update(userUpdatePayload)
+          .eq("id", userId)
+      }
+    }
 
     const profilePayload: any = {
       id: userId,
-      updated_at: new Date().toISOString()
+      name,
+      full_name: name,
+      email,
+      phone,
+      address,
+      city,
+      neighborhood
     }
 
-    if (name) {
-      profilePayload.name = name
-      profilePayload.full_name = name
-    }
+    Object.keys(profilePayload).forEach((key) => {
+      if (profilePayload[key] === "") {
+        delete profilePayload[key]
+      }
+    })
 
-    if (email) {
-      profilePayload.email = email
-    }
-
-    if (phone) {
-      profilePayload.phone = phone
-    }
-
-    if (address) {
-      profilePayload.address = address
-    }
-
-    if (city) {
-      profilePayload.city = city
-    }
-
-    if (neighborhood) {
-      profilePayload.neighborhood = neighborhood
-    }
-
-    const { data: profile, error: profileError } = await supabase
+    const { data: existingProfile } = await supabase
       .from("profiles")
-      .upsert(profilePayload)
-      .select(`
-        id,
-        name,
-        full_name,
-        email,
-        phone,
-        address,
-        city,
-        neighborhood
-      `)
-      .single()
+      .select("id")
+      .eq("id", userId)
+      .maybeSingle()
 
-    if (profileError) {
-      console.error("profile update error", profileError)
+    let profileResult
+
+    if (existingProfile?.id) {
+      profileResult = await supabase
+        .from("profiles")
+        .update(profilePayload)
+        .eq("id", userId)
+        .select(`
+          id,
+          name,
+          full_name,
+          email,
+          phone,
+          address,
+          city,
+          neighborhood
+        `)
+        .single()
+    } else {
+      profileResult = await supabase
+        .from("profiles")
+        .insert(profilePayload)
+        .select(`
+          id,
+          name,
+          full_name,
+          email,
+          phone,
+          address,
+          city,
+          neighborhood
+        `)
+        .single()
+    }
+
+    if (profileResult.error || !profileResult.data) {
+      console.error("profile save error", profileResult.error)
 
       return NextResponse.json(
-        { error: "No se pudo actualizar el perfil" },
+        {
+          error:
+            profileResult.error?.message ||
+            "No se pudo guardar el perfil."
+        },
         { status: 500 }
       )
     }
@@ -207,13 +234,17 @@ if (!userId) {
     if (address || city || phone || neighborhood) {
       const addressPayload: any = {
         user_id: userId,
-        updated_at: new Date().toISOString()
+        address,
+        city,
+        phone,
+        neighborhood
       }
 
-      if (address) addressPayload.address = address
-      if (city) addressPayload.city = city
-      if (phone) addressPayload.phone = phone
-      if (neighborhood) addressPayload.neighborhood = neighborhood
+      Object.keys(addressPayload).forEach((key) => {
+        if (addressPayload[key] === "") {
+          delete addressPayload[key]
+        }
+      })
 
       const { error: addressError } = await supabase
         .from("addresses")
@@ -224,16 +255,18 @@ if (!userId) {
       }
     }
 
+    const profile = profileResult.data
+
     return NextResponse.json({
       ok: true,
       user: {
         id: profile.id,
         name: profile.full_name || profile.name || "",
-        email: profile.email || "",
-        phone: profile.phone || "",
-        address: profile.address || "",
-        city: profile.city || "",
-        neighborhood: profile.neighborhood || ""
+        email: profile.email || email || "",
+        phone: profile.phone || phone || "",
+        address: profile.address || address || "",
+        city: profile.city || city || "",
+        neighborhood: profile.neighborhood || neighborhood || ""
       }
     })
   } catch (error: any) {
