@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import AppNav from "@/components/app/app-nav"
 
 type OrderItem = {
   id: string
@@ -114,7 +115,7 @@ export default function AppOrdersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-green-50 px-4 py-6">
+    <main className="min-h-screen bg-green-50 px-4 py-6 pb-28 md:pb-10">
       <div className="mx-auto max-w-4xl space-y-6">
         <section className="rounded-3xl bg-white p-6 shadow">
           <button
@@ -214,6 +215,7 @@ export default function AppOrdersPage() {
           ))}
         </div>
       </div>
+      <AppNav />
     </main>
   )
 }
