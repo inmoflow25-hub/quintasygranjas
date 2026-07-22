@@ -119,18 +119,36 @@ export async function POST(req: Request) {
       )
     }
 
-    const userId = await findUserId({
-      userId: userIdFromBody,
-      email,
-      phone
-    })
+ let userId = await findUserId({
+  userId: userIdFromBody,
+  email,
+  phone
+})
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "No encontramos el usuario para actualizar" },
-        { status: 404 }
-      )
-    }
+if (!userId) {
+  const newUserId = crypto.randomUUID()
+
+  const { data: createdUser, error: createUserError } = await supabase
+    .from("users")
+    .insert({
+      id: newUserId,
+      email: email || null,
+      name: name || ""
+    })
+    .select("id")
+    .single()
+
+  if (createUserError || !createdUser?.id) {
+    console.error("profile create user error", createUserError)
+
+    return NextResponse.json(
+      { error: "No se pudo crear el usuario para guardar el perfil" },
+      { status: 500 }
+    )
+  }
+
+  userId = createdUser.id
+}
 
     const profilePayload: any = {
       id: userId,
