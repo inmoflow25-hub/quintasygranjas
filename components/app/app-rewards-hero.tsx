@@ -99,25 +99,7 @@ export default function AppRewardsHero({
             Cada compra suma puntos. Cuando tenés saldo disponible, podés usarlo
             como descuento en tu próximo pedido.
           </p>
-
-          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-            {LEVELS.map((level) => {
-              const isCurrent = level === points?.current_level_name
-
-              return (
-                <span
-                  key={level}
-                  className={`shrink-0 rounded-full px-3 py-2 text-xs font-bold ${
-                    isCurrent
-                      ? "bg-green-700 text-white"
-                      : "bg-green-50 text-green-900"
-                  }`}
-                >
-                  {level}
-                </span>
-              )
-            })}
-          </div>
+         
         </div>
       </div>
     </section>
