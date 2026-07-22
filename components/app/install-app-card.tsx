@@ -109,6 +109,24 @@ export default function InstallAppCard() {
             <p className="mt-3 text-xs leading-relaxed text-stone-500">
               No necesitás App Store. Se agrega gratis desde la web.
             </p>
+            <div className="mt-4 rounded-2xl bg-stone-50 p-4">
+  <p className="text-sm font-semibold text-stone-800">
+    ¿No pudiste instalarla?
+  </p>
+
+  <p className="mt-1 text-sm text-stone-600">
+    Te ayudamos por WhatsApp.
+  </p>
+
+  <a
+    href={helpWhatsappUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="mt-3 block rounded-xl border border-green-700 px-4 py-3 text-center text-sm font-bold text-green-800"
+  >
+    Pedir ayuda
+  </a>
+</div>
           </div>
         </div>
       </section>
@@ -149,6 +167,24 @@ export default function InstallAppCard() {
                 {message}
               </p>
             )}
+            <div className="mt-4 rounded-2xl bg-stone-50 p-4">
+  <p className="text-sm font-semibold text-stone-800">
+    ¿No pudiste instalarla?
+  </p>
+
+  <p className="mt-1 text-sm text-stone-600">
+    Te ayudamos por WhatsApp.
+  </p>
+
+  <a
+    href={helpWhatsappUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="mt-3 block rounded-xl border border-green-700 px-4 py-3 text-center text-sm font-bold text-green-800"
+  >
+    Pedir ayuda
+  </a>
+</div>
           </div>
         </div>
       </section>
