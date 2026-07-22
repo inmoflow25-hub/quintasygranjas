@@ -16,11 +16,19 @@ export default function SuccessPage() {
     return params.get("payment")
   }, [])
 
+  const context = useMemo(() => {
+    if (typeof window === "undefined") return "web"
+    const params = new URLSearchParams(window.location.search)
+    return params.get("context") || "web"
+  }, [])
+
+  const isPwa = context === "pwa"
   const mpAlias = process.env.NEXT_PUBLIC_MP_ALIAS || ""
 
   useEffect(() => {
     localStorage.removeItem("qyg_checkout_cart")
     localStorage.removeItem("qyg_zona_norte_cart")
+    localStorage.removeItem("qyg_app_cart")
   }, [])
 
   const title =
@@ -28,18 +36,18 @@ export default function SuccessPage() {
       ? "No se pudo confirmar el pago"
       : payment === "pending"
         ? "Tu pago quedó pendiente"
-        : payment === "mp_transfer"
-          ? "¡Pedido recibido!"
-          : "¡Gracias por tu pedido!"
+        : "¡Pedido recibido!"
 
   const message =
     payment === "failure"
-      ? "Tu orden quedó registrada, pero el pago no fue aprobado."
+      ? "Tu pedido quedó registrado, pero el pago no fue aprobado."
       : payment === "pending"
-        ? "Tu orden quedó registrada. Cuando Mercado Pago confirme, la actualizamos."
-        : payment === "mp_transfer"
-          ? "Transferí al alias de Mercado Pago y mandanos el comprobante por WhatsApp para confirmar tu pedido."
-          : "Recibimos tu pedido. Por favor, mandanos un WhatsApp para confirmar."
+        ? "Tu pedido quedó registrado. Cuando Mercado Pago confirme el pago, lo actualizamos."
+        : isPwa
+          ? "Tu pedido ya está confirmado. Sumaste puntos con esta compra para usar en próximos pedidos desde la app."
+          : payment === "mp_transfer"
+            ? "Transferí al alias de Mercado Pago y mandanos el comprobante por WhatsApp."
+            : "Recibimos tu pedido. Por favor, mandanos un WhatsApp para confirmar."
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-green-50 px-6">
@@ -71,26 +79,49 @@ export default function SuccessPage() {
           </div>
         )}
 
-        <div className="flex flex-col gap-3">
-          <a
-            href="https://wa.me/5491168303596"
-            target="_blank"
-            rel="noreferrer"
-            className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold"
-          >
-            Hablar por WhatsApp
-          </a>
+        {isPwa ? (
+          <div className="flex flex-col gap-3">
+            <Link
+              href="/app/orders"
+              className="w-full bg-green-700 text-white py-3 rounded-xl font-semibold"
+            >
+              Ver mis pedidos
+            </Link>
 
-          <Link
-            href="/"
-            className="w-full border border-green-600 text-green-700 py-3 rounded-xl font-semibold"
-          >
-            Volver al inicio
-          </Link>
-        </div>
+            <Link
+              href="/app/rewards"
+              className="w-full border border-green-700 text-green-700 py-3 rounded-xl font-semibold"
+            >
+              Ver mis puntos
+            </Link>
+
+            <Link
+              href="/app"
+              className="w-full border border-gray-300 text-gray-700 py-3 rounded-xl font-semibold"
+            >
+              Volver a la app
+            </Link>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            <a
+              href="https://wa.me/5491168303596"
+              target="_blank"
+              rel="noreferrer"
+              className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold"
+            >
+              Hablar por WhatsApp
+            </a>
+
+            <Link
+              href="/"
+              className="w-full border border-green-600 text-green-700 py-3 rounded-xl font-semibold"
+            >
+              Volver al inicio
+            </Link>
+          </div>
+        )}
       </div>
     </main>
   )
 }
-
-
