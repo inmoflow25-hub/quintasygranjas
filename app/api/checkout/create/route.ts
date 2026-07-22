@@ -1045,20 +1045,22 @@ affiliate_discount_amount: affiliateDiscountAmount,
       )
     }
 
-    let pointsProcessingResult: any = null
+let pointsProcessingResult: any = null
 
-    if (initialStatus === "confirmed" && !isAffiliateOrder) {
+if (initialStatus === "confirmed" && !isAffiliateOrder) {
   try {
     pointsProcessingResult = await processConfirmedOrderPoints(order.id)
-  } catch (error) {
+  } catch (error: any) {
     console.error("points processing failed", error)
 
-    if (pointsToSpend > 0) {
-      return NextResponse.json(
-        { error: "No se pudo aplicar el canje de puntos" },
-        { status: 500 }
-      )
-    }
+    return NextResponse.json(
+      {
+        error:
+          error?.message ||
+          "El pedido se confirmó, pero no se pudieron procesar los puntos"
+      },
+      { status: 500 }
+    )
   }
 }
 
