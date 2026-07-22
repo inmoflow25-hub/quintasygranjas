@@ -35,7 +35,10 @@ export default function InstallAppCard() {
   const [isInstalled, setIsInstalled] = useState(false)
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [message, setMessage] = useState("")
+  const helpWhatsappUrl =
+  "https://wa.me/5491168303596?text=Hola%2C%20quiero%20instalar%20la%20app%20de%20Quintas%20y%20Granjas%20pero%20no%20pude%20hacerlo.%20%C2%BFMe%20ayudan%3F"
 
+  
   useEffect(() => {
     setDevice(getDeviceType())
     setIsInstalled(isStandaloneApp())
