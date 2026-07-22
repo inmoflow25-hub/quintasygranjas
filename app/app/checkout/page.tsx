@@ -201,6 +201,9 @@ useEffect(() => {
       return
     }
 
+localStorage.setItem("qyg_app_email", form.customer_email.trim().toLowerCase())
+localStorage.setItem("qyg_app_phone", form.customer_phone.trim())
+    
     setLoading(true)
 
    try {
