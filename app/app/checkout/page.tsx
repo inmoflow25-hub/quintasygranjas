@@ -385,43 +385,58 @@ localStorage.setItem("qyg_app_phone", form.customer_phone.trim())
             ))}
           </div>
 
-          {points && !isCandelaOrder && (
-            <div className="mt-6 rounded-2xl bg-green-50 p-4">
-              <p className="font-bold text-green-800">
-                {points.current_level_name}
-              </p>
+         {points && !isCandelaOrder && (
+  <div className="mt-6 rounded-2xl bg-green-50 p-4">
+    <p className="font-bold text-green-800">
+      Tus puntos
+    </p>
 
-              <p className="mt-1 text-sm text-green-900">
-                Tenés {points.available_points} puntos disponibles, equivalentes
-                a {money(points.available_discount_value)}.
-              </p>
+    <p className="mt-1 text-sm text-green-900">
+      {points.available_points > 0
+        ? `Tenés ${points.available_points} puntos disponibles.`
+        : "Todavía no tenés puntos disponibles."}
+    </p>
 
-              <div className="mt-4 flex gap-2">
-                <input
-                  className="w-full rounded-xl border px-4 py-3"
-                  placeholder="Puntos a usar"
-                  inputMode="numeric"
-                  value={pointsToSpend}
-                  onChange={(e) => setPointsToSpend(e.target.value)}
-                />
+    {points.available_points > 0 ? (
+      <>
+        <p className="mt-1 text-sm text-green-900">
+          Podés usarlos como descuento en este pedido.
+        </p>
 
-                <button
-                  type="button"
-                  onClick={quotePoints}
-                  className="rounded-xl bg-green-700 px-4 py-3 font-semibold text-white"
-                >
-                  Aplicar
-                </button>
-              </div>
+        {appliedDiscount > 0 ? (
+          <div className="mt-4 rounded-xl bg-white p-3">
+            <p className="text-sm font-semibold text-green-800">
+              Aplicaste {pointsNeeded} puntos.
+            </p>
+            <p className="text-sm text-green-900">
+              Ahorrás {money(appliedDiscount)} en este pedido.
+            </p>
 
-              {appliedDiscount > 0 && (
-                <p className="mt-3 text-sm font-semibold text-green-800">
-                  Usás {pointsNeeded} puntos y ahorrás{" "}
-                  {money(appliedDiscount)}.
-                </p>
-              )}
-            </div>
-          )}
+            <button
+              type="button"
+              onClick={removePoints}
+              className="mt-3 w-full rounded-xl border border-green-700 px-4 py-3 font-semibold text-green-700"
+            >
+              Quitar puntos
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={applyMaxPoints}
+            className="mt-4 w-full rounded-xl bg-green-700 px-4 py-3 font-semibold text-white"
+          >
+            Usar mis puntos disponibles
+          </button>
+        )}
+      </>
+    ) : (
+      <p className="mt-2 text-sm text-green-900">
+        Comprá desde la app y sumá puntos para descontar en próximas compras.
+      </p>
+    )}
+  </div>
+)}
 
           <div className="mt-6 space-y-3 border-t pt-4">
             <Row label="Subtotal" value={money(subtotal)} />
