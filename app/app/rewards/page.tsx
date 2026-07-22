@@ -134,16 +134,7 @@ export default function AppRewardsPage() {
             </section>
 
             <section className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-3xl bg-white p-6 shadow">
-                <p className="text-sm font-semibold text-gray-500">
-                  Nivel actual
-                </p>
-
-                <p className="mt-2 text-2xl font-bold text-gray-900">
-                  {points.current_level_name}
-                </p>
-              </div>
-
+          
               <div className="rounded-3xl bg-white p-6 shadow">
                 <p className="text-sm font-semibold text-gray-500">
                   Puntos acumulados
