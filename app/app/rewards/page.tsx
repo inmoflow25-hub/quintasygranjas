@@ -131,38 +131,39 @@ export default function AppRewardsPage() {
               </p>
             </section>
 
-            <section className="grid gap-4 md:grid-cols-2">
-          
-              <div className="rounded-3xl bg-white p-6 shadow">
-                <p className="text-sm font-semibold text-gray-500">
-                  Puntos acumulados
-                </p>
+          <section className="rounded-3xl bg-white p-6 shadow">
+  <div className="grid gap-6 md:grid-cols-3">
+    <div>
+      <p className="text-sm font-semibold text-gray-500">
+        Puntos acumulados
+      </p>
 
-                <p className="mt-2 text-2xl font-bold text-gray-900">
-                  {points.lifetime_points}
-                </p>
-              </div>
+      <p className="mt-2 text-2xl font-bold text-gray-900">
+        {points.lifetime_points}
+      </p>
+    </div>
 
-              <div className="rounded-3xl bg-white p-6 shadow">
-                <p className="text-sm font-semibold text-gray-500">
-                  Próximo vencimiento
-                </p>
+    <div>
+      <p className="text-sm font-semibold text-gray-500">
+        Próximo vencimiento
+      </p>
 
-                <p className="mt-2 text-2xl font-bold text-gray-900">
-                  {formatDate(points.next_expiration_at)}
-                </p>
-              </div>
+      <p className="mt-2 text-2xl font-bold text-gray-900">
+        {formatDate(points.next_expiration_at)}
+      </p>
+    </div>
 
-              <div className="rounded-3xl bg-white p-6 shadow">
-                <p className="text-sm font-semibold text-gray-500">
-                  Límite de uso
-                </p>
+    <div>
+      <p className="text-sm font-semibold text-gray-500">
+        Límite de uso
+      </p>
 
-                <p className="mt-2 text-2xl font-bold text-gray-900">
-                  Hasta {points.max_redemption_percent}% del pedido
-                </p>
-              </div>
-            </section>
+      <p className="mt-2 text-2xl font-bold text-gray-900">
+        Hasta {points.max_redemption_percent}% del pedido
+      </p>
+    </div>
+  </div>
+</section>
 
             <section className="rounded-3xl bg-white p-6 shadow">
               <h2 className="text-xl font-bold text-gray-900">
