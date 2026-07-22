@@ -1151,7 +1151,7 @@ final_price: finalPrice,
     if (payment_method === "cash" || payment_method === "mp_transfer") {
       return NextResponse.json({
         ...baseResponse,
-        redirect_to: `/success?order_id=${order.id}&order_number=${order.order_number}&payment=${payment_method}`
+        redirect_to: `/success?order_id=${order.id}&order_number=${order.order_number}&payment=${payment_method}&context=${appContext}`
       })
     }
 
@@ -1180,11 +1180,11 @@ final_price: finalPrice,
         },
         external_reference: order.id,
         notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mercadopago/webhook`,
-        back_urls: {
-          success: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}`,
-          failure: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&payment=failure`,
-          pending: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&payment=pending`
-        },
+       back_urls: {
+  success: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&context=${appContext}`,
+  failure: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&payment=failure&context=${appContext}`,
+  pending: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&payment=pending&context=${appContext}`
+},
         auto_return: "approved"
       }
     })
