@@ -139,10 +139,37 @@ export default function SuccessPage() {
               Volver a la app
             </Link>
           </div>
-        ) : (
-          <div className="flex flex-col gap-3">
-            <a
-              href="https://wa.me/5491168303596"
+       ) : (
+  <div className="flex flex-col gap-3">
+    <div className="rounded-2xl bg-green-50 p-5 text-left">
+      <p className="text-lg font-bold text-green-800">
+        La próxima compra hacela más fácil 🌱 Y además sumá puntos y ahorrá!
+      </p>
+
+      <p className="mt-2 text-sm text-green-900">
+        Instalá la app gratis y comprá más rápido, repetí pedidos en segundos y sumá puntos cashback para próximas compras.
+      </p>
+
+      <p className="mt-2 text-sm text-green-900">
+        Funciona en iPhone y Android. No necesitás App Store ni Play Store: se agrega a tu pantalla de inicio desde la web.
+      </p>
+
+      {installTarget.device === "ios" && (
+        <p className="mt-2 text-xs font-semibold text-green-800">
+          En iPhone te mostramos cómo agregarla a tu pantalla de inicio.
+        </p>
+      )}
+
+      <Link
+        href={installTarget.href}
+        className="mt-4 block w-full rounded-xl bg-green-700 py-3 text-center font-semibold text-white"
+      >
+        {installTarget.label}
+      </Link>
+    </div>
+
+    <a
+      href="https://wa.me/5491168303596"
               target="_blank"
               rel="noreferrer"
               className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold"
