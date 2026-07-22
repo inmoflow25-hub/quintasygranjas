@@ -144,39 +144,38 @@ useEffect(() => {
     }))
   }
 
-  async function quotePoints() {
-    const cleanPoints = Number(pointsToSpend || 0)
+async function applyMaxPoints() {
+  if (!points || points.available_points <= 0) return
 
-    if (!cleanPoints || cleanPoints <= 0) {
-      setAppliedDiscount(0)
-      setPointsNeeded(0)
-      return
-    }
-
-    if (subtotal < 20000) {
-      alert("El pedido mínimo es de $20.000")
-      return
-    }
-
-    const res = await fetch("/api/app/redemption/quote", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        subtotal,
-        points_to_spend: cleanPoints
-      })
-    })
-
-    const data = await res.json()
-
-    if (!res.ok) {
-      alert(data?.error || "No se pudo calcular el descuento")
-      return
-    }
-
-    setAppliedDiscount(Number(data.applied_discount || 0))
-    setPointsNeeded(Number(data.points_needed_for_applied_discount || 0))
+  if (subtotal < 20000) {
+    alert("El pedido mínimo es de $20.000")
+    return
   }
+
+  const res = await fetch("/api/app/redemption/quote", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      subtotal,
+      points_to_spend: points.available_points
+    })
+  })
+
+  const data = await res.json()
+
+  if (!res.ok) {
+    alert(data?.error || "No se pudo calcular el descuento")
+    return
+  }
+
+  setAppliedDiscount(Number(data.applied_discount || 0))
+  setPointsNeeded(Number(data.points_needed_for_applied_discount || 0))
+}
+
+function removePoints() {
+  setAppliedDiscount(0)
+  setPointsNeeded(0)
+}
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
