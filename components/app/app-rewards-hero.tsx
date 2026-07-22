@@ -5,7 +5,6 @@ import { useEffect, useState } from "react"
 type PointsSummary = {
   available_points: number
   available_discount_value: number
-  current_level_name: string
   next_expiration_at: string | null
 }
 
@@ -20,12 +19,12 @@ const images = [
   "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/WhatsApp%20Image%202026-03-14%20at%2011.13.19.jpeg"
 ]
 
-const LEVELS = [
+{/*const LEVELS = [
   "Nivel 1 — Semilla",
   "Nivel 2 — Brote",
   "Nivel 3 — Huerta",
   "Nivel 4 — Granja"
-]
+]*/}
 
 function money(value: number) {
   return `$${Math.round(value || 0).toLocaleString("es-AR")}`
