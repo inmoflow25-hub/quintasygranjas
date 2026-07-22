@@ -68,6 +68,23 @@ async function findUserId({
 
 export async function POST(req: Request) {
   try {
+    const pushSecret = process.env.PUSH_SEND_SECRET
+    const incomingSecret = req.headers.get("x-push-secret")
+
+    if (!pushSecret) {
+      return NextResponse.json(
+        { error: "Falta configurar PUSH_SEND_SECRET" },
+        { status: 500 }
+      )
+    }
+
+    if (incomingSecret !== pushSecret) {
+      return NextResponse.json(
+        { error: "No autorizado" },
+        { status: 401 }
+      )
+    }
+
     if (!vapidPublicKey || !vapidPrivateKey) {
       return NextResponse.json(
         {
