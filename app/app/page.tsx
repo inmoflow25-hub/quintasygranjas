@@ -179,6 +179,8 @@ export default function AppHomePage() {
   return (
     <main className="min-h-screen bg-green-50 px-4 py-6 pb-28 md:pb-10">
       <div className="mx-auto max-w-5xl space-y-6">
+         <AppNav />
+        
      <AppRewardsHero
   userName={user?.name}
   points={points}
@@ -220,7 +222,6 @@ export default function AppHomePage() {
           </div>
         )}
       </div>
-      <AppNav />
     </main>
   )
 }
