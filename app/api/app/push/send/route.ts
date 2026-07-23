@@ -25,8 +25,40 @@ function normalizeEmail(email: string | null | undefined) {
   return String(email || "").trim().toLowerCase()
 }
 
-function normalizePhone(phone: string | null | undefined) {
-  return String(phone || "").replace(/\D/g, "")
+function normalizeArgentinaPhone(rawPhone: string | null | undefined) {
+  let phone = String(rawPhone || "").replace(/\D/g, "")
+
+  if (!phone) return ""
+
+  if (phone.startsWith("00")) {
+    phone = phone.slice(2)
+  }
+
+  if (phone.startsWith("011")) {
+    phone = `11${phone.slice(3)}`
+  }
+
+  if (phone.startsWith("15") && phone.length >= 10) {
+    phone = `11${phone.slice(2)}`
+  }
+
+  if (phone.startsWith("5411")) {
+    phone = `54911${phone.slice(4)}`
+  }
+
+  if (phone.startsWith("54911")) {
+    return `+${phone}`
+  }
+
+  if (phone.startsWith("11")) {
+    return `+549${phone}`
+  }
+
+  if (phone.startsWith("54") && !phone.startsWith("549")) {
+    return `+549${phone.slice(2)}`
+  }
+
+  return `+54${phone}`
 }
 
 async function findUserId({
