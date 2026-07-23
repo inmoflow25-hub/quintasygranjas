@@ -1,5 +1,6 @@
 import { Leaf, MessageCircle, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import AppBrand from "@/components/app/app-brand"
 
 interface FooterProps {
   onWhatsAppClick: () => void
@@ -14,13 +15,11 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
 
           {/* BRAND */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-                <Leaf className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-bold text-background">
-                Quintas y Granjas
-              </span>
+           <AppBrand
+  href="/"
+  iconClassName="h-10 w-10"
+  logoClassName="h-14 w-auto"
+/>
             </div>
 
             <p className="text-background/70 leading-relaxed">
