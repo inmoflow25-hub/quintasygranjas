@@ -647,8 +647,7 @@ export default function CartMobileStickyTest({
   const [paymentMethod, setPaymentMethod] = useState<"mp" | "cash">("mp")
   const [loading, setLoading] = useState(false)
   const [expandedBoxId, setExpandedBoxId] = useState<string | null>(null)
-  const [repeatEmail, setRepeatEmail] = useState("")
-  const [repeatLoading, setRepeatLoading] = useState(false)
+
 
  const PRODUCTS = useMemo(() => {
   return dbProducts.map(normalizeProduct)
