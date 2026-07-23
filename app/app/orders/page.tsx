@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import AppNav from "@/components/app/app-nav"
+import AppBrand from "@/components/app/app-brand"
 
 type OrderItem = {
   id: string
@@ -121,6 +122,11 @@ function repeatOrder(order: Order) {
 
   return (
     <main className="min-h-screen bg-green-50 px-4 py-6">
+      <div className="flex justify-center">
+  <AppBrand href="/app" />
+</div>
+
+<AppNav />
       <div className="mx-auto max-w-4xl space-y-6">
         <section className="rounded-3xl bg-white p-6 shadow">
         
