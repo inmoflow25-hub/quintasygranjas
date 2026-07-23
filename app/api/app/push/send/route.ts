@@ -132,7 +132,7 @@ export async function POST(req: Request) {
 
     const type = String(body.type || "welcome") as PushTemplateKey
     const email = normalizeEmail(body.email)
-    const phone = normalizePhone(body.phone)
+    const phone = normalizeArgentinaPhone(body.phone)
 
     const deliveryWindow = String(body.deliveryWindow || "").trim()
     const pointsValue = Number(body.pointsValue || 0)
