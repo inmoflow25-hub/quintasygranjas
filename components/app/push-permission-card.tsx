@@ -197,16 +197,14 @@ if (permission === "granted") {
             o puntos por vencer.
           </p>
 
-          {permission !== "granted" && (
-            <button
-              type="button"
-              onClick={activatePush}
-              disabled={isLoading}
-              className="mt-4 rounded-2xl bg-green-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-green-800 disabled:cursor-not-allowed disabled:bg-stone-300"
-            >
-              {isLoading ? "Activando..." : "Activar avisos"}
-            </button>
-          )}
+          <button
+  type="button"
+  onClick={activatePush}
+  disabled={isLoading}
+  className="mt-4 rounded-2xl bg-green-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-green-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+>
+  {isLoading ? "Activando..." : "Activar avisos"}
+</button>
 
           {message && (
             <p className="mt-3 text-sm leading-relaxed text-stone-600">
