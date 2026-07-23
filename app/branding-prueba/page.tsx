@@ -1,15 +1,8 @@
-import { Mali } from "next/font/google"
-
-const mali = Mali({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-})
 
 export default function BrandingPruebaPage() {
   return (
     <main
-      className={`${mali.className} min-h-screen bg-[#fff8f0] text-[#06150a]`}
-    >
+className="min-h-screen bg-[#fff8f0] text-[#06150a]"    >
       <header className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
       <a href="/branding-prueba" className="flex items-center gap-3">
   <img
