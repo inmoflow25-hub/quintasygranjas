@@ -12,16 +12,15 @@ const mali = Mali({
 })
 
 export const metadata: Metadata = {
-  title:
-    "Quintas y Granjas | Alimentos de verdad directo a tu domicilio",
+  title: "Quintas y Granjas | Alimentos de verdad directo a tu domicilio",
   description:
-    "Simepre sumás puntos y ganás desceuntos usando la app de Quintas y Granjas. Sin supermercado. Sin filas. Entregas sin costo.",
+    "Siempre sumás puntos y ganás descuentos usando la app de Quintas y Granjas. Sin supermercado. Sin filas. Entregas sin costo.",
   generator: "v0.app",
   manifest: "/manifest.json",
-icons: {
-  icon: "/icons/push-icon-192.png?v=10",
-  apple: "/icons/push-icon-192.png?v=10"
-},
+  icons: {
+    icon: "/icons/push-icon-192.png?v=10",
+    apple: "/icons/push-icon-192.png?v=10"
+  },
   appleWebApp: {
     capable: true,
     title: "Quintas y Granjas",
@@ -45,7 +44,7 @@ export default function RootLayout({
     <html lang="es" className={mali.variable}>
       <body
         className="antialiased"
-       style={{ fontFamily: "var(--font-mali)" }}
+        style={{ fontFamily: "var(--font-mali)" }}
       >
         {/* META PIXEL */}
         <Script id="meta-pixel" strategy="afterInteractive">
@@ -79,40 +78,40 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
 
-   {/* PWA INSTALL + SERVICE WORKER */}
-<Script id="pwa-install-handler" strategy="beforeInteractive">
-  {`
-    window.qygInstallPrompt = null;
+        {/* PWA INSTALL + SERVICE WORKER */}
+        <Script id="pwa-install-handler" strategy="beforeInteractive">
+          {`
+            window.qygInstallPrompt = null;
 
-    window.addEventListener("beforeinstallprompt", function (event) {
-      event.preventDefault();
-      window.qygInstallPrompt = event;
-      window.dispatchEvent(new Event("qyg-install-ready"));
-      console.log("QYG install prompt ready");
-    });
+            window.addEventListener("beforeinstallprompt", function (event) {
+              event.preventDefault();
+              window.qygInstallPrompt = event;
+              window.dispatchEvent(new Event("qyg-install-ready"));
+              console.log("QYG install prompt ready");
+            });
 
-    window.addEventListener("appinstalled", function () {
-      window.qygInstallPrompt = null;
-      window.location.href = "/app?source=pwa-installed";
-    });
-  `}
-</Script>
+            window.addEventListener("appinstalled", function () {
+              window.qygInstallPrompt = null;
+              window.location.href = "/app?source=pwa-installed";
+            });
+          `}
+        </Script>
 
-<Script id="register-service-worker" strategy="afterInteractive">
-  {`
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("/sw.js", { scope: "/" })
-        .then(function (registration) {
-          console.log("Service worker registered:", registration.scope);
-          registration.update();
-        })
-        .catch(function (error) {
-          console.error("Service worker registration failed:", error);
-        });
-    }
-  `}
-</Script>
+        <Script id="register-service-worker" strategy="afterInteractive">
+          {`
+            if ("serviceWorker" in navigator) {
+              navigator.serviceWorker
+                .register("/sw.js", { scope: "/" })
+                .then(function (registration) {
+                  console.log("Service worker registered:", registration.scope);
+                  registration.update();
+                })
+                .catch(function (error) {
+                  console.error("Service worker registration failed:", error);
+                });
+            }
+          `}
+        </Script>
 
         {children}
         <Analytics />
