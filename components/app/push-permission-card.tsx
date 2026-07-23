@@ -145,29 +145,35 @@ if (!registration.active) {
     }
   }
 
-  if (permission === "unsupported") {
-    return (
-      <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-        <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-stone-100 text-xl">
-            🔕
-          </div>
-          <div>
-            <h2 className="font-serif text-xl font-bold text-stone-950">
-              Avisos de la app
-            </h2>
-            <p className="mt-1 text-sm leading-relaxed text-stone-600">
-              Este navegador no permite activar notificaciones push. Podés seguir
-              usando la app normalmente.
-            </p>
-          </div>
+if (permission === "unsupported") {
+  return (
+    <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+      <div className="flex items-start gap-3">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-stone-100 text-xl">
+          🔕
         </div>
-      </section>
-    )
-  }
- if (permission === "granted") {
+
+        <div>
+          <h2 className="font-serif text-xl font-bold text-stone-950">
+            Avisos de la app
+          </h2>
+
+          <p className="mt-1 text-sm leading-relaxed text-stone-600">
+            Este navegador no permite activar notificaciones push. Podés seguir
+            usando la app normalmente.
+          </p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+if (permission === "granted") {
   return null
- }
+}
+
+
+ 
   return (
     <section className="rounded-3xl border border-green-100 bg-white p-5 shadow-sm">
       <div className="flex items-start gap-3">
