@@ -194,21 +194,7 @@ export default function AppHomePage() {
 )}
 
         
-        <section className="flex gap-3">
-          <button
-            onClick={() => router.push("/app/orders")}
-            className="rounded-xl bg-white px-4 py-3 font-semibold shadow"
-          >
-            Mis pedidos
-          </button>
-
-          <button
-            onClick={() => router.push("/app/profile")}
-            className="rounded-xl bg-white px-4 py-3 font-semibold shadow"
-          >
-            Mi perfil
-          </button>
-        </section>
+      
 
    <section id="cart" className="scroll-mt-32">
   <CartMobileStickyTest />
