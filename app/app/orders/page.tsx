@@ -94,37 +94,36 @@ export default function AppOrdersPage() {
     }
   }
 
-  function repeatOrder(order: Order) {
-    const cart = order.items
-      .filter((item) => item.source_type !== "reward")
-      .map((item) => ({
-        id: item.id,
-        name: item.product_name,
-        product_name: item.product_name,
-        quantity: item.quantity,
-        price: item.price
-      }))
+function repeatOrder(order: Order) {
+  const cart = order.items
+    .filter((item) => item.source_type !== "reward")
+    .map((item) => ({
+      id: item.id || item.product_name,
+      name: item.product_name,
+      product_name: item.product_name,
+      quantity: Number(item.quantity || 1),
+      price: Number(item.price || 0),
+      type: "unit",
+      unit_label: "unidad",
+      category: "repetido",
+      image: "",
+      description: ""
+    }))
 
-    if (!cart.length) {
-      alert("Este pedido no tiene productos para repetir")
-      return
-    }
-
-    localStorage.setItem("qyg_app_cart", JSON.stringify(cart))
-    router.push("/app/checkout")
+  if (!cart.length) {
+    alert("Este pedido no tiene productos para repetir")
+    return
   }
 
+  localStorage.setItem("qyg_app_cart", JSON.stringify(cart))
+  router.push("/app/checkout")
+}
+
   return (
-    <main className="min-h-screen bg-green-50 px-4 py-6 pb-28 md:pb-10">
+    <main className="min-h-screen bg-green-50 px-4 py-6">
       <div className="mx-auto max-w-4xl space-y-6">
         <section className="rounded-3xl bg-white p-6 shadow">
-          <button
-            onClick={() => router.push("/app")}
-            className="mb-4 text-sm font-semibold text-green-700"
-          >
-            ← Volver a la app
-          </button>
-
+        
           <h1 className="text-3xl font-bold text-gray-900">Mis pedidos</h1>
 
           <p className="mt-2 text-gray-600">
