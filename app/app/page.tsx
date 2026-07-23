@@ -8,6 +8,7 @@ import { CANDELA_ATTRIBUTION, saveAttribution } from "@/lib/attribution"
 import CartMobileStickyTest from "@/components/cart/cart-mobile-sticky-test"
 import AppRewardsHero from "@/components/app/app-rewards-hero"
 import AppNav from "@/components/app/app-nav"
+import AppBrand from "@/components/app/app-brand"
 
 type Product = {
   id: string
@@ -177,6 +178,9 @@ export default function AppHomePage() {
   }
 
   return (
+    <div className="flex justify-center">
+  <AppBrand href="/app" />
+</div>
     <main className="min-h-screen bg-green-50 px-4 py-6 pb-28 md:pb-10">
       <div className="mx-auto max-w-5xl space-y-6">
          <AppNav />
