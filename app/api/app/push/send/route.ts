@@ -78,22 +78,15 @@ async function findUserId({
     if (data?.id) return data.id
   }
 
-  if (phone) {
-    const possiblePhones = [
-      phone,
-      `+54${phone}`,
-      `+549${phone}`,
-      phone.startsWith("11") ? `+549${phone}` : phone
-    ]
+if (phone) {
+  const { data } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("phone", phone)
+    .maybeSingle()
 
-    const { data } = await supabase
-      .from("profiles")
-      .select("id")
-      .in("phone", possiblePhones)
-      .maybeSingle()
-
-    if (data?.id) return data.id
-  }
+  if (data?.id) return data.id
+}
 
   return null
 }
