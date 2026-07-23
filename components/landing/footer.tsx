@@ -11,7 +11,6 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
     <footer className="bg-[#06150a] py-16">
       <div className="container mx-auto px-4">
         <div className="grid gap-12 md:grid-cols-3">
-          {/* BRAND */}
           <div>
             <AppBrand
               href="/"
@@ -25,7 +24,6 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
             </p>
           </div>
 
-          {/* ZONA */}
           <div>
             <h4 className="mb-4 flex items-center gap-2 font-bold text-white">
               <MapPin className="h-5 w-5" />
@@ -33,8 +31,12 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
             </h4>
 
             <p className="leading-relaxed text-white/70">
-              Cubrimos toda <span className="font-medium text-white">CABA NORTE</span>{" "}
-              y <span className="font-medium text-white">Gran Buenos Aires NORTE</span>.
+              Cubrimos toda{" "}
+              <span className="font-medium text-white">CABA NORTE</span> y{" "}
+              <span className="font-medium text-white">
+                Gran Buenos Aires NORTE
+              </span>
+              .
               <br />
               Coordinamos la entrega según tu ubicación.
             </p>
@@ -44,7 +46,6 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
             </p>
           </div>
 
-          {/* CTA */}
           <div>
             <h4 className="mb-4 font-bold text-white">¿Tenés dudas?</h4>
 
@@ -67,7 +68,6 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
           </div>
         </div>
 
-        {/* COPYRIGHT */}
         <div className="mt-12 border-t border-white/10 pt-8 text-center">
           <p className="text-sm text-white/50">
             © {new Date().getFullYear()} Quintas y Granjas. Todos los derechos
