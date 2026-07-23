@@ -146,9 +146,6 @@ if (!registration.active) {
   }
 
   if (permission === "unsupported") {
-    if (permission === "granted") {
-  return null
-}
     return (
       <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
         <div className="flex items-start gap-3">
@@ -168,7 +165,9 @@ if (!registration.active) {
       </section>
     )
   }
-
+ if (permission === "granted") {
+  return null
+ }
   return (
     <section className="rounded-3xl border border-green-100 bg-white p-5 shadow-sm">
       <div className="flex items-start gap-3">
