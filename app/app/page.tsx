@@ -177,55 +177,49 @@ export default function AppHomePage() {
     router.push("/app/checkout")
   }
 
-  return (
-    <div className="flex justify-center">
-  <AppBrand href="/app" />
-</div>
-    <main className="min-h-screen bg-green-50 px-4 py-6 pb-28 md:pb-10">
-      <div className="mx-auto max-w-5xl space-y-6">
-         <AppNav />
-        
-     <AppRewardsHero
-  userName={user?.name}
-  points={points}
-/>
-        <InstallAppCard />
-      
+return (
+  <main className="min-h-screen bg-green-50 px-4 py-6 pb-28 md:pb-10">
+    <div className="mx-auto max-w-5xl space-y-6">
+      <div className="flex justify-center">
+        <AppBrand href="/app" />
+      </div>
+
+      <AppNav />
+
+      <AppRewardsHero userName={user?.name} points={points} />
+
+      <InstallAppCard />
 
       {user && (
-  <PushPermissionCard
-    email={user.email || email}
-    phone={user.phone || phone}
-  />
-)}
+        <PushPermissionCard
+          email={user.email || email}
+          phone={user.phone || phone}
+        />
+      )}
 
-        
-      
+      <section id="cart" className="scroll-mt-32">
+        <CartMobileStickyTest />
+      </section>
 
-   <section id="cart" className="scroll-mt-32">
-  <CartMobileStickyTest />
-</section>
-
-        {cart.length > 0 && (
-          <div className="sticky bottom-4 rounded-2xl bg-green-800 p-4 text-white shadow-xl">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-semibold">
-                  {cart.reduce((acc, item) => acc + item.quantity, 0)} productos
-                </p>
-                <p className="text-xl font-bold">{money(subtotal)}</p>
-              </div>
-
-              <button
-                onClick={goToCheckout}
-                className="rounded-xl bg-white px-5 py-3 font-bold text-green-800"
-              >
-                Ir al checkout
-              </button>
+      {cart.length > 0 && (
+        <div className="sticky bottom-4 rounded-2xl bg-green-800 p-4 text-white shadow-xl">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-semibold">
+                {cart.reduce((acc, item) => acc + item.quantity, 0)} productos
+              </p>
+              <p className="text-xl font-bold">{money(subtotal)}</p>
             </div>
+
+            <button
+              onClick={goToCheckout}
+              className="rounded-xl bg-white px-5 py-3 font-bold text-green-800"
+            >
+              Ir al checkout
+            </button>
           </div>
-        )}
-      </div>
-    </main>
-  )
-}
+        </div>
+      )}
+    </div>
+  </main>
+)
