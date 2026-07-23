@@ -732,52 +732,6 @@ export default function CartMobileStickyTest({
     setExpandedBoxId((prev) => (prev === productId ? null : productId))
   }
 
-  async function repeatLastOrder() {
-    const email = repeatEmail.trim().toLowerCase()
-
-    if (!email) {
-      alert("Ingresá el email con el que hiciste tu compra anterior")
-      return
-    }
-
-    setRepeatLoading(true)
-
-    try {
-      const res = await fetch("/api/orders/last", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email })
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        alert(data?.error || "No pudimos encontrar tu último pedido")
-        return
-      }
-
-      const repeatedItems: CartItem[] = data.items.map((item: any) => ({
-        id: String(item.product_name),
-        name: String(item.product_name),
-        quantity: Number(item.quantity || 1),
-        price: Number(item.price || 0),
-        type: "unit",
-        unit_label: "unidad",
-        category: "repetido",
-        image: "",
-        description: ""
-      }))
-
-      setCart(repeatedItems)
-    } catch (error) {
-      console.error(error)
-      alert("Error buscando tu último pedido")
-    } finally {
-      setRepeatLoading(false)
-    }
-  }
 
   async function handleCheckout() {
     if (cart.length === 0) {
@@ -966,26 +920,7 @@ window.location.assign(isAppRoute ? "/app/checkout" : "/checkout?source=cart")
         {/* CARRITO VERDE DESKTOP */}
         <div className="hidden md:block md:col-span-1">
           <div className="sticky top-24 rounded-xl p-5 bg-green-600 text-white shadow-lg">
-            <div className="mb-4 rounded-xl bg-white/15 p-3">
-              <p className="mb-2 text-sm font-semibold">¿Ya compraste antes?</p>
-
-              <input
-                className="mb-2 w-full rounded-lg px-3 py-2 text-sm text-black"
-                placeholder="Tu email"
-                value={repeatEmail}
-                onChange={(e) => setRepeatEmail(e.target.value)}
-              />
-
-              <button
-                type="button"
-                onClick={repeatLastOrder}
-                disabled={repeatLoading}
-                className="w-full rounded-lg bg-black px-3 py-2 text-sm font-semibold text-white"
-              >
-                {repeatLoading ? "Buscando..." : "Repetir último pedido"}
-              </button>
-            </div>
-
+         
             <h3 className="text-xl font-bold mb-4">Mi pedido</h3>
 
             {cart.length === 0 && (
