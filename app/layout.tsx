@@ -1,13 +1,14 @@
 import type { Metadata, Viewport } from "next"
-import { Playfair_Display } from "next/font/google"
+import { Mali } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import Script from "next/script"
 import "./globals.css"
 import "leaflet/dist/leaflet.css"
 
-const playfair = Playfair_Display({
+const mali = Mali({
   subsets: ["latin"],
-  variable: "--font-playfair"
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-mali"
 })
 
 export const metadata: Metadata = {
@@ -41,10 +42,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es" className={playfair.variable}>
+    <html lang="es" className={mali.variable}>
       <body
         className="antialiased"
-        style={{ fontFamily: "var(--font-playfair)" }}
+       style={{ fontFamily: "var(--font-mali)" }}
       >
         {/* META PIXEL */}
         <Script id="meta-pixel" strategy="afterInteractive">
