@@ -54,14 +54,9 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
             </p>
 
             <Button
-              onClick={() => {
-                window.open(
-                  "https://wa.me/5491168303596?text=Hola%20quiero%20información%20sobre%20las%20cajas%20de%20Quintas%20y%20Granjas",
-                  "_blank"
-                )
-              }}
-              className="bg-[#25D366] text-white hover:bg-[#25D366]/90"
-            >
+  onClick={onWhatsAppClick}
+  className="bg-[#25D366] text-white hover:bg-[#25D366]/90"
+>
               <MessageCircle className="mr-2 h-5 w-5" />
               WhatsApp
             </Button>
