@@ -31,11 +31,11 @@ const CATEGORY_LABELS: Record<string, string> = {
 const CATEGORY_ICONS: Record<string, string> = {
   cajas_armadas:,
   verduras:,
-  frutas: ,
-  frutos_secos: ,
-  otros: ,
-  pollo: ,
-  congelados: ,
+  frutas:,
+  frutos_secos:,
+  otros:,
+  pollo:,
+  congelados:,
   comidas_listas_para_horno: 
 }
 
