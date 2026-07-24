@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { getStoredAttribution, isCandelaAttribution } from "@/lib/attribution"
+import AppBrand from "@/components/app/app-brand"
 
 type CartItem = {
   id: string
@@ -254,208 +255,207 @@ localStorage.setItem("qyg_app_phone", form.customer_phone.trim())
     }
   }
 
-  return (
-    <main className="min-h-screen bg-green-50 px-4 py-6">
-      <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-2">
-        <section className="rounded-3xl bg-white p-6 shadow">
-          <button
-            onClick={() => router.push("/app")}
-            className="mb-4 text-sm font-semibold text-green-700"
-          >
-            ← Volver a la app
-          </button>
+   return (
+    <main className="min-h-screen bg-green-50 px-4 py-6 pb-28 md:pb-10">
+      <div className="mx-auto max-w-6xl space-y-6">
+        <div className="flex justify-center">
+          <AppBrand href="/app" />
+        </div>
 
-          <h1 className="text-3xl font-bold text-gray-900">Finalizá tu pedido</h1>
+        <div className="grid gap-6 md:grid-cols-2">
+          <section className="rounded-3xl bg-white p-6 shadow">
+            <h1 className="text-3xl font-bold text-gray-900">
+              Finalizá tu pedido
+            </h1>
 
-<p className="mt-2 text-gray-600">
-  Confirmá tus datos, elegí cómo pagar y aplicá tus puntos si tenés disponibles.
-</p>
+            <p className="mt-2 text-gray-600">
+              Confirmá tus datos, elegí cómo pagar y aplicá tus puntos si tenés disponibles.
+            </p>
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-            <input
-              className="w-full rounded-xl border px-4 py-3"
-              placeholder="Nombre y apellido"
-              value={form.customer_name}
-              onChange={(e) => updateField("customer_name", e.target.value)}
-              required
-            />
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+              <input
+                className="w-full rounded-xl border px-4 py-3"
+                placeholder="Nombre y apellido"
+                value={form.customer_name}
+                onChange={(e) => updateField("customer_name", e.target.value)}
+                required
+              />
 
-            <input
-              className="w-full rounded-xl border px-4 py-3"
-              placeholder="Email"
-              type="email"
-              value={form.customer_email}
-              onChange={(e) => updateField("customer_email", e.target.value)}
-              required
-            />
+              <input
+                className="w-full rounded-xl border px-4 py-3"
+                placeholder="Email"
+                type="email"
+                value={form.customer_email}
+                onChange={(e) => updateField("customer_email", e.target.value)}
+                required
+              />
 
-            <input
-              className="w-full rounded-xl border px-4 py-3"
-              placeholder="WhatsApp"
-              value={form.customer_phone}
-              onChange={(e) => updateField("customer_phone", e.target.value)}
-              required
-            />
+              <input
+                className="w-full rounded-xl border px-4 py-3"
+                placeholder="WhatsApp"
+                value={form.customer_phone}
+                onChange={(e) => updateField("customer_phone", e.target.value)}
+                required
+              />
 
-            <input
-              className="w-full rounded-xl border px-4 py-3"
-              placeholder="Dirección de entrega"
-              value={form.delivery_address}
-              onChange={(e) => updateField("delivery_address", e.target.value)}
-              required
-            />
+              <input
+                className="w-full rounded-xl border px-4 py-3"
+                placeholder="Dirección de entrega"
+                value={form.delivery_address}
+                onChange={(e) => updateField("delivery_address", e.target.value)}
+                required
+              />
 
-            <input
-              className="w-full rounded-xl border px-4 py-3"
-              placeholder="Ciudad"
-              value={form.delivery_city}
-              onChange={(e) => updateField("delivery_city", e.target.value)}
-              required
-            />
+              <input
+                className="w-full rounded-xl border px-4 py-3"
+                placeholder="Ciudad"
+                value={form.delivery_city}
+                onChange={(e) => updateField("delivery_city", e.target.value)}
+                required
+              />
 
-            <textarea
-              className="w-full rounded-xl border px-4 py-3"
-              placeholder="Notas para la entrega"
-              value={form.delivery_notes}
-              onChange={(e) => updateField("delivery_notes", e.target.value)}
-            />
+              <textarea
+                className="w-full rounded-xl border px-4 py-3"
+                placeholder="Notas para la entrega"
+                value={form.delivery_notes}
+                onChange={(e) => updateField("delivery_notes", e.target.value)}
+              />
 
-            <div className="rounded-2xl border p-4">
-              <p className="mb-3 font-semibold">Método de pago</p>
+              <div className="rounded-2xl border p-4">
+                <p className="mb-3 font-semibold">Método de pago</p>
 
-              <label className="mb-2 flex items-center gap-2">
-                <input
-                  type="radio"
-                  checked={paymentMethod === "mercadopago"}
-                  onChange={() => setPaymentMethod("mercadopago")}
-                />
-                Tarjeta / Mercado Pago
-              </label>
+                <label className="mb-2 flex items-center gap-2">
+                  <input
+                    type="radio"
+                    checked={paymentMethod === "mercadopago"}
+                    onChange={() => setPaymentMethod("mercadopago")}
+                  />
+                  Tarjeta / Mercado Pago
+                </label>
 
-              <label className="mb-2 flex items-center gap-2">
-                <input
-                  type="radio"
-                  checked={paymentMethod === "mp_transfer"}
-                  onChange={() => setPaymentMethod("mp_transfer")}
-                />
-                Transferencia
-              </label>
+                <label className="mb-2 flex items-center gap-2">
+                  <input
+                    type="radio"
+                    checked={paymentMethod === "mp_transfer"}
+                    onChange={() => setPaymentMethod("mp_transfer")}
+                  />
+                  Transferencia
+                </label>
 
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  checked={paymentMethod === "cash"}
-                  onChange={() => setPaymentMethod("cash")}
-                />
-                Efectivo contra entrega
-              </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    checked={paymentMethod === "cash"}
+                    onChange={() => setPaymentMethod("cash")}
+                  />
+                  Efectivo contra entrega
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-xl bg-green-700 py-3 font-bold text-white disabled:opacity-60"
+              >
+                {loading ? "Procesando..." : "Confirmar pedido"}
+              </button>
+            </form>
+          </section>
+
+          <section className="rounded-3xl bg-white p-6 shadow">
+            <h2 className="mb-4 text-2xl font-bold">Tu pedido</h2>
+
+            <div className="space-y-3">
+              {items.map((item, index) => (
+                <div
+                  key={`${item.id}-${index}`}
+                  className="flex items-center justify-between border-b pb-3"
+                >
+                  <div>
+                    <p className="font-semibold">
+                      {item.name || item.product_name}
+                    </p>
+                    <p className="text-sm text-gray-500">x{item.quantity}</p>
+                  </div>
+
+                  <p className="font-bold">
+                    {money(Number(item.price || 0) * Number(item.quantity || 1))}
+                  </p>
+                </div>
+              ))}
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-xl bg-green-700 py-3 font-bold text-white disabled:opacity-60"
-            >
-              {loading ? "Procesando..." : "Confirmar pedido"}
-            </button>
-          </form>
-        </section>
+            {points && !isCandelaOrder && (
+              <div className="mt-6 rounded-2xl bg-green-50 p-4">
+                <p className="font-bold text-green-800">Tus puntos</p>
 
-        <section className="rounded-3xl bg-white p-6 shadow">
-          <h2 className="mb-4 text-2xl font-bold">Tu pedido</h2>
-
-          <div className="space-y-3">
-            {items.map((item, index) => (
-              <div
-                key={`${item.id}-${index}`}
-                className="flex items-center justify-between border-b pb-3"
-              >
-                <div>
-                  <p className="font-semibold">
-                    {item.name || item.product_name}
-                  </p>
-                  <p className="text-sm text-gray-500">x{item.quantity}</p>
-                </div>
-
-                <p className="font-bold">
-                  {money(Number(item.price || 0) * Number(item.quantity || 1))}
+                <p className="mt-1 text-sm text-green-900">
+                  {points.available_points > 0
+                    ? `Tenés ${points.available_points} puntos disponibles.`
+                    : "Todavía no tenés puntos disponibles."}
                 </p>
+
+                {points.available_points > 0 ? (
+                  <>
+                    <p className="mt-1 text-sm text-green-900">
+                      Podés usarlos como descuento en este pedido.
+                    </p>
+
+                    {appliedDiscount > 0 ? (
+                      <div className="mt-4 rounded-xl bg-white p-3">
+                        <p className="text-sm font-semibold text-green-800">
+                          Aplicaste {pointsNeeded} puntos.
+                        </p>
+                        <p className="text-sm text-green-900">
+                          Ahorrás {money(appliedDiscount)} en este pedido.
+                        </p>
+
+                        <button
+                          type="button"
+                          onClick={removePoints}
+                          className="mt-3 w-full rounded-xl border border-green-700 px-4 py-3 font-semibold text-green-700"
+                        >
+                          Quitar puntos
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={applyMaxPoints}
+                        className="mt-4 w-full rounded-xl bg-green-700 px-4 py-3 font-semibold text-white"
+                      >
+                        Usar mis puntos disponibles
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <p className="mt-2 text-sm text-green-900">
+                    Comprá desde la app y sumá puntos para descontar en próximas compras.
+                  </p>
+                )}
               </div>
-            ))}
-          </div>
-
-         {points && !isCandelaOrder && (
-  <div className="mt-6 rounded-2xl bg-green-50 p-4">
-    <p className="font-bold text-green-800">
-      Tus puntos
-    </p>
-
-    <p className="mt-1 text-sm text-green-900">
-      {points.available_points > 0
-        ? `Tenés ${points.available_points} puntos disponibles.`
-        : "Todavía no tenés puntos disponibles."}
-    </p>
-
-    {points.available_points > 0 ? (
-      <>
-        <p className="mt-1 text-sm text-green-900">
-          Podés usarlos como descuento en este pedido.
-        </p>
-
-        {appliedDiscount > 0 ? (
-          <div className="mt-4 rounded-xl bg-white p-3">
-            <p className="text-sm font-semibold text-green-800">
-              Aplicaste {pointsNeeded} puntos.
-            </p>
-            <p className="text-sm text-green-900">
-              Ahorrás {money(appliedDiscount)} en este pedido.
-            </p>
-
-            <button
-              type="button"
-              onClick={removePoints}
-              className="mt-3 w-full rounded-xl border border-green-700 px-4 py-3 font-semibold text-green-700"
-            >
-              Quitar puntos
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={applyMaxPoints}
-            className="mt-4 w-full rounded-xl bg-green-700 px-4 py-3 font-semibold text-white"
-          >
-            Usar mis puntos disponibles
-          </button>
-        )}
-      </>
-    ) : (
-      <p className="mt-2 text-sm text-green-900">
-        Comprá desde la app y sumá puntos para descontar en próximas compras.
-      </p>
-    )}
-  </div>
-)}
-
-          <div className="mt-6 space-y-3 border-t pt-4">
-            <Row label="Subtotal" value={money(subtotal)} />
-            {candelaDiscount > 0 && (
-  <Row label="Beneficio Candela" value={`-${money(candelaDiscount)}`} />
-)}
-
-            
-            {appliedDiscount > 0 && (
-              <Row label="Puntos" value={`-${money(appliedDiscount)}`} />
             )}
 
-            <div className="border-t pt-4">
-              <div className="flex items-center justify-between text-xl font-bold">
-                <span>Total final</span>
-                <span>{money(finalTotal)}</span>
+            <div className="mt-6 space-y-3 border-t pt-4">
+              <Row label="Subtotal" value={money(subtotal)} />
+
+              {candelaDiscount > 0 && (
+                <Row label="Beneficio Candela" value={`-${money(candelaDiscount)}`} />
+              )}
+
+              {appliedDiscount > 0 && (
+                <Row label="Puntos" value={`-${money(appliedDiscount)}`} />
+              )}
+
+              <div className="border-t pt-4">
+                <div className="flex items-center justify-between text-xl font-bold">
+                  <span>Total final</span>
+                  <span>{money(finalTotal)}</span>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       </div>
     </main>
   )
