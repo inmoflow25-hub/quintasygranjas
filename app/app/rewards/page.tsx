@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import AppNav from "@/components/app/app-nav"
+import AppBrand from "@/components/app/app-brand"
 
 
 type PointsSummary = {
@@ -76,17 +77,16 @@ export default function AppRewardsPage() {
     }
   }
 
-  return (
-   <main className="min-h-screen bg-green-50 px-4 py-6 pb-28 md:pb-10">
+   return (
+    <main className="min-h-screen bg-green-50 px-4 py-6 pb-28 md:pb-10">
       <div className="mx-auto max-w-4xl space-y-6">
-        <section className="rounded-3xl bg-white p-6 shadow">
-          <button
-            onClick={() => router.push("/app")}
-            className="mb-4 text-sm font-semibold text-green-700"
-          >
-            ← Volver a la app
-          </button>
+        <div className="flex justify-center">
+          <AppBrand href="/app" />
+        </div>
 
+        <AppNav />
+
+        <section className="rounded-3xl bg-white p-6 shadow">
           <h1 className="text-3xl font-bold text-gray-900">Mis puntos</h1>
 
           <p className="mt-2 text-gray-600">
@@ -133,39 +133,39 @@ export default function AppRewardsPage() {
               </p>
             </section>
 
-          <section className="rounded-3xl bg-white p-6 shadow">
-  <div className="grid gap-6 md:grid-cols-3">
-    <div>
-      <p className="text-sm font-semibold text-gray-500">
-        Puntos acumulados
-      </p>
+            <section className="rounded-3xl bg-white p-6 shadow">
+              <div className="grid gap-6 md:grid-cols-3">
+                <div>
+                  <p className="text-sm font-semibold text-gray-500">
+                    Puntos acumulados
+                  </p>
 
-      <p className="mt-2 text-2xl font-bold text-gray-900">
-        {points.lifetime_points}
-      </p>
-    </div>
+                  <p className="mt-2 text-2xl font-bold text-gray-900">
+                    {points.lifetime_points}
+                  </p>
+                </div>
 
-    <div>
-      <p className="text-sm font-semibold text-gray-500">
-        Próximo vencimiento
-      </p>
+                <div>
+                  <p className="text-sm font-semibold text-gray-500">
+                    Próximo vencimiento
+                  </p>
 
-      <p className="mt-2 text-2xl font-bold text-gray-900">
-        {formatDate(points.next_expiration_at)}
-      </p>
-    </div>
+                  <p className="mt-2 text-2xl font-bold text-gray-900">
+                    {formatDate(points.next_expiration_at)}
+                  </p>
+                </div>
 
-    <div>
-      <p className="text-sm font-semibold text-gray-500">
-        Límite de uso
-      </p>
+                <div>
+                  <p className="text-sm font-semibold text-gray-500">
+                    Límite de uso
+                  </p>
 
-      <p className="mt-2 text-2xl font-bold text-gray-900">
-        Hasta {points.max_redemption_percent}% del pedido
-      </p>
-    </div>
-  </div>
-</section>
+                  <p className="mt-2 text-2xl font-bold text-gray-900">
+                    Hasta {points.max_redemption_percent}% del pedido
+                  </p>
+                </div>
+              </div>
+            </section>
 
             <section className="rounded-3xl bg-white p-6 shadow">
               <h2 className="text-xl font-bold text-gray-900">
@@ -173,7 +173,7 @@ export default function AppRewardsPage() {
               </h2>
 
               <p className="mt-2 text-gray-600">
-              Al pagar tu pedido desde la app, vas a poder usar tus puntos como descuento.
+                Al pagar tu pedido desde la app, vas a poder usar tus puntos como descuento.
               </p>
 
               <p className="mt-2 text-sm text-gray-500">
@@ -193,7 +193,6 @@ export default function AppRewardsPage() {
           </>
         )}
       </div>
-      <AppNav />
     </main>
   )
 }
