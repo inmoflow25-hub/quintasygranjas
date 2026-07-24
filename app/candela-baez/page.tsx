@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { CANDELA_ATTRIBUTION, saveAttribution } from "@/lib/attribution"
+import AppBrand from "@/components/app/app-brand"
 
 const images = [
   "https://pub-6d50e72dcfe845d5b97f24b5ac57f161.r2.dev/CAJA%20CAMPO.png",
@@ -23,7 +24,7 @@ export default function CandelaBaezPage() {
     return () => clearInterval(interval)
   }, [])
 
-  return (
+   return (
     <main className="min-h-screen bg-black text-white">
       <section className="relative flex min-h-screen items-center overflow-hidden px-4 py-10">
         <div className="absolute inset-0">
@@ -32,11 +33,16 @@ export default function CandelaBaezPage() {
             alt="Productos frescos Quintas y Granjas"
             className="h-full w-full object-cover transition-opacity duration-1000"
           />
+
           <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/20" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/25" />
         </div>
 
         <div className="relative z-10 mx-auto w-full max-w-6xl">
+          <div className="mb-10 inline-flex rounded-2xl bg-white/90 px-4 py-3 shadow-2xl">
+            <AppBrand href="/" logoClassName="h-20 w-auto" />
+          </div>
+
           <div className="max-w-2xl">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm font-bold text-green-900 shadow">
               <span className="h-2 w-2 rounded-full bg-green-600" />
@@ -48,6 +54,7 @@ export default function CandelaBaezPage() {
                 <span className="text-6xl font-black leading-none md:text-7xl">
                   10%
                 </span>
+
                 <span className="pb-2 text-3xl font-black uppercase leading-none">
                   OFF
                 </span>
@@ -57,6 +64,7 @@ export default function CandelaBaezPage() {
                 <p className="text-sm font-bold uppercase tracking-[0.18em] text-white/80">
                   Beneficio activado
                 </p>
+
                 <p className="text-lg font-semibold leading-tight">
                   Para comprar en web o entrar a la app
                 </p>
