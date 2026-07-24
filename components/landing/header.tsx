@@ -16,7 +16,7 @@ export function Header({
   return (
     <header className="fixed left-0 right-0 top-0 z-50 border-b border-[#0f3d22]/10 bg-[#fff8f0]/95 backdrop-blur-sm">
       <div className="container mx-auto flex h-20 items-center justify-between px-4">
-      <AppBrand href="/" logoClassName="h-20 w-auto" />
+        <AppBrand href="/" logoClassName="h-20 w-auto" />
 
         <nav className="hidden items-center gap-8 md:flex">
           <a
