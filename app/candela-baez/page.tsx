@@ -45,9 +45,7 @@ export default function CandelaBaezPage() {
               <AppBrand href="/" logoClassName="h-14 w-auto md:h-16" />
             </div>
 
-            <div className="hidden rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white backdrop-blur md:block">
-              Beneficio exclusivo
-            </div>
+        
           </div>
 
           <div className="flex flex-1 items-center pb-6">
@@ -86,8 +84,7 @@ export default function CandelaBaezPage() {
               </h1>
 
               <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/85">
-                Frutas, verduras y productos de granja directo a tu mesa.
-                El beneficio de Candela queda guardado automáticamente.
+                Frutas, verduras, productos de granja y comidas listas para cocinar directo a tu mesa.
               </p>
 
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
@@ -95,7 +92,7 @@ export default function CandelaBaezPage() {
                   href="/#cart"
                   className="rounded-2xl bg-green-600 px-7 py-4 text-center text-base font-black text-white shadow-2xl transition hover:bg-green-700"
                 >
-                  Comprar con 10% OFF
+                  Comprar con 10% OFF en todas tus compras!
                 </Link>
 
                 <Link
