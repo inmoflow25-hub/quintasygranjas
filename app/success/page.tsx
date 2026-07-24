@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo } from "react"
 import Link from "next/link"
+import AppBrand from "@/components/app/app-brand"
 
 function getInstallTarget() {
   if (typeof window === "undefined") {
@@ -87,9 +88,15 @@ export default function SuccessPage() {
             : "Recibimos tu pedido. Por favor, mandanos un WhatsApp para confirmar."
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-green-50 px-6">
-      <div className="max-w-xl w-full bg-white rounded-2xl shadow-lg p-10 text-center">
-        <div className="text-6xl mb-4">🎉</div>
+    <main className="min-h-screen bg-green-50 px-4 py-6">
+      <div className="mx-auto flex min-h-[calc(100vh-48px)] max-w-xl flex-col justify-center gap-6">
+        <div className="flex justify-center">
+          <AppBrand href={isPwa ? "/app" : "/"} />
+        </div>
+
+        <div className="w-full rounded-2xl bg-white p-10 text-center shadow-lg">
+          <div className="mb-4 text-6xl">🎉</div>
+
 
         <h1 className="text-3xl font-bold text-green-700 mb-4">
           {title}
@@ -186,6 +193,7 @@ export default function SuccessPage() {
           </div>
         )}
       </div>
+         </div>
     </main>
   )
 }
