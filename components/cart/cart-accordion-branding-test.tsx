@@ -28,16 +28,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   comidas_listas_para_horno: "Listas para horno"
 }
 
-const CATEGORY_ICONS: Record<string, string> = {
-  cajas_armadas:,
-  verduras:,
-  frutas:,
-  frutos_secos:,
-  otros:,
-  pollo:,
-  congelados:,
-  comidas_listas_para_horno: 
-}
+
 
 function categoryLabel(category: string) {
   return CATEGORY_LABELS[category] || category.replaceAll("_", " ")
