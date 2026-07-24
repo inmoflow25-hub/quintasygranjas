@@ -120,16 +120,16 @@ function repeatOrder(order: Order) {
   router.push("/app/checkout")
 }
 
-  return (
-    <main className="min-h-screen bg-green-50 px-4 py-6">
-      <div className="flex justify-center">
-  <AppBrand href="/app" />
-</div>
-
-<AppNav />
+    return (
+    <main className="min-h-screen bg-green-50 px-4 py-6 pb-28 md:pb-10">
       <div className="mx-auto max-w-4xl space-y-6">
+        <div className="flex justify-center">
+          <AppBrand href="/app" />
+        </div>
+
+        <AppNav />
+
         <section className="rounded-3xl bg-white p-6 shadow">
-        
           <h1 className="text-3xl font-bold text-gray-900">Mis pedidos</h1>
 
           <p className="mt-2 text-gray-600">
@@ -220,8 +220,6 @@ function repeatOrder(order: Order) {
           ))}
         </div>
       </div>
-      <AppNav />
     </main>
   )
 }
-
