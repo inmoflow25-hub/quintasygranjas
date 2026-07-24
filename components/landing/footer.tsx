@@ -12,7 +12,9 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
       <div className="container mx-auto px-4">
         <div className="grid gap-12 md:grid-cols-3">
           <div>
-          <AppBrand href="/" logoClassName="h-16 w-auto" />
+            <div className="inline-flex rounded-2xl bg-[#fff8f0] px-3 py-2">
+              <AppBrand href="/" logoClassName="h-16 w-auto" />
+            </div>
 
             <p className="mt-4 leading-relaxed text-white/70">
               Cajas semanales con frutas, verduras, frutos secos y productos de
@@ -50,9 +52,9 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
             </p>
 
             <Button
-  onClick={onWhatsAppClick}
-  className="bg-[#25D366] text-white hover:bg-[#25D366]/90"
->
+              onClick={onWhatsAppClick}
+              className="bg-[#25D366] text-white hover:bg-[#25D366]/90"
+            >
               <MessageCircle className="mr-2 h-5 w-5" />
               WhatsApp
             </Button>
