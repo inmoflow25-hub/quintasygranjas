@@ -1,22 +1,25 @@
+import CartAccordionBrandingTest from "@/components/cart/cart-accordion-branding-test"
 
 export default function BrandingPruebaPage() {
   return (
-    <main
-className="min-h-screen bg-[#fff8f0] text-[#06150a]"    >
+    <main className="min-h-screen bg-[#fff8f0] text-[#06150a]">
       <header className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
-      <a href="/branding-prueba" className="flex items-center gap-3">
-  <img
-    src="/logho quintas nuevo.svg"
-    alt=""
-    className="h-10 w-10 object-contain"
-  />
+        <a
+          href="/branding-prueba"
+          className="flex items-center gap-3"
+        >
+          <img
+            src="/logho quintas nuevo.svg"
+            alt=""
+            className="h-10 w-10 object-contain"
+          />
 
-  <img
-    src="/brand/qyg-logo.svg"
-    alt="Quintas y Granjas"
-    className="h-16 w-auto"
-  />
-</a>
+          <img
+            src="/brand/qyg-logo.svg"
+            alt="Quintas y Granjas"
+            className="h-16 w-auto"
+          />
+        </a>
 
         <nav className="hidden items-center gap-8 md:flex">
           <a
@@ -34,7 +37,7 @@ className="min-h-screen bg-[#fff8f0] text-[#06150a]"    >
           </a>
 
           <a
-            href="#comprar"
+            href="#productos"
             className="rounded-full bg-[#06150a] px-6 py-3 text-base font-bold text-white"
           >
             Pedí ahora
@@ -59,7 +62,7 @@ className="min-h-screen bg-[#fff8f0] text-[#06150a]"    >
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <a
-              href="#comprar"
+              href="#productos"
               className="rounded-2xl bg-[#0f3d22] px-7 py-4 text-center text-lg font-bold text-white shadow-sm"
             >
               Armar mi pedido
@@ -82,6 +85,8 @@ className="min-h-screen bg-[#fff8f0] text-[#06150a]"    >
           />
         </div>
       </section>
+
+      <CartAccordionBrandingTest />
     </main>
   )
 }
