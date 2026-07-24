@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import AppNav from "@/components/app/app-nav"
+import AppBrand from "@/components/app/app-brand"
 
 type AppUser = {
   id: string
@@ -122,14 +123,13 @@ export default function AppProfilePage() {
   return (
     <main className="min-h-screen bg-green-50 px-4 py-6 pb-28 md:pb-10">
       <div className="mx-auto max-w-2xl space-y-6">
-        <section className="rounded-3xl bg-white p-6 shadow">
-          <button
-            onClick={() => router.push("/app")}
-            className="mb-4 text-sm font-semibold text-green-700"
-          >
-            ← Volver a la app
-          </button>
+        <div className="flex justify-center">
+          <AppBrand href="/app" />
+        </div>
 
+        <AppNav />
+
+        <section className="rounded-3xl bg-white p-6 shadow">
           <h1 className="text-3xl font-bold text-gray-900">Mi perfil</h1>
 
           <p className="mt-2 text-gray-600">
@@ -196,7 +196,6 @@ export default function AppProfilePage() {
           )}
         </section>
       </div>
-      <AppNav />
     </main>
   )
 }
