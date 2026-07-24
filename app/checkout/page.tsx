@@ -553,7 +553,7 @@ function CheckoutContent() {
       </div>
     </main>
   )
-
+}
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
