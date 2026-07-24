@@ -24,9 +24,9 @@ export default function CandelaBaezPage() {
     return () => clearInterval(interval)
   }, [])
 
-   return (
-    <main className="min-h-screen bg-black text-white">
-      <section className="relative flex min-h-screen items-center overflow-hidden px-4 py-10">
+  return (
+    <main className="min-h-screen bg-[#06150a] text-white">
+      <section className="relative min-h-screen overflow-hidden px-4 py-8">
         <div className="absolute inset-0">
           <img
             src={images[index]}
@@ -34,72 +34,84 @@ export default function CandelaBaezPage() {
             className="h-full w-full object-cover transition-opacity duration-1000"
           />
 
-          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/20" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/25" />
+          <div className="absolute inset-0 bg-black/55" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#06150a]/95 via-[#06150a]/70 to-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#06150a]/90 via-transparent to-[#06150a]/30" />
         </div>
 
-        <div className="relative z-10 mx-auto w-full max-w-6xl">
-          <div className="mb-10 inline-flex rounded-2xl bg-white/90 px-4 py-3 shadow-2xl">
-            <AppBrand href="/" logoClassName="h-20 w-auto" />
+        <div className="relative z-10 mx-auto flex min-h-[calc(100vh-64px)] w-full max-w-6xl flex-col">
+          <div className="flex items-center justify-between">
+            <AppBrand
+              href="/"
+              logoClassName="h-14 w-auto md:h-16"
+            />
+
+            <div className="hidden rounded-full bg-white/10 px-4 py-2 text-sm font-bold text-white backdrop-blur md:block">
+              Beneficio exclusivo
+            </div>
           </div>
 
-          <div className="max-w-2xl">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm font-bold text-green-900 shadow">
-              <span className="h-2 w-2 rounded-full bg-green-600" />
-              Invitación privada de Candela Báez
-            </div>
-
-            <div className="mb-7 inline-flex max-w-full flex-col rounded-2xl bg-green-700/95 px-6 py-4 text-white shadow-2xl sm:flex-row sm:items-center sm:gap-5">
-              <div className="flex items-end gap-2">
-                <span className="text-6xl font-black leading-none md:text-7xl">
-                  10%
-                </span>
-
-                <span className="pb-2 text-3xl font-black uppercase leading-none">
-                  OFF
-                </span>
+          <div className="flex flex-1 items-center py-10">
+            <div className="max-w-2xl">
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-green-900 shadow">
+                <span className="h-2 w-2 rounded-full bg-green-600" />
+                Invitación privada de Candela Báez
               </div>
 
-              <div className="mt-3 sm:mt-0">
-                <p className="text-sm font-bold uppercase tracking-[0.18em] text-white/80">
-                  Beneficio activado
-                </p>
+              <div className="mb-7 inline-flex items-center gap-4 rounded-2xl bg-green-600 px-5 py-4 shadow-2xl">
+                <div className="flex items-end gap-2">
+                  <span className="text-5xl font-black leading-none md:text-6xl">
+                    10%
+                  </span>
 
-                <p className="text-lg font-semibold leading-tight">
-                  Para comprar en web o entrar a la app
-                </p>
+                  <span className="pb-1 text-2xl font-black uppercase leading-none">
+                    OFF
+                  </span>
+                </div>
+
+                <div className="h-12 w-px bg-white/30" />
+
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/75">
+                    Beneficio activado
+                  </p>
+
+                  <p className="text-base font-bold leading-tight md:text-lg">
+                    En tu pedido web o app
+                  </p>
+                </div>
               </div>
+
+              <h1 className="text-4xl font-black leading-tight text-white md:text-6xl">
+                Pedí fresco en casa con un beneficio de Candela.
+              </h1>
+
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/85 md:text-xl">
+                Frutas, verduras y productos de granja directo a tu mesa.
+                Tu 10% OFF queda guardado automáticamente desde esta invitación.
+              </p>
+
+              <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+                <Link
+                  href="/#cart"
+                  className="rounded-2xl bg-green-600 px-8 py-4 text-center text-lg font-black text-white shadow-2xl transition hover:bg-green-700"
+                >
+                  Comprar con 10% OFF
+                </Link>
+
+                <Link
+                  href="/app?affiliate=candela-baez"
+                  className="rounded-2xl bg-white px-8 py-4 text-center text-lg font-black text-green-900 shadow-2xl transition hover:bg-green-50"
+                >
+                  Entrar a la app
+                </Link>
+              </div>
+
+              <p className="mt-5 max-w-xl text-sm leading-relaxed text-white/60">
+                Beneficio exclusivo para compras originadas desde esta invitación.
+                No acumulable con puntos ni otros descuentos.
+              </p>
             </div>
-
-            <h1 className="text-4xl font-black leading-tight text-white md:text-6xl">
-              Candela te dejó un beneficio para pedir fresco en casa.
-            </h1>
-
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/90 md:text-xl">
-              Frutas, verduras, productos de granja y alimentos saludables.
-              Tu 10% OFF queda guardado desde esta invitación.
-            </p>
-
-            <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Link
-                href="/#cart"
-                className="rounded-2xl bg-green-600 px-8 py-4 text-center text-lg font-black text-white shadow-2xl hover:bg-green-700"
-              >
-                Comprar con 10% OFF
-              </Link>
-
-              <Link
-                href="/app?affiliate=candela-baez"
-                className="rounded-2xl bg-white px-8 py-4 text-center text-lg font-black text-green-900 shadow-2xl hover:bg-green-50"
-              >
-                Entrar a la app
-              </Link>
-            </div>
-
-            <p className="mt-5 max-w-xl text-sm leading-relaxed text-white/70">
-              Beneficio exclusivo para compras originadas desde esta invitación.
-              No acumulable con puntos ni otros descuentos.
-            </p>
           </div>
         </div>
       </section>
