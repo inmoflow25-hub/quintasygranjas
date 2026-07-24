@@ -12,11 +12,7 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
       <div className="container mx-auto px-4">
         <div className="grid gap-12 md:grid-cols-3">
           <div>
-            <AppBrand
-              href="/"
-              iconClassName="h-10 w-10"
-              logoClassName="h-14 w-auto"
-            />
+          <AppBrand href="/" logoClassName="h-16 w-auto" />
 
             <p className="mt-4 leading-relaxed text-white/70">
               Cajas semanales con frutas, verduras, frutos secos y productos de
