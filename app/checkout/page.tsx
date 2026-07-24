@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { BOX_CATALOG } from "@/lib/boxes"
 import { getStoredAttribution } from "@/lib/attribution"
+import AppBrand from "@/components/app/app-brand"
 
 type CheckoutItem = {
   id?: string
@@ -343,8 +344,13 @@ function CheckoutContent() {
   }
 
   return (
-    <main className="min-h-screen bg-green-50 px-6 py-10">
-      <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-2">
+    <main className="min-h-screen bg-green-50 px-4 py-6 pb-28 md:pb-10">
+      <div className="mx-auto max-w-6xl space-y-6">
+        <div className="flex justify-center">
+          <AppBrand href="/" />
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-2">
         <div className="rounded-2xl bg-white p-8 shadow">
           <h1 className="mb-2 text-3xl font-bold text-green-700">Checkout</h1>
           <p className="mb-8 text-gray-600">Completá tus datos antes de pagar.</p>
