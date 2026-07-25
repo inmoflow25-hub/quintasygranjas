@@ -51,6 +51,77 @@ const CATEGORY_ORDER = [
   "comidas_listas_para_horno"
 ]
 
+const CATEGORY_ORDER = [
+  "cajas_armadas",
+  "verduras",
+  "frutas",
+  "otros",
+  "pollo",
+  "frutos_secos",
+  "congelados",
+  "comidas_listas_para_horno"
+]
+
+const BOX_CONTENTS: Record<string, string[]> = {
+  "Caja Veggie": [
+    "1 zapallo anco",
+    "2 kg papa blanca",
+    "1 1/2 kg cebolla",
+    "1/2 kg tomate",
+    "1/2 kg zanahoria",
+    "1/2 kg mandarina",
+    "1/2 kg pera",
+    "1/2 kg manzana",
+    "1 kg banana",
+    "1 kg cítricos: limón y naranja de jugo",
+    "2 paltas",
+    "1 lechuga",
+    "2 espinacas"
+  ],
+  "Caja Campo": [
+    "1 zapallo anco",
+    "2 kg papa blanca",
+    "1 1/2 kg cebolla",
+    "1/2 kg tomate",
+    "1/2 kg zanahoria",
+    "1/2 kg mandarina",
+    "1/2 kg pera",
+    "1/2 kg manzana",
+    "1 kg banana",
+    "1 kg cítricos: limón y naranja de jugo",
+    "2 paltas",
+    "1 lechuga",
+    "2 espinacas",
+    "1 kg suprema",
+    "Huevos"
+  ],
+  "Caja Granja": [
+    "1 zapallo anco",
+    "2 kg papa blanca",
+    "1 1/2 kg cebolla",
+    "1/2 kg tomate",
+    "1/2 kg zanahoria",
+    "1/2 kg mandarina",
+    "1/2 kg pera",
+    "1/2 kg manzana",
+    "1 kg banana",
+    "1 kg cítricos: limón y naranja de jugo",
+    "2 paltas",
+    "1 lechuga",
+    "2 espinacas",
+    "1 kg suprema",
+    "Huevos",
+    "Pan",
+    "Miel"
+  ]
+}
+
+function getBoxContents(product: Product) {
+  return BOX_CONTENTS[product.name] || []
+}
+
+function getProductLabel(product: Product) {
+
 function categoryLabel(category: string) {
   return CATEGORY_LABELS[category] || category.replaceAll("_", " ")
 }
@@ -505,7 +576,7 @@ export default function CartCategorySelectorWeb() {
                             </p>
                           )}
 
-                          {product.category === "cajas_armadas" && (
+{product.category === "cajas_armadas" && (
   <button
     type="button"
     onClick={() => setSelectedBox(product)}
@@ -687,46 +758,65 @@ export default function CartCategorySelectorWeb() {
           </button>
         </div>
       </div>
+       </div>
+
       {selectedBox && (
-  <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 px-4">
-    <div className="w-full max-w-lg rounded-[28px] bg-[#fff8f0] p-6 shadow-2xl">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#0f3d22]/50">
-            Qué trae
-          </p>
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 px-4">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-[28px] bg-[#fff8f0] p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#0f3d22]/50">
+                  Qué trae
+                </p>
 
-          <h3 className="mt-1 text-2xl font-black text-[#102d1c]">
-            {selectedBox.name}
-          </h3>
+                <h3 className="mt-1 text-2xl font-black text-[#102d1c]">
+                  {selectedBox.name}
+                </h3>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSelectedBox(null)}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#0f3d22] text-lg font-black text-white"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="mt-5 rounded-2xl bg-white/70 p-4">
+              <p className="mb-3 text-sm font-black uppercase tracking-[0.14em] text-[#0f3d22]/55">
+                Incluye
+              </p>
+
+              <ul className="grid gap-2 sm:grid-cols-2">
+                {getBoxContents(selectedBox).map((item) => (
+                  <li
+                    key={item}
+                    className="flex gap-2 text-sm font-bold leading-relaxed text-[#102d1c]"
+                  >
+                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#0f3d22]" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                addItem(selectedBox)
+                setSelectedBox(null)
+              }}
+              className="mt-6 w-full rounded-2xl bg-[#0f3d22] px-5 py-4 text-base font-black text-white"
+            >
+              Agregar esta caja
+            </button>
+          </div>
         </div>
-
-        <button
-          type="button"
-          onClick={() => setSelectedBox(null)}
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0f3d22] text-lg font-black text-white"
-        >
-          ×
-        </button>
-      </div>
-
-      <p className="mt-5 whitespace-pre-line text-base font-medium leading-relaxed text-[#102d1c]/75">
-        {selectedBox.description || "Caja seleccionada con productos frescos de estación."}
-      </p>
-
-      <button
-        type="button"
-        onClick={() => {
-          addItem(selectedBox)
-          setSelectedBox(null)
-        }}
-        className="mt-6 w-full rounded-2xl bg-[#0f3d22] px-5 py-4 text-base font-black text-white"
-      >
-        Agregar esta caja
-      </button>
-    </div>
-  </div>
-)}
+      )}
+    </section>
+  )
+}
     </section>
   )
 }
