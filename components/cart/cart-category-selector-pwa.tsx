@@ -79,6 +79,7 @@ export default function CartCategorySelectorPwa() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [cart, setCart] = useState<CartItem[]>([])
   const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const [selectedBox, setSelectedBox] = useState<Product | null>(null)
 
   useEffect(() => {
     async function loadProducts() {
@@ -522,6 +523,16 @@ export default function CartCategorySelectorPwa() {
                             </p>
                           )}
 
+                          {product.category === "cajas_armadas" && (
+  <button
+    type="button"
+    onClick={() => setSelectedBox(product)}
+    className="mt-3 w-fit rounded-full border border-[#0f3d22]/20 bg-[#f4efe7] px-3 py-1.5 text-xs font-black text-[#0f3d22] transition hover:bg-[#e8efe5]"
+  >
+    Qué trae
+  </button>
+)}
+
                           <div className="mt-3">
                             <p className="text-lg font-black text-[#0f3d22]">
                               $
@@ -696,6 +707,47 @@ export default function CartCategorySelectorPwa() {
           </button>
         </div>
       </div>
+      {selectedBox && (
+  <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 px-4">
+    <div className="w-full max-w-lg rounded-[28px] bg-[#fff8f0] p-6 shadow-2xl">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#0f3d22]/50">
+            Qué trae
+          </p>
+
+          <h3 className="mt-1 text-2xl font-black text-[#102d1c]">
+            {selectedBox.name}
+          </h3>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setSelectedBox(null)}
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0f3d22] text-lg font-black text-white"
+        >
+          ×
+        </button>
+      </div>
+
+      <p className="mt-5 whitespace-pre-line text-base font-medium leading-relaxed text-[#102d1c]/75">
+        {selectedBox.description ||
+          "Caja seleccionada con productos frescos de estación."}
+      </p>
+
+      <button
+        type="button"
+        onClick={() => {
+          addItem(selectedBox)
+          setSelectedBox(null)
+        }}
+        className="mt-6 w-full rounded-2xl bg-[#0f3d22] px-5 py-4 text-base font-black text-white"
+      >
+        Agregar esta caja
+      </button>
+    </div>
+  </div>
+)}
     </section>
   )
 }
