@@ -120,7 +120,6 @@ function getBoxContents(product: Product) {
   return BOX_CONTENTS[product.name] || []
 }
 
-function getProductLabel(product: Product) {
 
 function categoryLabel(category: string) {
   return CATEGORY_LABELS[category] || category.replaceAll("_", " ")
