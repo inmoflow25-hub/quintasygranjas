@@ -342,8 +342,9 @@ export default function CartCategorySelectorPwa() {
             </h2>
 
             <p className="mt-2 max-w-2xl text-base font-medium text-[#102d1c]/60 md:text-lg">
-              Elegí una categoría y armá tu pedido sin recorrer
-              todo el catálogo.
+             Desliza hacia la derecha para elegir categoría.
+            </ br>
+            Y debajo ves todos los productos para agregar al carrito.
             </p>
           </div>
 
