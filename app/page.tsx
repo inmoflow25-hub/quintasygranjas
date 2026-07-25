@@ -9,7 +9,7 @@ import { DeliveryZones } from "@/components/landing/delivery-zones"
 import { FinalCTA } from "@/components/landing/final-cta"
 import { Footer } from "@/components/landing/footer"
 import { Header } from "@/components/landing/header"
-import CartMobileStickyTest from "@/components/cart/cart-mobile-sticky-test"
+import CartCategorySelectorWeb from "@/components/cart/cart-category-selector-web"
 type BoxType = "veggie" | "campo" | "granja"
 
 const BOX_DB_IDS: Record<BoxType, string> = {
@@ -37,9 +37,8 @@ export default function Home() {
       <Hero onWhatsAppClick={onWhatsAppClick} />
 
       {/*<HowItWorks />*/}
-
-      <div id="cart" className="scroll-mt-32">
-  <CartMobileStickyTest />
+<div id="cart" className="scroll-mt-32">
+  <CartCategorySelectorWeb />
 </div>
 
       {/*<BoxesSection onSelectBox={onSelectBox} />*/}
