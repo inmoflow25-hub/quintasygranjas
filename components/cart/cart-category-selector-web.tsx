@@ -51,16 +51,6 @@ const CATEGORY_ORDER = [
   "comidas_listas_para_horno"
 ]
 
-const CATEGORY_ORDER = [
-  "cajas_armadas",
-  "verduras",
-  "frutas",
-  "otros",
-  "pollo",
-  "frutos_secos",
-  "congelados",
-  "comidas_listas_para_horno"
-]
 
 const BOX_CONTENTS: Record<string, string[]> = {
   "Caja Veggie": [
