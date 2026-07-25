@@ -341,11 +341,11 @@ export default function CartCategorySelectorPwa() {
               ¿Qué estás buscando?
             </h2>
 
-            <p className="mt-2 max-w-2xl text-base font-medium text-[#102d1c]/60 md:text-lg">
-             Desliza hacia la derecha para elegir categoría.
-            </ br>
-            Y debajo ves todos los productos para agregar al carrito.
-            </p>
+          <p className="mt-2 max-w-2xl text-base font-medium text-[#102d1c]/60 md:text-lg">
+  Deslizá hacia la derecha para elegir categoría.
+  <br />
+  Y debajo ves todos los productos para agregar al carrito.
+</p>
           </div>
 
           <p className="text-sm font-bold text-[#102d1c]/55">
