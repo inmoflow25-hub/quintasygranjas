@@ -335,8 +335,8 @@ function buildItemsSummary(
   }>
 ) {
   return items
-    .map((item) => `• ${item.title} x${Number(item.quantity || 1)}`)
-    .join("\n")
+    .map((item) => `${item.title} x${Number(item.quantity || 1)}`)
+    .join(", ")
 }
 
 function buildCycleProgress({
