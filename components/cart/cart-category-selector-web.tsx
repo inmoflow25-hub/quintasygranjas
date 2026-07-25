@@ -757,7 +757,7 @@ export default function CartCategorySelectorWeb() {
           </button>
         </div>
       </div>
-       </div>
+    
 
       {selectedBox && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 px-4">
