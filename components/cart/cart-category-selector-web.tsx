@@ -340,14 +340,11 @@ export default function CartCategorySelectorWeb() {
             </h2>
 
             <p className="mt-2 max-w-2xl text-base font-medium text-[#102d1c]/60 md:text-lg">
-              Elegí una categoría y armá tu pedido sin recorrer
-              todo el catálogo.
+              Elegí una categoría y abajo se abre para que armes tu pedido.
             </p>
           </div>
 
-          <p className="text-sm font-bold text-[#102d1c]/55">
-            Pedido mínimo de $20.000
-          </p>
+      
         </div>
       </div>
 
