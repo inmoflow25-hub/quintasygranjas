@@ -130,8 +130,13 @@ function buildItemsSummary(
   }>
 ) {
   return items
-    .map((item) => `• ${String(item.product_name || "Producto")} x${Number(item.quantity || 1)}`)
-    .join("\n")
+    .map(
+      (item) =>
+        `${String(item.product_name || "Producto")} x${Number(
+          item.quantity || 1
+        )}`
+    )
+    .join(", ")
 }
 
 function buildCycleProgress({
