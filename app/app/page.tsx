@@ -197,29 +197,10 @@ return (
         />
       )}
 
-      <section id="cart" className="scroll-mt-32">
-        <CartMobileStickyTest />
-      </section>
-
-      {cart.length > 0 && (
-        <div className="sticky bottom-4 rounded-2xl bg-green-800 p-4 text-white shadow-xl">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-semibold">
-                {cart.reduce((acc, item) => acc + item.quantity, 0)} productos
-              </p>
-              <p className="text-xl font-bold">{money(subtotal)}</p>
-            </div>
-
-            <button
-              onClick={goToCheckout}
-              className="rounded-xl bg-white px-5 py-3 font-bold text-green-800"
-            >
-              Ir al checkout
-            </button>
-          </div>
-        </div>
-      )}
+<section id="cart" className="scroll-mt-32">
+  <CartCategorySelectorPwa />
+</section>
+      
     </div>
   </main>
 )
