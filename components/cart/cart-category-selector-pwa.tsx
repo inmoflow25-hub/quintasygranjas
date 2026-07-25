@@ -55,6 +55,64 @@ const CATEGORY_ORDER = [
   "comidas_listas_para_horno"
 ]
 
+const BOX_CONTENTS: Record<string, string[]> = {
+  "Caja Veggie": [
+    "1 zapallo anco",
+    "2 kg papa blanca",
+    "1 1/2 kg cebolla",
+    "1/2 kg tomate",
+    "1/2 kg zanahoria",
+    "1/2 kg mandarina",
+    "1/2 kg pera",
+    "1/2 kg manzana",
+    "1 kg banana",
+    "1 kg cítricos: limón y naranja de jugo",
+    "2 paltas",
+    "1 lechuga",
+    "2 espinacas"
+  ],
+  "Caja Campo": [
+    "1 zapallo anco",
+    "2 kg papa blanca",
+    "1 1/2 kg cebolla",
+    "1/2 kg tomate",
+    "1/2 kg zanahoria",
+    "1/2 kg mandarina",
+    "1/2 kg pera",
+    "1/2 kg manzana",
+    "1 kg banana",
+    "1 kg cítricos: limón y naranja de jugo",
+    "2 paltas",
+    "1 lechuga",
+    "2 espinacas",
+    "1 kg suprema",
+    "Huevos"
+  ],
+  "Caja Granja": [
+    "1 zapallo anco",
+    "2 kg papa blanca",
+    "1 1/2 kg cebolla",
+    "1/2 kg tomate",
+    "1/2 kg zanahoria",
+    "1/2 kg mandarina",
+    "1/2 kg pera",
+    "1/2 kg manzana",
+    "1 kg banana",
+    "1 kg cítricos: limón y naranja de jugo",
+    "2 paltas",
+    "1 lechuga",
+    "2 espinacas",
+    "1 kg suprema",
+    "Huevos",
+    "Pan",
+    "Miel"
+  ]
+}
+
+function getBoxContents(product: Product) {
+  return BOX_CONTENTS[product.name] || []
+}
+
 function categoryLabel(category: string) {
   return CATEGORY_LABELS[category] || category.replaceAll("_", " ")
 }
