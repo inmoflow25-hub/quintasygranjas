@@ -816,6 +816,3 @@ export default function CartCategorySelectorWeb() {
     </section>
   )
 }
-    </section>
-  )
-}
