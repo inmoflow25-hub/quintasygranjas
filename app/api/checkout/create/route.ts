@@ -930,6 +930,7 @@ const affiliateDiscountAmount =
     const fullNotes = [
       delivery_notes || "",
       `Domicilio: ${delivery_address}`,
+      `Entrega programada: ${deliverySchedule.scheduledDeliveryLabel} (${deliverySchedule.scheduledDeliveryDate})`,
       payment_method === "mp_transfer"
         ? `Pago por transferencia MP. Alias: ${process.env.NEXT_PUBLIC_MP_ALIAS || ""}`
         : "",
