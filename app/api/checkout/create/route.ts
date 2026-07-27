@@ -927,6 +927,9 @@ const affiliateDiscountAmount =
         city: delivery_city
       })
 
+    const deliverySchedule = getScheduledDelivery(new Date())
+
+    
     const fullNotes = [
       delivery_notes || "",
       `Domicilio: ${delivery_address}`,
@@ -969,9 +972,7 @@ attribution.affiliate_slug
         : payment_method === "mp_transfer"
           ? "pending_transfer"
           : "pending"
-  
-    const deliverySchedule = getScheduledDelivery(new Date())
-          
+            
 
     const { data: order, error: orderError } = await supabase
       .from("orders")
