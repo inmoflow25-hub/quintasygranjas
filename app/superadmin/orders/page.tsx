@@ -262,7 +262,7 @@ order_cutoff_bucket,
 
                   <td className="px-4 py-4 min-w-[180px]">
   <div className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-amber-800">
-    {order.scheduled_delivery_label || "Sin entrega"}
+    {order.scheduled_delivery_label || "Entregado"}
   </div>
 
   <div className="mt-2 text-sm font-semibold text-gray-900">
