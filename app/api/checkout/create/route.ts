@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js"
 import MercadoPagoConfig, { Preference } from "mercadopago"
 import { createHash } from "crypto"
 import { BOX_CATALOG } from "@/lib/boxes"
+import { getScheduledDelivery } from "@/lib/delivery-schedule"
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
