@@ -114,6 +114,10 @@ status,
       delivery_address,
       delivery_city,
       delivery_notes,
+      scheduled_delivery_date,
+scheduled_delivery_label,
+scheduled_delivery_window,
+order_cutoff_bucket,
       is_test,
       order_items (
         id,
@@ -147,12 +151,29 @@ status,
 
   return (
     <div className="space-y-6">
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-7">
         <Metric
   title="Pedidos reales"
   value={safeOrders.filter((o: any) => o.source !== "csv_import_real").length}
 />
         <Metric title="Confirmados" value={confirmedOrders.length} />
+        <Metric
+  title="Entrega lunes"
+  value={
+    confirmedOrders.filter((o: any) =>
+      String(o.scheduled_delivery_label || "").toLowerCase().includes("lunes")
+    ).length
+  }
+/>
+
+<Metric
+  title="Entrega viernes"
+  value={
+    confirmedOrders.filter((o: any) =>
+      String(o.scheduled_delivery_label || "").toLowerCase().includes("viernes")
+    ).length
+  }
+/>
         <Metric
           title="Cancelados"
           value={safeOrders.filter((o: any) => o.status === "cancelled").length}
@@ -194,6 +215,7 @@ status,
                 <th className="px-4 py-3">Cliente</th>
                 <th className="px-4 py-3">Contacto</th>
                 <th className="px-4 py-3">Dirección</th>
+                <th className="px-4 py-3">Entrega</th>
                 <th className="px-4 py-3">Productos</th>
                 <th className="px-4 py-3">Canal</th>
                 <th className="px-4 py-3">Pago</th>
@@ -238,6 +260,20 @@ status,
                       </div>
                     </td>
 
+                  <td className="px-4 py-4 min-w-[180px]">
+  <div className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-amber-800">
+    {order.scheduled_delivery_label || "Sin entrega"}
+  </div>
+
+  <div className="mt-2 text-sm font-semibold text-gray-900">
+    {formatDeliveryDate(order.scheduled_delivery_date)}
+  </div>
+
+  <div className="mt-1 text-xs text-gray-500">
+    {formatCutoffBucket(order.order_cutoff_bucket)}
+  </div>
+</td>
+                    
                     <td className="px-4 py-4 max-w-[320px]">
                       {formatItems(order.order_items)}
                     </td>
