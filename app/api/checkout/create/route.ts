@@ -968,6 +968,9 @@ attribution.affiliate_slug
         : payment_method === "mp_transfer"
           ? "pending_transfer"
           : "pending"
+  
+    const deliverySchedule = getScheduledDelivery(new Date())
+          
 
     const { data: order, error: orderError } = await supabase
       .from("orders")
