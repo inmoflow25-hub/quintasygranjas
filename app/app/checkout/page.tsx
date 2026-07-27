@@ -388,6 +388,19 @@ localStorage.setItem("qyg_app_phone", form.customer_phone.trim())
 
           <section className="rounded-3xl bg-white p-6 shadow">
             <h2 className="mb-4 text-2xl font-bold">Tu pedido</h2>
+            <div className="mb-5 rounded-2xl bg-green-50 p-4 text-green-900">
+  <p className="text-xs font-black uppercase tracking-[0.16em] text-green-700">
+    Entrega programada
+  </p>
+
+  <p className="mt-1 text-lg font-black">
+    {deliverySchedule.scheduledDeliveryLabel}
+  </p>
+
+  <p className="text-sm font-semibold">
+    {deliverySchedule.scheduledDeliveryDate}
+  </p>
+</div>
 
             <div className="space-y-3">
               {items.map((item, index) => (
