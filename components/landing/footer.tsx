@@ -48,7 +48,7 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
             <h4 className="mb-4 font-bold text-white">¿Tenés dudas?</h4>
 
             <p className="mb-4 text-white/70">
-              Escribinos por WhatsApp y te ayudamos a elegir tu caja.
+              Escribinos por WhatsApp.
             </p>
 
             <Button
