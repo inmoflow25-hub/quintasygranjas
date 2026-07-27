@@ -269,15 +269,34 @@ localStorage.setItem("qyg_app_phone", form.customer_phone.trim())
 
         <div className="grid gap-6 md:grid-cols-2">
           <section className="rounded-3xl bg-white p-6 shadow">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Finalizá tu pedido
-            </h1>
+        <h1 className="text-3xl font-bold text-gray-900">
+  Finalizá tu pedido
+</h1>
 
-            <p className="mt-2 text-gray-600">
-              Confirmá tus datos, elegí cómo pagar y aplicá tus puntos si tenés disponibles.
-            </p>
+<p className="mt-2 text-gray-600">
+  Confirmá tus datos, elegí cómo pagar y aplicá tus puntos si tenés disponibles.
+</p>
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+<div className="mt-5 rounded-2xl border border-green-200 bg-green-50 p-4">
+  <p className="text-xs font-black uppercase tracking-[0.16em] text-green-700">
+    Próxima entrega
+  </p>
+
+  <p className="mt-1 text-xl font-black text-green-950">
+    {deliverySchedule.scheduledDeliveryLabel}
+  </p>
+
+  <p className="mt-1 text-sm font-semibold text-green-800">
+    Fecha estimada: {deliverySchedule.scheduledDeliveryDate}
+  </p>
+
+  <p className="mt-3 text-xs leading-relaxed text-green-700">
+    Los pedidos se organizan por tanda. Si confirmás ahora, entra en esta próxima entrega.
+  </p>
+</div>
+
+<form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          
               <input
                 className="w-full rounded-xl border px-4 py-3"
                 placeholder="Nombre y apellido"
