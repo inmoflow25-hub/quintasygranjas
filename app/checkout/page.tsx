@@ -212,6 +212,10 @@ function CheckoutContent() {
 
   const finalTotal = subtotal + propina
 
+  const deliverySchedule = useMemo(() => {
+  return getScheduledDelivery(new Date())
+}, [])
+
   function updateField(field: string, value: string) {
     setForm((prev) => ({
       ...prev,
