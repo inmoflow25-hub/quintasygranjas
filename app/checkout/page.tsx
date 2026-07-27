@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { BOX_CATALOG } from "@/lib/boxes"
 import { getStoredAttribution } from "@/lib/attribution"
+import { getScheduledDelivery } from "@/lib/delivery-schedule"
 import AppBrand from "@/components/app/app-brand"
 
 type CheckoutItem = {
