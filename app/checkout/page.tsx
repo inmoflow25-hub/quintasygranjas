@@ -542,6 +542,19 @@ function CheckoutContent() {
 
         <div className="rounded-2xl bg-white p-8 shadow">
           <h2 className="mb-6 text-2xl font-bold">Tu pedido</h2>
+          <div className="mb-5 rounded-2xl bg-green-50 p-4 text-green-900">
+  <p className="text-xs font-bold uppercase tracking-[0.16em] text-green-700">
+    Entrega programada
+  </p>
+
+  <p className="mt-1 text-lg font-black">
+    {deliverySchedule.scheduledDeliveryLabel}
+  </p>
+
+  <p className="text-sm font-semibold">
+    {deliverySchedule.scheduledDeliveryDate}
+  </p>
+</div>
 
           <div className="space-y-3">
             {items.map((item, index) => (
