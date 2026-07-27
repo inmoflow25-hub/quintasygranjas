@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { getStoredAttribution, isCandelaAttribution } from "@/lib/attribution"
+import { getScheduledDelivery } from "@/lib/delivery-schedule"
 import AppBrand from "@/components/app/app-brand"
 
 type CartItem = {
