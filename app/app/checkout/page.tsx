@@ -68,6 +68,10 @@ export default function AppCheckoutPage() {
   const candelaDiscount = isCandelaOrder ? Math.round(subtotal * 0.1) : 0
 const finalTotal = Math.max(subtotal - candelaDiscount - appliedDiscount, 1)
 
+const deliverySchedule = useMemo(() => {
+  return getScheduledDelivery(new Date())
+}, [])
+  
 useEffect(() => {
   function resetLoading() {
     setLoading(false)
