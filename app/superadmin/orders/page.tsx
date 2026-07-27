@@ -25,6 +25,30 @@ function formatDateTime(dateString: string | null) {
   })
 }
 
+function formatDeliveryDate(dateString: string | null) {
+  if (!dateString) return "-"
+
+  return new Date(`${dateString}T12:00:00`).toLocaleDateString("es-AR", {
+    weekday: "short",
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit"
+  })
+}
+
+function formatCutoffBucket(bucket: string | null) {
+  if (bucket === "miercoles_22_a_sabado_22") {
+    return "Mié 22 → Sáb 22"
+  }
+
+  if (bucket === "sabado_22_a_miercoles_22") {
+    return "Sáb 22 → Mié 22"
+  }
+
+  return "-"
+}
+
+
 function normalizePhone(phone: string | null | undefined) {
   const raw = String(phone || "").replace(/\D/g, "")
   if (!raw) return ""
