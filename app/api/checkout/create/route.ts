@@ -1012,9 +1012,14 @@ affiliate_discount_amount: affiliateDiscountAmount,
         customer_name,
         customer_email: normalizedCustomerEmail,
         customer_phone: normalizedCustomerPhone,
-        delivery_address,
-        delivery_city,
-        delivery_notes: fullNotes
+      delivery_address,
+delivery_city,
+delivery_notes: fullNotes,
+
+scheduled_delivery_date: deliverySchedule.scheduledDeliveryDate,
+scheduled_delivery_label: deliverySchedule.scheduledDeliveryLabel,
+scheduled_delivery_window: deliverySchedule.scheduledDeliveryWindow,
+order_cutoff_bucket: deliverySchedule.orderCutoffBucket
       })
       .select()
       .single()
