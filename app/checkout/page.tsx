@@ -357,10 +357,28 @@ function CheckoutContent() {
 
         <div className="grid gap-8 md:grid-cols-2">
         <div className="rounded-2xl bg-white p-8 shadow">
-          <h1 className="mb-2 text-3xl font-bold text-green-700">Checkout</h1>
-          <p className="mb-8 text-gray-600">Completá tus datos antes de pagar.</p>
+       <h1 className="mb-2 text-3xl font-bold text-green-700">Checkout</h1>
+<p className="mb-5 text-gray-600">Completá tus datos antes de pagar.</p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+<div className="mb-6 rounded-2xl border border-green-200 bg-green-50 p-4">
+  <p className="text-xs font-bold uppercase tracking-[0.16em] text-green-700">
+    Próxima entrega
+  </p>
+
+  <p className="mt-1 text-xl font-black text-green-900">
+    {deliverySchedule.scheduledDeliveryLabel}
+  </p>
+
+  <p className="mt-1 text-sm font-semibold text-green-800">
+    Fecha estimada: {deliverySchedule.scheduledDeliveryDate}
+  </p>
+
+  <p className="mt-3 text-xs leading-relaxed text-green-700">
+    Los pedidos se organizan por tanda. Si comprás ahora, tu pedido entra en esta próxima entrega.
+  </p>
+</div>
+
+<form onSubmit={handleSubmit} className="space-y-4">
             <input
               className="w-full rounded-xl border px-4 py-3"
               placeholder="Nombre y apellido"
