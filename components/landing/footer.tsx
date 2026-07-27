@@ -17,8 +17,7 @@ export function Footer({ onWhatsAppClick }: FooterProps) {
             </div>
 
             <p className="mt-4 leading-relaxed text-white/70">
-              Cajas semanales con frutas, verduras, frutos secos y productos de
-              granja directo a tu casa.
+              Cajas armadas o armás la tuya como prefieras, y la esperás en casa.
             </p>
           </div>
 
