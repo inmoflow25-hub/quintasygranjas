@@ -296,9 +296,7 @@ export default function SuppliersClient({
       <section className="rounded-3xl border border-[#e3e1dc] bg-white p-6 shadow-sm">
         <div className="mb-5">
           <h2 className="text-2xl font-serif font-bold">Precios de compra y venta</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Compra = cuánto pagás. Venta = precio real de la tienda.
-          </p>
+        
         </div>
 
         <div className="overflow-x-auto">
