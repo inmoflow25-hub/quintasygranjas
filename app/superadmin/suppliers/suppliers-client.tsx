@@ -78,6 +78,14 @@ function formatDate(dateString: string | null | undefined) {
   return new Date(`${dateString}T12:00:00`).toLocaleDateString("es-AR")
 }
 
+function getProductNameFromUpdate(update: PriceUpdate) {
+  if (Array.isArray(update.products)) {
+    return update.products[0]?.name || update.product_id
+  }
+
+  return update.products?.name || update.product_id
+}
+
 export default function SuppliersClient({
   partners,
   products,
@@ -91,6 +99,7 @@ export default function SuppliersClient({
   const [supplierName, setSupplierName] = useState("")
   const [costs, setCosts] = useState<Record<string, string>>({})
   const [productSuppliers, setProductSuppliers] = useState<Record<string, string>>({})
+  const [productSupplierNames, setProductSupplierNames] = useState<Record<string, string>>({})
   const [sellPrices, setSellPrices] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {}
 
@@ -119,10 +128,6 @@ export default function SuppliersClient({
     )
   }, [products, search])
 
-  const selectedPartner = useMemo(() => {
-    return partners.find((partner) => partner.id === supplierPartnerId) || null
-  }, [partners, supplierPartnerId])
-
   const partnerNameById = useMemo(() => {
     const map = new Map<string, string>()
 
@@ -135,16 +140,26 @@ export default function SuppliersClient({
 
   async function saveCost(product: Product) {
     const unitCost = Number(costs[product.id] || 0)
-    const rowSupplierPartnerId = productSuppliers[product.id] || supplierPartnerId
 
-const rowPartner =
-  partners.find((partner) => partner.id === rowSupplierPartnerId) || null
+    const rowSupplierPartnerId =
+      productSuppliers[product.id] || supplierPartnerId
 
-const finalSupplierName =
-  rowPartner?.name || supplierName.trim() || "Proveedor"
+    const rowPartner =
+      partners.find((partner) => partner.id === rowSupplierPartnerId) || null
+
+    const typedSupplierName =
+      productSupplierNames[product.id]?.trim() || supplierName.trim()
+
+    const finalSupplierName =
+      typedSupplierName || rowPartner?.name || "Proveedor"
 
     if (!Number.isFinite(unitCost) || unitCost <= 0) {
       setMessage("Poné un precio de compra válido.")
+      return
+    }
+
+    if (!finalSupplierName || finalSupplierName === "Proveedor") {
+      setMessage("Escribí dónde compraste este producto.")
       return
     }
 
@@ -178,7 +193,10 @@ const finalSupplierName =
         return
       }
 
-      setMessage(`Costo guardado: ${product.name} · pagás ${money(unitCost)}.`)
+      setMessage(
+        `Costo guardado: ${product.name} · ${finalSupplierName} · pagás ${money(unitCost)}.`
+      )
+
       setCosts((prev) => ({
         ...prev,
         [product.id]: ""
@@ -193,7 +211,9 @@ const finalSupplierName =
 
   async function updateSellPrice(product: Product) {
     const newPrice = Number(sellPrices[product.id] || 0)
-    const rowSupplierPartnerId = productSuppliers[product.id] || supplierPartnerId
+
+    const rowSupplierPartnerId =
+      productSuppliers[product.id] || supplierPartnerId
 
     if (!Number.isFinite(newPrice) || newPrice <= 0) {
       setMessage("Poné un precio de venta válido.")
@@ -251,10 +271,25 @@ const finalSupplierName =
   return (
     <div className="space-y-6">
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Metric title="Socios activos" value={partners.filter((p) => p.active).length} />
-        <Metric title="Productos activos" value={products.length} />
-        <Metric title="Gastos cargados" value={expenses.length} />
-        <Metric title="Total gastos" value={money(totalExpenses)} />
+        <Metric
+          title="Socios activos"
+          value={partners.filter((partner) => partner.active).length}
+        />
+
+        <Metric
+          title="Productos activos"
+          value={products.length}
+        />
+
+        <Metric
+          title="Gastos cargados"
+          value={expenses.length}
+        />
+
+        <Metric
+          title="Total gastos"
+          value={money(totalExpenses)}
+        />
       </section>
 
       <section className="rounded-3xl border border-[#e3e1dc] bg-white p-6 shadow-sm">
@@ -265,25 +300,41 @@ const finalSupplierName =
         </p>
 
         <div className="mt-5 grid gap-3 md:grid-cols-3">
-          <select
-            className="rounded-2xl border border-[#d8d4ca] px-4 py-3 text-sm"
-            value={supplierPartnerId}
-            onChange={(event) => setSupplierPartnerId(event.target.value)}
-          >
-            <option value="">Sin socio asignado</option>
-            {partners.map((partner) => (
-              <option key={partner.id} value={partner.id}>
-                {partner.name}
-              </option>
-            ))}
-          </select>
-
           <input
             className="rounded-2xl border border-[#d8d4ca] px-4 py-3 text-sm"
-            placeholder="Proveedor manual, ejemplo Mercado Central"
+            placeholder="Lugar de compra general, ejemplo Mercado Central"
             value={supplierName}
             onChange={(event) => setSupplierName(event.target.value)}
           />
+
+          {partners.length > 0 ? (
+            <select
+              className="rounded-2xl border border-[#d8d4ca] px-4 py-3 text-sm"
+              value={supplierPartnerId}
+              onChange={(event) => {
+                const partnerId = event.target.value
+                const partner = partners.find((item) => item.id === partnerId)
+
+                setSupplierPartnerId(partnerId)
+
+                if (partner?.name) {
+                  setSupplierName(partner.name)
+                }
+              }}
+            >
+              <option value="">Usar proveedor guardado</option>
+
+              {partners.map((partner) => (
+                <option key={partner.id} value={partner.id}>
+                  {partner.name}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <div className="rounded-2xl border border-[#d8d4ca] px-4 py-3 text-sm text-gray-500">
+              Sin proveedores guardados. Podés escribir el lugar manualmente.
+            </div>
+          )}
 
           <input
             className="rounded-2xl border border-[#d8d4ca] px-4 py-3 text-sm"
@@ -302,16 +353,17 @@ const finalSupplierName =
 
       <section className="rounded-3xl border border-[#e3e1dc] bg-white p-6 shadow-sm">
         <div className="mb-5">
-          <h2 className="text-2xl font-serif font-bold">Precios de compra y venta</h2>
-        
+          <h2 className="text-2xl font-serif font-bold">
+            Precios de compra y venta
+          </h2>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
+          <table className="min-w-[1250px] text-left text-sm">
             <thead className="bg-[#efefed] text-xs uppercase text-gray-600">
               <tr>
                 <th className="px-4 py-3">Producto</th>
-                <th className="px-4 py-3">Proveedor</th>
+                <th className="px-4 py-3">Dónde compraste</th>
                 <th className="px-4 py-3">Categoría</th>
                 <th className="px-4 py-3">Unidad</th>
                 <th className="px-4 py-3 text-right">Venta actual</th>
@@ -323,36 +375,73 @@ const finalSupplierName =
 
             <tbody>
               {filteredProducts.map((product) => (
-                <tr key={product.id} className="border-b border-[#eee] align-top">
+                <tr
+                  key={product.id}
+                  className="border-b border-[#eee] align-top"
+                >
                   <td className="px-4 py-4">
                     <div className="font-bold">{product.name}</div>
+
                     <div className="mt-1 text-xs text-gray-500">
                       Web: {product.visible_on_web ? "sí" : "no"} · App:{" "}
                       {product.visible_on_pwa ? "sí" : "no"}
                     </div>
                   </td>
-                  <td className="px-4 py-4">
-  <select
-    className="w-48 rounded-xl border border-[#d8d4ca] px-3 py-2 text-sm"
-    value={productSuppliers[product.id] || supplierPartnerId}
-    onChange={(event) =>
-      setProductSuppliers((prev) => ({
-        ...prev,
-        [product.id]: event.target.value
-      }))
-    }
-  >
-    <option value="">Sin proveedor</option>
-    {partners.map((partner) => (
-      <option key={partner.id} value={partner.id}>
-        {partner.name}
-      </option>
-    ))}
-  </select>
-</td>
 
-                  <td className="px-4 py-4">{product.category || "-"}</td>
-                  <td className="px-4 py-4">{product.unit_label || "-"}</td>
+                  <td className="px-4 py-4">
+                    <input
+                      className="w-56 rounded-xl border border-[#d8d4ca] px-3 py-2 text-sm"
+                      placeholder="Ej: Mercado Central"
+                      value={productSupplierNames[product.id] || ""}
+                      onChange={(event) =>
+                        setProductSupplierNames((prev) => ({
+                          ...prev,
+                          [product.id]: event.target.value
+                        }))
+                      }
+                    />
+
+                    {partners.length > 0 && (
+                      <select
+                        className="mt-2 w-56 rounded-xl border border-[#d8d4ca] px-3 py-2 text-xs text-gray-600"
+                        value={productSuppliers[product.id] || supplierPartnerId}
+                        onChange={(event) => {
+                          const partnerId = event.target.value
+                          const partner = partners.find(
+                            (item) => item.id === partnerId
+                          )
+
+                          setProductSuppliers((prev) => ({
+                            ...prev,
+                            [product.id]: partnerId
+                          }))
+
+                          if (partner?.name) {
+                            setProductSupplierNames((prev) => ({
+                              ...prev,
+                              [product.id]: partner.name
+                            }))
+                          }
+                        }}
+                      >
+                        <option value="">Usar proveedor guardado</option>
+
+                        {partners.map((partner) => (
+                          <option key={partner.id} value={partner.id}>
+                            {partner.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </td>
+
+                  <td className="px-4 py-4">
+                    {product.category || "-"}
+                  </td>
+
+                  <td className="px-4 py-4">
+                    {product.unit_label || "-"}
+                  </td>
 
                   <td className="px-4 py-4 text-right font-black">
                     {money(product.price)}
@@ -415,7 +504,7 @@ const finalSupplierName =
 
               {filteredProducts.length === 0 && (
                 <tr>
-                 <td colSpan={8} className="px-4 py-8 text-gray-500">
+                  <td colSpan={8} className="px-4 py-8 text-gray-500">
                     No hay productos para mostrar.
                   </td>
                 </tr>
@@ -427,17 +516,26 @@ const finalSupplierName =
 
       <section className="grid gap-6 xl:grid-cols-2">
         <div className="rounded-3xl border border-[#e3e1dc] bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-serif font-bold">Últimos costos cargados</h2>
+          <h2 className="text-2xl font-serif font-bold">
+            Últimos costos cargados
+          </h2>
 
           <div className="mt-5 space-y-3">
             {expenses.map((expense) => (
-              <div key={expense.id} className="rounded-2xl border border-[#eee] p-4">
+              <div
+                key={expense.id}
+                className="rounded-2xl border border-[#eee] p-4"
+              >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="font-bold">{expense.product_name}</div>
+                    <div className="font-bold">
+                      {expense.product_name}
+                    </div>
+
                     <div className="text-xs text-gray-500">
                       {expense.supplier_name} · {formatDate(expense.expense_date)}
                     </div>
+
                     <div className="mt-1 text-xs text-gray-500">
                       Socio:{" "}
                       {expense.supplier_partner_id
@@ -447,7 +545,10 @@ const finalSupplierName =
                   </div>
 
                   <div className="text-right">
-                    <div className="font-black">{money(expense.total_cost)}</div>
+                    <div className="font-black">
+                      {money(expense.total_cost)}
+                    </div>
+
                     <div className="text-xs text-gray-500">
                       {expense.quantity} {expense.unit_label || ""} ·{" "}
                       {money(expense.unit_cost)}
@@ -464,30 +565,37 @@ const finalSupplierName =
             ))}
 
             {expenses.length === 0 && (
-              <p className="text-sm text-gray-500">Todavía no hay costos cargados.</p>
+              <p className="text-sm text-gray-500">
+                Todavía no hay costos cargados.
+              </p>
             )}
           </div>
         </div>
 
         <div className="rounded-3xl border border-[#e3e1dc] bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-serif font-bold">Cambios de precios de venta</h2>
+          <h2 className="text-2xl font-serif font-bold">
+            Cambios de precios de venta
+          </h2>
 
           <div className="mt-5 space-y-3">
             {priceUpdates.map((update) => (
-              <div key={update.id} className="rounded-2xl border border-[#eee] p-4">
+              <div
+                key={update.id}
+                className="rounded-2xl border border-[#eee] p-4"
+              >
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="font-bold">
-                      {Array.isArray(update.products)
-  ? update.products[0]?.name || update.product_id
-  : update.products?.name || update.product_id}
+                      {getProductNameFromUpdate(update)}
                     </div>
+
                     <div className="text-xs text-gray-500">
                       Socio:{" "}
                       {update.supplier_partner_id
                         ? partnerNameById.get(update.supplier_partner_id) || "-"
                         : "-"}
                     </div>
+
                     <div className="mt-1 text-xs text-gray-500">
                       {formatDate(update.created_at)}
                     </div>
@@ -497,6 +605,7 @@ const finalSupplierName =
                     <div>
                       Antes: <strong>{money(update.old_price)}</strong>
                     </div>
+
                     <div>
                       Ahora: <strong>{money(update.new_price)}</strong>
                     </div>
