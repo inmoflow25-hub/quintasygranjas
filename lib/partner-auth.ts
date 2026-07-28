@@ -31,11 +31,14 @@ export async function getPartnerByToken(accessToken: string | null) {
 
   const { data: partner, error } = await partnerSupabase
     .from("supplier_partners")
-  .select(`
+.select(`
   id,
   name,
   email,
   phone,
+  address,
+  city,
+  notes,
   active,
   can_update_prices,
   can_log_expenses
