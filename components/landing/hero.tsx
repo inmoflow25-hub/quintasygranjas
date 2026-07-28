@@ -7,6 +7,7 @@ import {
   getScheduledDelivery,
   type DeliverySchedule
 } from "@/lib/delivery-schedule"
+
 interface HeroProps {
   onWhatsAppClick: () => void
 }
@@ -20,6 +21,9 @@ const images = [
 export function Hero({ onWhatsAppClick }: HeroProps) {
   const [index, setIndex] = useState(0)
 
+  const [deliverySchedule, setDeliverySchedule] =
+    useState<DeliverySchedule | null>(null)
+
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % images.length)
@@ -28,12 +32,15 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
     return () => clearInterval(interval)
   }, [])
 
+  useEffect(() => {
+    setDeliverySchedule(getScheduledDelivery(new Date()))
+  }, [])
+
   return (
     <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
-
       {/* BARRA SUPERIOR */}
-      <div className="absolute top-0 left-0 w-full z-20 bg-green-700 text-white text-sm text-center py-2">
-        🚚 Envío GRATIS en CABA y GBA Norte · 🧺 Pedido mínimo $20.000
+      <div className="absolute top-0 left-0 w-full z-20 bg-green-700 text-white text-sm text-center py-2 px-3">
+        🚚 Envío GRATIS en CABA Norte y GBA Norte · 🧺 Pedido mínimo $20.000
       </div>
 
       {/* SLIDER */}
@@ -50,13 +57,13 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
       {/* CONTENIDO */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl">
-
           {/* OFERTA */}
-          <div className="mb-7 inline-flex max-w-full flex-col rounded-2xl bg-green-700/95 px-6 py-4 text-white shadow-2xl sm:flex-row sm:items-center sm:gap-5">
+          <div className="mb-5 inline-flex max-w-full flex-col rounded-2xl bg-green-700/95 px-6 py-4 text-white shadow-2xl sm:flex-row sm:items-center sm:gap-5">
             <div className="flex items-end gap-2">
               <span className="text-5xl font-black leading-none md:text-6xl">
                 10%
               </span>
+
               <span className="pb-1 text-2xl font-black uppercase leading-none">
                 OFF
               </span>
@@ -66,10 +73,34 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
               <p className="text-sm font-bold uppercase tracking-[0.18em] text-white/80">
                 Primera compra
               </p>
+
               <p className="text-lg font-semibold leading-tight">
                 Se aplica automático al armar tu pedido
               </p>
             </div>
+          </div>
+
+          {/* ENTREGA */}
+          <div className="mb-7 max-w-xl rounded-2xl border border-white/25 bg-black/45 px-5 py-4 text-white shadow-xl backdrop-blur-sm">
+            <p className="text-sm font-black uppercase tracking-[0.15em] text-green-200">
+              Próxima entrega
+            </p>
+
+            <p className="mt-1 text-xl font-black leading-tight md:text-2xl">
+              🚚 Comprando ahora, recibís{" "}
+              {deliverySchedule
+                ? deliverySchedule.scheduledDeliveryLabel.toLowerCase()
+                : "en la próxima entrega programada"}
+            </p>
+
+            <p className="mt-2 text-sm font-semibold leading-relaxed text-white/85 md:text-base">
+              Entregamos todas las semanas los lunes y viernes post mediodía.
+              Tu pedido entra automáticamente en la próxima tanda disponible.
+            </p>
+
+            <p className="mt-2 text-sm font-bold text-white">
+              Envío gratis en CABA Norte y GBA Norte.
+            </p>
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
@@ -83,7 +114,7 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
 
           <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
             En tu primera compra tenés 10% de descuento. Después, cada 4 compras,
-            volvés a recibir otro 5% OFF.
+            volvés a recibir otro 10% OFF.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
@@ -91,7 +122,9 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
               size="lg"
               className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6"
               onClick={() => {
-                document.getElementById("cart")?.scrollIntoView({ behavior: "smooth" })
+                document
+                  .getElementById("cart")
+                  ?.scrollIntoView({ behavior: "smooth" })
               }}
             >
               Armar tu pedido
