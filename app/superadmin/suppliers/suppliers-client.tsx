@@ -90,6 +90,7 @@ export default function SuppliersClient({
   const [supplierPartnerId, setSupplierPartnerId] = useState("")
   const [supplierName, setSupplierName] = useState("")
   const [costs, setCosts] = useState<Record<string, string>>({})
+  const [productSuppliers, setProductSuppliers] = useState<Record<string, string>>({})
   const [sellPrices, setSellPrices] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {}
 
