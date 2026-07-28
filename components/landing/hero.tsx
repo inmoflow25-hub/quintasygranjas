@@ -114,7 +114,7 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
 
           <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
             En tu primera compra tenés 10% de descuento. Después, cada 4 compras,
-            volvés a recibir otro 10% OFF.
+            volvés a recibir otro 5% OFF.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
