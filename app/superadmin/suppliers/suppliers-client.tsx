@@ -453,7 +453,9 @@ export default function SuppliersClient({
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="font-bold">
-                      {update.products?.name || update.product_id}
+                      {Array.isArray(update.products)
+  ? update.products[0]?.name || update.product_id
+  : update.products?.name || update.product_id}
                     </div>
                     <div className="text-xs text-gray-500">
                       Socio:{" "}
