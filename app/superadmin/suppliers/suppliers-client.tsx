@@ -48,9 +48,14 @@ type PriceUpdate = {
   new_price: number
   reason: string | null
   created_at: string
-  products?: {
-    name?: string | null
-  } | null
+  products?:
+    | {
+        name?: string | null
+      }
+    | {
+        name?: string | null
+      }[]
+    | null
 }
 
 type Props = {
