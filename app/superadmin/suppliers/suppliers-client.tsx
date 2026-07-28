@@ -135,8 +135,13 @@ export default function SuppliersClient({
 
   async function saveCost(product: Product) {
     const unitCost = Number(costs[product.id] || 0)
-    const finalSupplierName =
-      selectedPartner?.name || supplierName.trim() || "Proveedor"
+    const rowSupplierPartnerId = productSuppliers[product.id] || supplierPartnerId
+
+const rowPartner =
+  partners.find((partner) => partner.id === rowSupplierPartnerId) || null
+
+const finalSupplierName =
+  rowPartner?.name || supplierName.trim() || "Proveedor"
 
     if (!Number.isFinite(unitCost) || unitCost <= 0) {
       setMessage("Poné un precio de compra válido.")
@@ -153,7 +158,7 @@ export default function SuppliersClient({
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          supplier_partner_id: supplierPartnerId || null,
+          supplier_partner_id: rowSupplierPartnerId || null,
           supplier_name: finalSupplierName,
           product_id: product.id,
           product_name: product.name,
@@ -188,6 +193,7 @@ export default function SuppliersClient({
 
   async function updateSellPrice(product: Product) {
     const newPrice = Number(sellPrices[product.id] || 0)
+    const rowSupplierPartnerId = productSuppliers[product.id] || supplierPartnerId
 
     if (!Number.isFinite(newPrice) || newPrice <= 0) {
       setMessage("Poné un precio de venta válido.")
@@ -206,7 +212,7 @@ export default function SuppliersClient({
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            supplier_partner_id: supplierPartnerId || null,
+            supplier_partner_id: rowSupplierPartnerId || null,
             new_price: newPrice,
             reason: "Precio de venta actualizado desde Proveedores"
           })
