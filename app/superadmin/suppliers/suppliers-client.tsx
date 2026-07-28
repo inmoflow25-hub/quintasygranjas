@@ -311,6 +311,7 @@ const finalSupplierName =
             <thead className="bg-[#efefed] text-xs uppercase text-gray-600">
               <tr>
                 <th className="px-4 py-3">Producto</th>
+                <th className="px-4 py-3">Proveedor</th>
                 <th className="px-4 py-3">Categoría</th>
                 <th className="px-4 py-3">Unidad</th>
                 <th className="px-4 py-3 text-right">Venta actual</th>
@@ -330,6 +331,25 @@ const finalSupplierName =
                       {product.visible_on_pwa ? "sí" : "no"}
                     </div>
                   </td>
+                  <td className="px-4 py-4">
+  <select
+    className="w-48 rounded-xl border border-[#d8d4ca] px-3 py-2 text-sm"
+    value={productSuppliers[product.id] || supplierPartnerId}
+    onChange={(event) =>
+      setProductSuppliers((prev) => ({
+        ...prev,
+        [product.id]: event.target.value
+      }))
+    }
+  >
+    <option value="">Sin proveedor</option>
+    {partners.map((partner) => (
+      <option key={partner.id} value={partner.id}>
+        {partner.name}
+      </option>
+    ))}
+  </select>
+</td>
 
                   <td className="px-4 py-4">{product.category || "-"}</td>
                   <td className="px-4 py-4">{product.unit_label || "-"}</td>
