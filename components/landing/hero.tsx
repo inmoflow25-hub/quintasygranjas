@@ -40,7 +40,7 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
     <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
       {/* BARRA SUPERIOR */}
       <div className="absolute top-0 left-0 w-full z-20 bg-green-700 text-white text-sm text-center py-2 px-3">
-        🚚 Envío GRATIS en CABA Norte y GBA Norte · 🧺 Pedido mínimo $20.000
+         Envío GRATIS en CABA Norte y GBA Norte ·  Pedido mínimo $20.000
       </div>
 
       {/* SLIDER */}
@@ -87,7 +87,7 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
             </p>
 
             <p className="mt-1 text-xl font-black leading-tight md:text-2xl">
-              🚚 Comprando ahora, recibís{" "}
+              Comprando ahora, recibís{" "}
               {deliverySchedule
                 ? deliverySchedule.scheduledDeliveryLabel.toLowerCase()
                 : "en la próxima entrega programada"}
