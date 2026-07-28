@@ -3,7 +3,10 @@
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 import { useEffect, useState } from "react"
-
+import {
+  getScheduledDelivery,
+  type DeliverySchedule
+} from "@/lib/delivery-schedule"
 interface HeroProps {
   onWhatsAppClick: () => void
 }
