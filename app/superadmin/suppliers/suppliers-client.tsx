@@ -75,6 +75,7 @@ function today() {
 
 function formatDate(dateString: string | null | undefined) {
   if (!dateString) return "-"
+
   return new Date(`${dateString}T12:00:00`).toLocaleDateString("es-AR")
 }
 
@@ -95,8 +96,6 @@ export default function SuppliersClient({
   const [message, setMessage] = useState("")
   const [loadingId, setLoadingId] = useState("")
   const [search, setSearch] = useState("")
-  const [supplierPartnerId, setSupplierPartnerId] = useState("")
-  const [supplierName, setSupplierName] = useState("")
   const [costs, setCosts] = useState<Record<string, string>>({})
   const [productSuppliers, setProductSuppliers] = useState<Record<string, string>>({})
   const [productSupplierNames, setProductSupplierNames] = useState<Record<string, string>>({})
@@ -141,24 +140,22 @@ export default function SuppliersClient({
   async function saveCost(product: Product) {
     const unitCost = Number(costs[product.id] || 0)
 
-    const rowSupplierPartnerId =
-      productSuppliers[product.id] || supplierPartnerId
+    const rowSupplierPartnerId = productSuppliers[product.id] || ""
 
     const rowPartner =
       partners.find((partner) => partner.id === rowSupplierPartnerId) || null
 
-    const typedSupplierName =
-      productSupplierNames[product.id]?.trim() || supplierName.trim()
+    const typedSupplierName = productSupplierNames[product.id]?.trim() || ""
 
     const finalSupplierName =
-      typedSupplierName || rowPartner?.name || "Proveedor"
+      typedSupplierName || rowPartner?.name || ""
 
     if (!Number.isFinite(unitCost) || unitCost <= 0) {
       setMessage("Poné un precio de compra válido.")
       return
     }
 
-    if (!finalSupplierName || finalSupplierName === "Proveedor") {
+    if (!finalSupplierName) {
       setMessage("Escribí dónde compraste este producto.")
       return
     }
@@ -212,8 +209,7 @@ export default function SuppliersClient({
   async function updateSellPrice(product: Product) {
     const newPrice = Number(sellPrices[product.id] || 0)
 
-    const rowSupplierPartnerId =
-      productSuppliers[product.id] || supplierPartnerId
+    const rowSupplierPartnerId = productSuppliers[product.id] || ""
 
     if (!Number.isFinite(newPrice) || newPrice <= 0) {
       setMessage("Poné un precio de venta válido.")
@@ -292,70 +288,26 @@ export default function SuppliersClient({
         />
       </section>
 
+      {message && (
+        <section className="rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-900">
+          {message}
+        </section>
+      )}
+
       <section className="rounded-3xl border border-[#e3e1dc] bg-white p-6 shadow-sm">
-        <h2 className="text-3xl font-serif font-bold">Proveedores</h2>
-
-        <p className="mt-2 text-sm text-gray-600">
-          Acá cargás cuánto pagás cada producto y modificás cuánto lo vendés en tienda.
-        </p>
-
-        <div className="mt-5 grid gap-3 md:grid-cols-3">
-          <input
-            className="rounded-2xl border border-[#d8d4ca] px-4 py-3 text-sm"
-            placeholder="Lugar de compra general, ejemplo Mercado Central"
-            value={supplierName}
-            onChange={(event) => setSupplierName(event.target.value)}
-          />
-
-          {partners.length > 0 ? (
-            <select
-              className="rounded-2xl border border-[#d8d4ca] px-4 py-3 text-sm"
-              value={supplierPartnerId}
-              onChange={(event) => {
-                const partnerId = event.target.value
-                const partner = partners.find((item) => item.id === partnerId)
-
-                setSupplierPartnerId(partnerId)
-
-                if (partner?.name) {
-                  setSupplierName(partner.name)
-                }
-              }}
-            >
-              <option value="">Usar proveedor guardado</option>
-
-              {partners.map((partner) => (
-                <option key={partner.id} value={partner.id}>
-                  {partner.name}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <div className="rounded-2xl border border-[#d8d4ca] px-4 py-3 text-sm text-gray-500">
-              Sin proveedores guardados. Podés escribir el lugar manualmente.
-            </div>
-          )}
+        <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h2 className="text-2xl font-serif font-bold">
+              Precios de compra y venta
+            </h2>
+          </div>
 
           <input
-            className="rounded-2xl border border-[#d8d4ca] px-4 py-3 text-sm"
+            className="rounded-2xl border border-[#d8d4ca] px-4 py-3 text-sm md:w-[360px]"
             placeholder="Buscar producto"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
-        </div>
-
-        {message && (
-          <div className="mt-4 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-900">
-            {message}
-          </div>
-        )}
-      </section>
-
-      <section className="rounded-3xl border border-[#e3e1dc] bg-white p-6 shadow-sm">
-        <div className="mb-5">
-          <h2 className="text-2xl font-serif font-bold">
-            Precios de compra y venta
-          </h2>
         </div>
 
         <div className="overflow-x-auto">
@@ -404,7 +356,7 @@ export default function SuppliersClient({
                     {partners.length > 0 && (
                       <select
                         className="mt-2 w-56 rounded-xl border border-[#d8d4ca] px-3 py-2 text-xs text-gray-600"
-                        value={productSuppliers[product.id] || supplierPartnerId}
+                        value={productSuppliers[product.id] || ""}
                         onChange={(event) => {
                           const partnerId = event.target.value
                           const partner = partners.find(
