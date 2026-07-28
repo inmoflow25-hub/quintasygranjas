@@ -82,9 +82,9 @@ export default async function AdminPage() {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-[#f5f5f3] p-10">
+      <main className="min-h-screen bg-[#f5f5f3] px-4 py-6 md:p-10">
         <h1 className="mb-6 text-5xl font-serif font-bold text-[#1f2a1f]">
-          📦 Pedidos / Entregas
+           Pedidos / Entregas
         </h1>
         <div className="rounded-3xl bg-white p-6 shadow-sm">
           <p className="mb-4 text-sm text-gray-500">Ingresaste como {admin.email}</p>
@@ -95,14 +95,14 @@ export default async function AdminPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f5f5f3] p-10">
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-5xl font-serif font-bold text-[#1f2a1f]">
-          📦 Pedidos / Entregas
+    <main className="min-h-screen bg-[#f5f5f3] px-4 py-6 md:p-10">
+      <div className="mb-4 flex items-start justify-between gap-4">
+        <h1 className="text-4xl font-serif font-bold leading-tight text-[#1f2a1f] md:text-5xl">
+           Pedidos / Entregas
         </h1>
 
         <form action="/api/admin/logout" method="POST">
-          <button className="rounded-xl bg-[#1f2a1f] px-4 py-2 text-white">
+          <button className="whitespace-nowrap rounded-xl bg-[#1f2a1f] px-4 py-2 text-white">
             Cerrar sesión
           </button>
         </form>
@@ -112,8 +112,8 @@ export default async function AdminPage() {
         Sesión activa: {admin.email}
       </p>
 
-      <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">
-        <table className="min-w-full text-left">
+      <div className="w-full overflow-x-auto rounded-3xl bg-white shadow-sm [-webkit-overflow-scrolling:touch]">
+        <table className="min-w-[1500px] text-left">
           <thead className="bg-[#efefed] text-[#2b2b2b]">
             <tr>
               <th className="px-4 py-4 text-xl font-serif">Fecha</th>
