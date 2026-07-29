@@ -83,6 +83,11 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
             Tu súper de zona norte
           </h1>
+         
+
+<p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
+ Vegetales, huevos, miel, pollo, frutos secos, comidas congeladas listas para el horno y +
+</p>
 
           <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
             Armá tu caja con los productos que quieras o elegí una ya lista.
