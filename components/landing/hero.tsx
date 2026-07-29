@@ -40,7 +40,7 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
     <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
       {/* BARRA SUPERIOR */}
       <div className="absolute top-0 left-0 w-full z-20 bg-green-700 text-white text-sm text-center py-2 px-3">
-         Envío GRATIS en CABA Norte y GBA Norte ·  Pedido mínimo $20.000
+        🚚 Envío GRATIS en CABA Norte y GBA Norte · 🧺 Pedido mínimo $20.000
       </div>
 
       {/* SLIDER */}
@@ -80,13 +80,6 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
             </div>
           </div>
 
-        <div className="mb-6 inline-flex max-w-full items-center rounded-full border border-white/25 bg-black/40 px-4 py-2 text-sm font-bold text-white backdrop-blur-sm md:text-base">
-  🚚 Comprando ahora, recibís{" "}
-  {deliverySchedule
-    ? deliverySchedule.scheduledDeliveryLabel.toLowerCase()
-    : "en la próxima entrega programada"}
-</div>
-
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
             Alimentos frescos directo de productores a tu mesa
           </h1>
@@ -94,6 +87,17 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
           <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
             Armá tu caja con los productos que quieras o elegí una ya lista.
             Sin supermercado. Sin filas. Sin pagar de más.
+          </p>
+
+          <div className="mb-6 mt-5 inline-flex max-w-full items-center rounded-full border border-white/25 bg-black/40 px-4 py-2 text-sm font-bold text-white backdrop-blur-sm md:text-base">
+            🚚 Comprando ahora, recibís{" "}
+            {deliverySchedule
+              ? deliverySchedule.scheduledDeliveryLabel.toLowerCase()
+              : "en la próxima entrega programada"}
+          </div>
+
+          <p className="mt-3 text-sm font-semibold text-white/75 md:text-base">
+            Entregamos todos los lunes y viernes post mediodía · Envío gratis en CABA Norte y GBA Norte
           </p>
 
           <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
