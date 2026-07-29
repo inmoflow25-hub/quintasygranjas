@@ -80,28 +80,12 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
             </div>
           </div>
 
-          {/* ENTREGA */}
-          <div className="mb-7 max-w-xl rounded-2xl border border-white/25 bg-black/45 px-5 py-4 text-white shadow-xl backdrop-blur-sm">
-            <p className="text-sm font-black uppercase tracking-[0.15em] text-green-200">
-              Próxima entrega
-            </p>
-
-            <p className="mt-1 text-xl font-black leading-tight md:text-2xl">
-              Comprando ahora, recibís{" "}
-              {deliverySchedule
-                ? deliverySchedule.scheduledDeliveryLabel.toLowerCase()
-                : "en la próxima entrega programada"}
-            </p>
-
-            <p className="mt-2 text-sm font-semibold leading-relaxed text-white/85 md:text-base">
-              Entregamos todas las semanas los lunes y viernes post mediodía.
-              Tu pedido entra automáticamente en la próxima tanda disponible.
-            </p>
-
-            <p className="mt-2 text-sm font-bold text-white">
-              Envío gratis en CABA Norte y GBA Norte.
-            </p>
-          </div>
+        <div className="mb-6 inline-flex max-w-full items-center rounded-full border border-white/25 bg-black/40 px-4 py-2 text-sm font-bold text-white backdrop-blur-sm md:text-base">
+  🚚 Comprando ahora, recibís{" "}
+  {deliverySchedule
+    ? deliverySchedule.scheduledDeliveryLabel.toLowerCase()
+    : "en la próxima entrega programada"}
+</div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
             Alimentos frescos directo de productores a tu mesa
