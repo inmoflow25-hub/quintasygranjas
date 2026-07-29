@@ -83,7 +83,7 @@ const BOX_CONTENTS: Record<string, string[]> = {
     "1 lechuga",
     "2 espinacas",
     "1 kg suprema",
-    "Huevos"
+    "30 Huevos"
   ],
   "Caja Granja": [
     "1 zapallo anco",
@@ -100,7 +100,7 @@ const BOX_CONTENTS: Record<string, string[]> = {
     "1 lechuga",
     "2 espinacas",
     "1 kg suprema",
-    "Huevos",
+    "30 Huevos",
     "Pan",
     "Miel"
   ]
