@@ -338,6 +338,9 @@ function buildItemsSummary(
   return items
     .map((item) => `${item.title} x${Number(item.quantity || 1)}`)
     .join(", ")
+    .replace(/[\r\n\t]+/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim()
 }
 
 function buildCycleProgress({
