@@ -137,6 +137,9 @@ function buildItemsSummary(
         )}`
     )
     .join(", ")
+    .replace(/[\r\n\t]+/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim()
 }
 
 function buildCycleProgress({
