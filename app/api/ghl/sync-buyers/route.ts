@@ -235,10 +235,11 @@ export async function POST() {
     const errors: Array<{ buyer: string; error: string }> = []
 
     for (const buyer of buyers.values()) {
-      const tags = [
-        "comprador_quintas_y_granjas",
-        getLoyaltyTag(buyer.totalOrders)
-      ]
+     const tags = [
+  "compro_ok",
+  "comprador_quintas_y_granjas",
+  getLoyaltyTag(buyer.totalOrders)
+]
 
       const barrioTag = getBarrioTag(buyer.deliveryCity)
       if (barrioTag) {
