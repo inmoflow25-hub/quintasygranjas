@@ -149,7 +149,7 @@ const FALLBACK_PRODUCTS: Product[] = [
   {
     id: "papa-blanca",
     slug: "papa-blanca",
-    name: "Papa negra cepillada",
+    name: "Papa blanca",
     description: "Ideal para horno, puré o fritas.",
     price: 800,
     type: "weight_500g",
