@@ -28,7 +28,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     category: "cajas_armadas",
     boxItems: [
       "1 zapallo anco",
-      "papa negra 2 kg",
+      "papa blanca 2 kg",
       "cebolla 1 kg y 1/2",
       "tomate 1/2 kg",
       "zanahoria 1/2 kg",
@@ -54,7 +54,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     category: "cajas_armadas",
     boxItems: [
       "1 zapallo anco",
-      "papa negra 2 kg",
+      "papa blanca 2 kg",
       "cebolla 1 kg y 1/2",
       "tomate 1/2 kg",
       "zanahoria 1/2 kg",
@@ -84,7 +84,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     category: "cajas_armadas",
     boxItems: [
       "1 zapallo anco",
-      "papa negra 2 kg",
+      "papa blanca 2 kg",
       "cebolla 1 kg y 1/2",
       "tomate 1/2 kg",
       "zanahoria 1/2 kg",
@@ -127,9 +127,9 @@ const FALLBACK_PRODUCTS: Product[] = [
     category: "verduras"
   },
   {
-    id: "papa-negra-cepillada",
-    slug: "papa-negra-cepillada",
-    name: "Papa negra cepillada",
+    id: "papa-blanca",
+    slug: "papa-blanca",
+    name: "Papa blanca",
     description: "Ideal para horno, puré o fritas.",
     price: 800,
     type: "weight_500g",
