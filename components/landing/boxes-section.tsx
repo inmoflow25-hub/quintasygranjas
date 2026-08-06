@@ -19,7 +19,7 @@ const boxes = [
       "Rica en fibra, vitaminas y antioxidantes. Mejora la digestión y fortalece tus defensas.",
     features: [
       "1 zapallo anco",
-      "papa negra 2 kg",
+      "papa blanca 2 kg",
       "cebolla 1 kg y 1/2",
       "tomate 1/2 kg",
       "zanahoria 1/2 kg",
