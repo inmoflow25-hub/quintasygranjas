@@ -319,8 +319,8 @@ export default function SuppliersClient({
                 <th className="px-4 py-3">Categoría</th>
                 <th className="px-4 py-3">Unidad</th>
                 <th className="px-4 py-3 text-right">Venta actual</th>
-                <th className="px-4 py-3">Precio que pago</th>
-                <th className="px-4 py-3">Precio que vendo</th>
+                <th className="px-4 py-3">Costo</th>
+                <th className="px-4 py-3">Precio</th>
                 <th className="px-4 py-3">Acciones</th>
               </tr>
             </thead>
