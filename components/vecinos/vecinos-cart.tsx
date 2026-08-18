@@ -37,7 +37,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     image: "/images/caja-veggie.jpg",
     category: "cajas_armadas",
     boxItems: [
-      "1 zapallo anco",
+     
       "papa negra 2 kg",
       "cebolla 1 kg y 1/2",
       "tomate 1/2 kg",
@@ -64,7 +64,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     image: "/images/caja-campo.jpg",
     category: "cajas_armadas",
     boxItems: [
-      "1 zapallo anco",
+      
       "papa negra 2 kg",
       "cebolla 1 kg y 1/2",
       "tomate 1/2 kg",
@@ -95,7 +95,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     image: "/images/caja-granja.jpg",
     category: "cajas_armadas",
     boxItems: [
-      "1 zapallo anco",
+     
       "papa negra 2 kg",
       "cebolla 1 kg y 1/2",
       "tomate 1/2 kg",
