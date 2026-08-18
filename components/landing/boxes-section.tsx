@@ -18,7 +18,7 @@ const boxes = [
     benefit:
       "Rica en fibra, vitaminas y antioxidantes. Mejora la digestión y fortalece tus defensas.",
     features: [
-      "1 zapallo anco",
+      
       "papa blanca 2 kg",
       "cebolla 1 kg y 1/2",
       "tomate 1/2 kg",
@@ -41,7 +41,7 @@ const boxes = [
     benefit:
       "Equilibrio entre vegetales y proteínas. Más energía, saciedad y nutrición completa.",
     features: [
-      "1 zapallo anco",
+      
       "papa blanca 2 kg",
       "cebolla 1 kg y 1/2",
       "tomate 1/2 kg",
@@ -66,7 +66,7 @@ const boxes = [
     benefit:
       "Nutrición completa para toda la familia. Proteínas, grasas saludables y alimentos reales.",
     features: [
-      "1 zapallo anco",
+     
       "papa blanca 2 kg",
       "cebolla 1 kg y 1/2",
       "tomate 1/2 kg",
