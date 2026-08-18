@@ -54,7 +54,7 @@ const CATEGORY_ORDER = [
 
 const BOX_CONTENTS: Record<string, string[]> = {
   "Caja Veggie": [
-    "1 zapallo anco",
+    
     "2 kg papa blanca",
     "1 1/2 kg cebolla",
     "1/2 kg tomate",
@@ -69,7 +69,7 @@ const BOX_CONTENTS: Record<string, string[]> = {
     "2 espinacas"
   ],
   "Caja Campo": [
-    "1 zapallo anco",
+   
     "2 kg papa blanca",
     "1 1/2 kg cebolla",
     "1/2 kg tomate",
@@ -86,7 +86,7 @@ const BOX_CONTENTS: Record<string, string[]> = {
     "30 Huevos"
   ],
   "Caja Granja": [
-    "1 zapallo anco",
+    
     "2 kg papa blanca",
     "1 1/2 kg cebolla",
     "1/2 kg tomate",
