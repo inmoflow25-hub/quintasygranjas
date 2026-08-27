@@ -176,7 +176,7 @@ export default function SuccessPage() {
     </div>
 
     <a
-      href="https://wa.me/5491168303596"
+      href="https://wa.me/5491176518605"
               target="_blank"
               rel="noreferrer"
               className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold"
