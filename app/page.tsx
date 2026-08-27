@@ -27,7 +27,7 @@ export default function Home() {
   }
 
   function onWhatsAppClick() {
-    window.open("https://wa.me/5491168303596", "_blank")
+    window.open("https://wa.me/5491176518605", "_blank")
   }
 
   return (
