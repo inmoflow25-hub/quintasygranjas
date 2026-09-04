@@ -682,14 +682,13 @@ export async function POST(req: Request) {
       delivery_notes
     } = body
 
-   const appContext = normalizeAppContext(body.app_context)
-const attribution = getAttribution(body)
-const isAffiliateOrder = Boolean(attribution.affiliate_slug)
+    const appContext = normalizeAppContext(body.app_context)
+    const attribution = getAttribution(body)
+    const isAffiliateOrder = Boolean(attribution.affiliate_slug)
 
-const requestedPointsToSpend =
-  appContext === "pwa" && !isAffiliateOrder
-    ? normalizePoints(body.points_to_spend)
-    : 0
+    const requestedPointsToSpend = !isAffiliateOrder
+      ? normalizePoints(body.points_to_spend)
+      : 0
 
     const propina = normalizeMoney(body.propina)
     const normalizedCustomerEmail = normalizeEmail(customer_email)
@@ -829,40 +828,40 @@ const requestedPointsToSpend =
       phone: normalizedCustomerPhone
     })
 
- const individualDiscount = getIndividualDiscount({
-  completedPurchases: completedPurchasesBeforeOrder,
-  appContext
-})
+    const individualDiscount = getIndividualDiscount({
+      completedPurchases: completedPurchasesBeforeOrder,
+      appContext
+    })
 
-const affiliateDiscountPercent = attribution.affiliate_discount_percent
+    const affiliateDiscountPercent = attribution.affiliate_discount_percent
 
-const discountPercent = Math.max(
-  individualDiscount.discountPercent,
-  affiliateDiscountPercent
-)
+    const discountPercent = Math.max(
+      individualDiscount.discountPercent,
+      affiliateDiscountPercent
+    )
 
-const benefitStatus =
-  affiliateDiscountPercent > individualDiscount.discountPercent
-    ? `affiliate_${attribution.affiliate_slug}`
-    : individualDiscount.benefitStatus
+    const benefitStatus =
+      affiliateDiscountPercent > individualDiscount.discountPercent
+        ? `affiliate_${attribution.affiliate_slug}`
+        : individualDiscount.benefitStatus
 
-const loyaltyDiscountPercent =
-  individualDiscount.loyaltyDiscountPercent > 0 &&
-  individualDiscount.discountPercent >= affiliateDiscountPercent
-    ? individualDiscount.loyaltyDiscountPercent
-    : 0
+    const loyaltyDiscountPercent =
+      individualDiscount.loyaltyDiscountPercent > 0 &&
+      individualDiscount.discountPercent >= affiliateDiscountPercent
+        ? individualDiscount.loyaltyDiscountPercent
+        : 0
 
-const discountAmount = Math.round(subtotal * (discountPercent / 100))
+    const discountAmount = Math.round(subtotal * (discountPercent / 100))
 
-const loyaltyDiscountAmount =
-  loyaltyDiscountPercent > 0
-    ? Math.round(subtotal * (loyaltyDiscountPercent / 100))
-    : 0
+    const loyaltyDiscountAmount =
+      loyaltyDiscountPercent > 0
+        ? Math.round(subtotal * (loyaltyDiscountPercent / 100))
+        : 0
 
-const affiliateDiscountAmount =
-  affiliateDiscountPercent > 0
-    ? Math.round(subtotal * (affiliateDiscountPercent / 100))
-    : 0
+    const affiliateDiscountAmount =
+      affiliateDiscountPercent > 0
+        ? Math.round(subtotal * (affiliateDiscountPercent / 100))
+        : 0
 
     let availablePoints = 0
     let pointsToSpend = 0
@@ -870,7 +869,7 @@ const affiliateDiscountAmount =
     let rewardDescription: string | null = null
     let redemptionQuote: RedemptionQuote | null = null
 
-    if (appContext === "pwa" && requestedPointsToSpend > 0) {
+    if (requestedPointsToSpend > 0) {
       availablePoints = await getAvailablePoints(userId)
 
       if (availablePoints <= 0) {
@@ -932,7 +931,6 @@ const affiliateDiscountAmount =
 
     const deliverySchedule = getScheduledDelivery(new Date())
 
-    
     const fullNotes = [
       delivery_notes || "",
       `Domicilio: ${delivery_address}`,
@@ -942,11 +940,11 @@ const affiliateDiscountAmount =
         : "",
       propina > 0 ? `Propina: ${formatMoney(propina)}` : "",
       discountPercent > 0
-  ? `Descuento aplicado: ${discountPercent}% (${benefitStatus})`
-  : "",
-attribution.affiliate_slug
-  ? `Proveniencia: ${attribution.attribution_label} (${attribution.affiliate_slug})`
-  : "",
+        ? `Descuento aplicado: ${discountPercent}% (${benefitStatus})`
+        : "",
+      attribution.affiliate_slug
+        ? `Proveniencia: ${attribution.attribution_label} (${attribution.affiliate_slug})`
+        : "",
       rewardDiscountAmount > 0 && rewardDescription
         ? `Puntos aplicados: ${rewardDescription}`
         : ""
@@ -975,22 +973,21 @@ attribution.affiliate_slug
         : payment_method === "mp_transfer"
           ? "pending_transfer"
           : "pending"
-            
 
     const { data: order, error: orderError } = await supabase
       .from("orders")
       .insert({
         user_id: userId,
         box_id: source === "box" ? box_id : null,
-       source,
-app_context: appContext,
+        source,
+        app_context: appContext,
 
-affiliate_slug: attribution.affiliate_slug,
-campaign_source: attribution.campaign_source,
-landing_path: attribution.landing_path,
-attribution_label: attribution.attribution_label,
-affiliate_discount_percent: affiliateDiscountPercent,
-affiliate_discount_amount: affiliateDiscountAmount,
+        affiliate_slug: attribution.affiliate_slug,
+        campaign_source: attribution.campaign_source,
+        landing_path: attribution.landing_path,
+        attribution_label: attribution.attribution_label,
+        affiliate_discount_percent: affiliateDiscountPercent,
+        affiliate_discount_amount: affiliateDiscountAmount,
 
         status: initialStatus,
         payment_method,
@@ -1016,14 +1013,14 @@ affiliate_discount_amount: affiliateDiscountAmount,
         customer_name,
         customer_email: normalizedCustomerEmail,
         customer_phone: normalizedCustomerPhone,
-      delivery_address,
-delivery_city,
-delivery_notes: fullNotes,
+        delivery_address,
+        delivery_city,
+        delivery_notes: fullNotes,
 
-scheduled_delivery_date: deliverySchedule.scheduledDeliveryDate,
-scheduled_delivery_label: deliverySchedule.scheduledDeliveryLabel,
-scheduled_delivery_window: deliverySchedule.scheduledDeliveryWindow,
-order_cutoff_bucket: deliverySchedule.orderCutoffBucket
+        scheduled_delivery_date: deliverySchedule.scheduledDeliveryDate,
+        scheduled_delivery_label: deliverySchedule.scheduledDeliveryLabel,
+        scheduled_delivery_window: deliverySchedule.scheduledDeliveryWindow,
+        order_cutoff_bucket: deliverySchedule.orderCutoffBucket
       })
       .select()
       .single()
@@ -1037,14 +1034,14 @@ order_cutoff_bucket: deliverySchedule.orderCutoffBucket
       )
     }
 
-   const orderItems = normalizedItems.map((item) => ({
-  order_id: order.id,
-  product_id: isUuid(item.id) ? item.id : null,
-  product_name: item.title,
-  quantity: item.quantity,
-  price: item.unit_price,
-  source_type: "product"
-}))
+    const orderItems = normalizedItems.map((item) => ({
+      order_id: order.id,
+      product_id: isUuid(item.id) ? item.id : null,
+      product_name: item.title,
+      quantity: item.quantity,
+      price: item.unit_price,
+      source_type: "product"
+    }))
 
     const { error: itemsError } = await supabase
       .from("order_items")
@@ -1059,82 +1056,83 @@ order_cutoff_bucket: deliverySchedule.orderCutoffBucket
       )
     }
 
-let pointsProcessingResult: any = null
+    let pointsProcessingResult: any = null
 
-if (initialStatus === "confirmed" && !isAffiliateOrder) {
-  try {
-    pointsProcessingResult = await processConfirmedOrderPoints(order.id)
-  } catch (error: any) {
-    console.error("points processing failed", error)
+    if (initialStatus === "confirmed" && !isAffiliateOrder) {
+      try {
+        pointsProcessingResult = await processConfirmedOrderPoints(order.id)
+      } catch (error: any) {
+        console.error("points processing failed", error)
 
-    return NextResponse.json(
-      {
-        error:
-          error?.message ||
-          "El pedido se confirmó, pero no se pudieron procesar los puntos"
-      },
-      { status: 500 }
-    )
-  }
-}
+        return NextResponse.json(
+          {
+            error:
+              error?.message ||
+              "El pedido se confirmó, pero no se pudieron procesar los puntos"
+          },
+          { status: 500 }
+        )
+      }
+    }
 
     const { cyclePosition, cycleBenefitMessage } = buildCycleProgress({
-  completedPurchasesBeforeOrder,
-  benefitStatus,
-  discountPercent,
-  appContext
-})
+      completedPurchasesBeforeOrder,
+      benefitStatus,
+      discountPercent,
+      appContext
+    })
 
     const itemsSummary = buildItemsSummary(normalizedItems)
     const totalFormatted = formatMoney(finalPrice)
     const paymentMethodLabel = formatPaymentMethod(payment_method)
-    
-if (initialStatus === "confirmed") {
-  await sendPostPurchaseTemplate({
-    orderId: order.id,
-    orderNumber: order.order_number || order.id,
-    customerName: customer_name,
-    customerEmail: normalizedCustomerEmail,
-    customerPhone: normalizedCustomerPhone,
-    itemsSummary,
-    totalFormatted,
-    paymentMethodLabel,
-    cyclePosition,
-    cycleBenefitMessage,
-    deliveryAddress: delivery_address,
-    deliveryCity: delivery_city
-  })
-}
-   if (initialStatus === "confirmed") {
-  await syncConfirmedOrderToGhl({
-    orderId: order.id,
-    orderNumber: order.order_number || order.id,
-    userId,
-    customerName: customer_name,
-    customerEmail: normalizedCustomerEmail,
-    customerPhone: normalizedCustomerPhone,
-    deliveryAddress: delivery_address,
-    deliveryCity: delivery_city,
-    value: finalPrice,
-    source,
-    status: initialStatus,
-    paymentStatus: initialPaymentStatus,
-    paymentMethod: payment_method,
-    boxId: source === "box" ? box_id : null,
-    createdAt: order.created_at
-  })
 
-  await sendPurchaseEventToMeta({
-    orderId: order.id,
-    userId,
-    customerEmail: normalizedCustomerEmail,
-    customerPhone: normalizedCustomerPhone,
-    customerName: customer_name,
-    deliveryCity: delivery_city,
-    value: finalPrice,
-    source
-  })
-}
+    if (initialStatus === "confirmed") {
+      await sendPostPurchaseTemplate({
+        orderId: order.id,
+        orderNumber: order.order_number || order.id,
+        customerName: customer_name,
+        customerEmail: normalizedCustomerEmail,
+        customerPhone: normalizedCustomerPhone,
+        itemsSummary,
+        totalFormatted,
+        paymentMethodLabel,
+        cyclePosition,
+        cycleBenefitMessage,
+        deliveryAddress: delivery_address,
+        deliveryCity: delivery_city
+      })
+    }
+
+    if (initialStatus === "confirmed") {
+      await syncConfirmedOrderToGhl({
+        orderId: order.id,
+        orderNumber: order.order_number || order.id,
+        userId,
+        customerName: customer_name,
+        customerEmail: normalizedCustomerEmail,
+        customerPhone: normalizedCustomerPhone,
+        deliveryAddress: delivery_address,
+        deliveryCity: delivery_city,
+        value: finalPrice,
+        source,
+        status: initialStatus,
+        paymentStatus: initialPaymentStatus,
+        paymentMethod: payment_method,
+        boxId: source === "box" ? box_id : null,
+        createdAt: order.created_at
+      })
+
+      await sendPurchaseEventToMeta({
+        orderId: order.id,
+        userId,
+        customerEmail: normalizedCustomerEmail,
+        customerPhone: normalizedCustomerPhone,
+        customerName: customer_name,
+        deliveryCity: delivery_city,
+        value: finalPrice,
+        source
+      })
+    }
 
     const baseResponse = {
       ok: true,
@@ -1148,14 +1146,14 @@ if (initialStatus === "confirmed") {
       points_processing_result: pointsProcessingResult,
       redemption_quote: redemptionQuote,
       app_context: appContext,
-affiliate_slug: attribution.affiliate_slug,
-campaign_source: attribution.campaign_source,
-landing_path: attribution.landing_path,
-attribution_label: attribution.attribution_label,
-affiliate_discount_percent: affiliateDiscountPercent,
-affiliate_discount_amount: affiliateDiscountAmount,
-propina,
-final_price: finalPrice,
+      affiliate_slug: attribution.affiliate_slug,
+      campaign_source: attribution.campaign_source,
+      landing_path: attribution.landing_path,
+      attribution_label: attribution.attribution_label,
+      affiliate_discount_percent: affiliateDiscountPercent,
+      affiliate_discount_amount: affiliateDiscountAmount,
+      propina,
+      final_price: finalPrice,
       completed_purchases_before_order: completedPurchasesBeforeOrder,
       cycle_position: cyclePosition,
       cycle_benefit_message: cycleBenefitMessage
@@ -1193,11 +1191,11 @@ final_price: finalPrice,
         },
         external_reference: order.id,
         notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mercadopago/webhook`,
-       back_urls: {
-  success: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&context=${appContext}`,
-  failure: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&payment=failure&context=${appContext}`,
-  pending: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&payment=pending&context=${appContext}`
-},
+        back_urls: {
+          success: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&context=${appContext}`,
+          failure: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&payment=failure&context=${appContext}`,
+          pending: `${process.env.NEXT_PUBLIC_BASE_URL}/success?order_id=${order.id}&order_number=${order.order_number}&payment=pending&context=${appContext}`
+        },
         auto_return: "approved"
       }
     })
@@ -1222,3 +1220,5 @@ final_price: finalPrice,
     )
   }
 }
+
+
