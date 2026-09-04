@@ -15,6 +15,14 @@ type CheckoutItem = {
   price: number
 }
 
+type PointsSummary = {
+  available_points: number
+  available_discount_value: number
+  current_level_name: string
+  next_expiration_at: string | null
+  max_redemption_percent: number
+}
+
 type GooglePlacesStatus = "manual" | "loading" | "ready" | "error"
 
 function money(value: number) {
@@ -31,10 +39,19 @@ function CheckoutContent() {
 
   const [loading, setLoading] = useState(false)
   const [items, setItems] = useState<CheckoutItem[]>([])
-  const [paymentMethod, setPaymentMethod] = useState<"mercadopago" | "cash" | "mp_transfer">("mercadopago")
+  const [paymentMethod, setPaymentMethod] = useState<
+    "mercadopago" | "cash" | "mp_transfer"
+  >("mercadopago")
   const [propina, setPropina] = useState(0)
   const [customPropina, setCustomPropina] = useState("")
-  const [googlePlacesStatus, setGooglePlacesStatus] = useState<GooglePlacesStatus>("manual")
+  const [googlePlacesStatus, setGooglePlacesStatus] =
+    useState<GooglePlacesStatus>("manual")
+
+  const [points, setPoints] = useState<PointsSummary | null>(null)
+  const [pointsLoading, setPointsLoading] = useState(false)
+  const [pointsError, setPointsError] = useState("")
+  const [appliedDiscount, setAppliedDiscount] = useState(0)
+  const [pointsNeeded, setPointsNeeded] = useState(0)
 
   const mpAlias = process.env.NEXT_PUBLIC_MP_ALIAS || ""
 
@@ -87,6 +104,28 @@ function CheckoutContent() {
   }, [source, boxId])
 
   useEffect(() => {
+    const savedEmail =
+      localStorage.getItem("qyg_checkout_email") ||
+      localStorage.getItem("qyg_app_email") ||
+      ""
+
+    const savedPhone =
+      localStorage.getItem("qyg_checkout_phone") ||
+      localStorage.getItem("qyg_app_phone") ||
+      ""
+
+    if (savedEmail || savedPhone) {
+      setForm((prev) => ({
+        ...prev,
+        customer_email: prev.customer_email || savedEmail,
+        customer_phone: prev.customer_phone || savedPhone
+      }))
+
+      loadPoints(savedEmail, savedPhone)
+    }
+  }, [])
+
+  useEffect(() => {
     if (!googlePlacesEnabled) {
       setGooglePlacesStatus("manual")
       return
@@ -124,8 +163,12 @@ function CheckoutContent() {
 
           const locality =
             components.find((c: any) => c.types.includes("locality"))?.long_name ||
-            components.find((c: any) => c.types.includes("administrative_area_level_2"))?.long_name ||
-            components.find((c: any) => c.types.includes("administrative_area_level_1"))?.long_name ||
+            components.find((c: any) =>
+              c.types.includes("administrative_area_level_2")
+            )?.long_name ||
+            components.find((c: any) =>
+              c.types.includes("administrative_area_level_1")
+            )?.long_name ||
             ""
 
           const lat =
@@ -210,17 +253,24 @@ function CheckoutContent() {
     )
   }, [items])
 
-  const finalTotal = subtotal + propina
+  const finalTotal = Math.max(subtotal + propina - appliedDiscount, 1)
 
   const deliverySchedule = useMemo(() => {
-  return getScheduledDelivery(new Date())
-}, [])
+    return getScheduledDelivery(new Date())
+  }, [])
 
   function updateField(field: string, value: string) {
     setForm((prev) => ({
       ...prev,
       [field]: value
     }))
+
+    if (field === "customer_email" || field === "customer_phone") {
+      setPoints(null)
+      setPointsError("")
+      setAppliedDiscount(0)
+      setPointsNeeded(0)
+    }
   }
 
   function updateAddressManually(value: string) {
@@ -259,9 +309,93 @@ function CheckoutContent() {
       value: Number(finalTotal || subtotal || 0),
       currency: "ARS",
       num_items: items.reduce((acc, item) => acc + Number(item.quantity || 1), 0),
-      content_ids: items.map((item) => String(item.id || item.product_name || item.name || "")),
+      content_ids: items.map((item) =>
+        String(item.id || item.product_name || item.name || "")
+      ),
       content_type: "product"
     })
+  }
+
+  async function loadPoints(email: string, phone: string) {
+    const cleanEmail = email.trim().toLowerCase()
+    const cleanPhone = phone.trim()
+
+    if (!cleanEmail && !cleanPhone) {
+      setPoints(null)
+      setPointsError("")
+      return
+    }
+
+    setPointsLoading(true)
+    setPointsError("")
+
+    try {
+      const res = await fetch("/api/app/points", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: cleanEmail,
+          phone: cleanPhone
+        })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setPoints(null)
+        setPointsError(data?.error || "No pudimos consultar tus puntos.")
+        return
+      }
+
+      setPoints(data?.points || null)
+    } catch (error) {
+      console.error("points lookup web error", error)
+      setPoints(null)
+      setPointsError("No pudimos consultar tus puntos.")
+    } finally {
+      setPointsLoading(false)
+    }
+  }
+
+  async function refreshPoints() {
+    await loadPoints(form.customer_email, form.customer_phone)
+  }
+
+  async function applyMaxPoints() {
+    if (!points || points.available_points <= 0) return
+
+    if (subtotal < 20000) {
+      alert("El pedido mínimo es de $20.000")
+      return
+    }
+
+    const res = await fetch("/api/app/redemption/quote", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        subtotal,
+        points_to_spend: points.available_points
+      })
+    })
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      alert(data?.error || "No se pudo calcular el descuento")
+      return
+    }
+
+    setAppliedDiscount(Number(data.applied_discount || 0))
+    setPointsNeeded(Number(data.points_needed_for_applied_discount || 0))
+  }
+
+  function removePoints() {
+    setAppliedDiscount(0)
+    setPointsNeeded(0)
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -282,6 +416,21 @@ function CheckoutContent() {
       return
     }
 
+    if (!form.customer_name.trim()) {
+      alert("Ingresá tu nombre")
+      return
+    }
+
+    if (!form.customer_email.trim()) {
+      alert("Ingresá tu email")
+      return
+    }
+
+    if (!form.customer_phone.trim()) {
+      alert("Ingresá tu teléfono")
+      return
+    }
+
     if (!form.delivery_address.trim()) {
       alert("Ingresá tu dirección de entrega")
       return
@@ -292,31 +441,38 @@ function CheckoutContent() {
       return
     }
 
+    localStorage.setItem(
+      "qyg_checkout_email",
+      form.customer_email.trim().toLowerCase()
+    )
+    localStorage.setItem("qyg_checkout_phone", form.customer_phone.trim())
+
     trackInitiateCheckout()
 
     setLoading(true)
 
     try {
-  const attribution = getStoredAttribution()
+      const attribution = getStoredAttribution()
 
-  const res = await fetch("/api/checkout/create", {
+      const res = await fetch("/api/checkout/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-   body: JSON.stringify({
-  source,
-  app_context: "web",
-  box_id: boxId,
-  items,
-  payment_method: paymentMethod,
-  propina,
-  affiliate_slug: attribution.affiliate_slug,
-  campaign_source: attribution.campaign_source,
-  landing_path: attribution.landing_path,
-  attribution_label: attribution.attribution_label,
-  ...form
-})
+        body: JSON.stringify({
+          source,
+          app_context: "web",
+          box_id: boxId,
+          items,
+          payment_method: paymentMethod,
+          propina,
+          points_to_spend: pointsNeeded,
+          affiliate_slug: attribution.affiliate_slug,
+          campaign_source: attribution.campaign_source,
+          landing_path: attribution.landing_path,
+          attribution_label: attribution.attribution_label,
+          ...form
+        })
       })
 
       const data = await res.json()
@@ -356,238 +512,331 @@ function CheckoutContent() {
         </div>
 
         <div className="grid gap-8 md:grid-cols-2">
-        <div className="rounded-2xl bg-white p-8 shadow">
-       <h1 className="mb-2 text-3xl font-bold text-green-700">Checkout</h1>
-<p className="mb-5 text-gray-600">Completá tus datos antes de pagar.</p>
+          <div className="rounded-2xl bg-white p-8 shadow">
+            <h1 className="mb-2 text-3xl font-bold text-green-700">
+              Checkout
+            </h1>
 
-<div className="mb-6 rounded-2xl border border-green-200 bg-green-50 p-4">
-  <p className="text-xs font-bold uppercase tracking-[0.16em] text-green-700">
-    Próxima entrega
-  </p>
-
-  <p className="mt-1 text-xl font-black text-green-900">
-    {deliverySchedule.scheduledDeliveryLabel}
-  </p>
-
-  <p className="mt-1 text-sm font-semibold text-green-800">
-    Fecha estimada: {deliverySchedule.scheduledDeliveryDate}
-  </p>
-
-  <p className="mt-3 text-xs leading-relaxed text-green-700">
-    Los pedidos se organizan por tanda. Si comprás ahora, tu pedido entra en esta próxima entrega.
-  </p>
-</div>
-
-<form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              className="w-full rounded-xl border px-4 py-3"
-              placeholder="Nombre y apellido"
-              value={form.customer_name}
-              onChange={(e) => updateField("customer_name", e.target.value)}
-              required
-            />
-
-            <input
-              className="w-full rounded-xl border px-4 py-3"
-              placeholder="Email"
-              type="email"
-              value={form.customer_email}
-              onChange={(e) => updateField("customer_email", e.target.value)}
-              required
-            />
-
-            <input
-              className="w-full rounded-xl border px-4 py-3"
-              placeholder="Teléfono / WhatsApp"
-              value={form.customer_phone}
-              onChange={(e) => updateField("customer_phone", e.target.value)}
-              required
-            />
-
-            <input
-              ref={addressInputRef}
-              className="w-full rounded-xl border px-4 py-3"
-              placeholder="Dirección de entrega"
-              value={form.delivery_address}
-              onChange={(e) => updateAddressManually(e.target.value)}
-              required
-            />
-
-            <p className="text-xs text-gray-500">
-              Escribí tu dirección completa. Si aparecen sugerencias, podés elegir una; si no aparecen, igual podés continuar.
+            <p className="mb-5 text-gray-600">
+              Completá tus datos antes de pagar.
             </p>
 
-            {googlePlacesStatus === "loading" && (
-              <p className="text-xs text-gray-400">
-                Cargando sugerencias de dirección...
-              </p>
-            )}
-
-            {googlePlacesStatus === "error" && (
-              <p className="text-xs text-amber-700">
-                Las sugerencias automáticas no están disponibles. Podés escribir tu domicilio manualmente.
-              </p>
-            )}
-
-            <input
-              className="w-full rounded-xl border px-4 py-3"
-              placeholder="Ciudad"
-              value={form.delivery_city}
-              onChange={(e) => updateField("delivery_city", e.target.value)}
-              required
-            />
-
-            <textarea
-              className="w-full rounded-xl border px-4 py-3"
-              placeholder="Notas para la entrega"
-              value={form.delivery_notes}
-              onChange={(e) => updateField("delivery_notes", e.target.value)}
-            />
-
-            <div className="rounded-xl border p-4">
-              <p className="mb-2 font-semibold">
-                Propina para el equipo
+            <div className="mb-6 rounded-2xl border border-green-200 bg-green-50 p-4">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-green-700">
+                Próxima entrega
               </p>
 
-              <p className="mb-3 text-sm text-gray-500">
-                Sumá una propina para quienes preparan y entregan tu pedido.
+              <p className="mt-1 text-xl font-black text-green-900">
+                {deliverySchedule.scheduledDeliveryLabel}
               </p>
 
-              <div className="grid grid-cols-4 gap-2">
-                {[0, 1000, 2000, 5000].map((value) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => selectPropina(value)}
-                    className={`rounded-xl border px-3 py-2 text-sm font-semibold ${
-                      propina === value && !customPropina
-                        ? "border-green-700 bg-green-700 text-white"
-                        : "bg-white"
-                    }`}
-                  >
-                    {value === 0 ? "Sin propina" : money(value)}
-                  </button>
-                ))}
-              </div>
+              <p className="mt-1 text-sm font-semibold text-green-800">
+                Fecha estimada: {deliverySchedule.scheduledDeliveryDate}
+              </p>
+
+              <p className="mt-3 text-xs leading-relaxed text-green-700">
+                Los pedidos se organizan por tanda. Si comprás ahora, tu pedido
+                entra en esta próxima entrega.
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                className="w-full rounded-xl border px-4 py-3"
+                placeholder="Nombre y apellido"
+                value={form.customer_name}
+                onChange={(e) => updateField("customer_name", e.target.value)}
+                required
+              />
 
               <input
-                className="mt-3 w-full rounded-xl border px-4 py-3"
-                placeholder="Otro monto"
-                inputMode="numeric"
-                value={customPropina}
-                onChange={(e) => updateCustomPropina(e.target.value)}
+                className="w-full rounded-xl border px-4 py-3"
+                placeholder="Email"
+                type="email"
+                value={form.customer_email}
+                onChange={(e) => updateField("customer_email", e.target.value)}
+                onBlur={refreshPoints}
+                required
               />
-            </div>
 
-            <div className="rounded-xl border p-4">
-              <p className="mb-3 font-semibold">Método de pago</p>
+              <input
+                className="w-full rounded-xl border px-4 py-3"
+                placeholder="Teléfono / WhatsApp"
+                value={form.customer_phone}
+                onChange={(e) => updateField("customer_phone", e.target.value)}
+                onBlur={refreshPoints}
+                required
+              />
 
-              <label className="mb-2 flex items-center gap-2">
-                <input
-                  type="radio"
-                  checked={paymentMethod === "mercadopago"}
-                  onChange={() => setPaymentMethod("mercadopago")}
-                />
-                Tarjetas débito / crédito
-              </label>
+              <input
+                ref={addressInputRef}
+                className="w-full rounded-xl border px-4 py-3"
+                placeholder="Dirección de entrega"
+                value={form.delivery_address}
+                onChange={(e) => updateAddressManually(e.target.value)}
+                required
+              />
 
-              <label className="mb-2 flex items-center gap-2">
-                <input
-                  type="radio"
-                  checked={paymentMethod === "mp_transfer"}
-                  onChange={() => setPaymentMethod("mp_transfer")}
-                />
-                Transferencia / alias Mercado Pago
-              </label>
+              <p className="text-xs text-gray-500">
+                Escribí tu dirección completa. Si aparecen sugerencias, podés
+                elegir una; si no aparecen, igual podés continuar.
+              </p>
 
-              {paymentMethod === "mp_transfer" && (
-                <div className="mb-3 rounded-xl bg-green-50 p-4 text-sm text-green-900">
-                  <p className="mb-1 font-semibold">Alias Mercado Pago</p>
-
-                  <p className="rounded-lg bg-white px-3 py-2 font-bold">
-                    {mpAlias || "Configurar NEXT_PUBLIC_MP_ALIAS"}
-                  </p>
-
-                  <p className="mt-2 text-green-800">
-                    Transferí el total y después mandanos el comprobante por WhatsApp.
-                  </p>
-                </div>
+              {googlePlacesStatus === "loading" && (
+                <p className="text-xs text-gray-400">
+                  Cargando sugerencias de dirección...
+                </p>
               )}
 
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  checked={paymentMethod === "cash"}
-                  onChange={() => setPaymentMethod("cash")}
-                />
-                Efectivo contra entrega
-              </label>
-            </div>
+              {googlePlacesStatus === "error" && (
+                <p className="text-xs text-amber-700">
+                  Las sugerencias automáticas no están disponibles. Podés
+                  escribir tu domicilio manualmente.
+                </p>
+              )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-xl bg-green-600 py-3 font-semibold text-white disabled:opacity-60"
-            >
-              {loading
-                ? "Procesando..."
-                : paymentMethod === "mercadopago"
-                  ? "Ir a pagar"
-                  : paymentMethod === "mp_transfer"
-                    ? "Confirmar pedido y transferir"
-                    : "Confirmar pedido"}
-            </button>
-          </form>
-        </div>
+              <input
+                className="w-full rounded-xl border px-4 py-3"
+                placeholder="Ciudad"
+                value={form.delivery_city}
+                onChange={(e) => updateField("delivery_city", e.target.value)}
+                required
+              />
 
-        <div className="rounded-2xl bg-white p-8 shadow">
-          <h2 className="mb-6 text-2xl font-bold">Tu pedido</h2>
-          <div className="mb-5 rounded-2xl bg-green-50 p-4 text-green-900">
-  <p className="text-xs font-bold uppercase tracking-[0.16em] text-green-700">
-    Entrega programada
-  </p>
+              <textarea
+                className="w-full rounded-xl border px-4 py-3"
+                placeholder="Notas para la entrega"
+                value={form.delivery_notes}
+                onChange={(e) => updateField("delivery_notes", e.target.value)}
+              />
 
-  <p className="mt-1 text-lg font-black">
-    {deliverySchedule.scheduledDeliveryLabel}
-  </p>
+              <div className="rounded-xl border p-4">
+                <p className="mb-2 font-semibold">
+                  Propina para el equipo
+                </p>
 
-  <p className="text-sm font-semibold">
-    {deliverySchedule.scheduledDeliveryDate}
-  </p>
-</div>
+                <p className="mb-3 text-sm text-gray-500">
+                  Sumá una propina para quienes preparan y entregan tu pedido.
+                </p>
 
-          <div className="space-y-3">
-            {items.map((item, index) => (
-              <div
-                key={`${item.id || item.name}-${index}`}
-                className="flex items-center justify-between border-b pb-3"
-              >
-                <div>
-                  <p className="font-medium">{item.name || item.product_name}</p>
-                  <p className="text-sm text-gray-500">x{item.quantity}</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {[0, 1000, 2000, 5000].map((value) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => selectPropina(value)}
+                      className={`rounded-xl border px-3 py-2 text-sm font-semibold ${
+                        propina === value && !customPropina
+                          ? "border-green-700 bg-green-700 text-white"
+                          : "bg-white"
+                      }`}
+                    >
+                      {value === 0 ? "Sin propina" : money(value)}
+                    </button>
+                  ))}
                 </div>
 
-                <p className="font-semibold">
-                  {money(Number(item.price || 0) * Number(item.quantity || 1))}
-                </p>
+                <input
+                  className="mt-3 w-full rounded-xl border px-4 py-3"
+                  placeholder="Otro monto"
+                  inputMode="numeric"
+                  value={customPropina}
+                  onChange={(e) => updateCustomPropina(e.target.value)}
+                />
               </div>
-            ))}
+
+              <div className="rounded-xl border p-4">
+                <p className="mb-3 font-semibold">Método de pago</p>
+
+                <label className="mb-2 flex items-center gap-2">
+                  <input
+                    type="radio"
+                    checked={paymentMethod === "mercadopago"}
+                    onChange={() => setPaymentMethod("mercadopago")}
+                  />
+                  Tarjetas débito / crédito
+                </label>
+
+                <label className="mb-2 flex items-center gap-2">
+                  <input
+                    type="radio"
+                    checked={paymentMethod === "mp_transfer"}
+                    onChange={() => setPaymentMethod("mp_transfer")}
+                  />
+                  Transferencia / alias Mercado Pago
+                </label>
+
+                {paymentMethod === "mp_transfer" && (
+                  <div className="mb-3 rounded-xl bg-green-50 p-4 text-sm text-green-900">
+                    <p className="mb-1 font-semibold">Alias Mercado Pago</p>
+
+                    <p className="rounded-lg bg-white px-3 py-2 font-bold">
+                      {mpAlias || "Configurar NEXT_PUBLIC_MP_ALIAS"}
+                    </p>
+
+                    <p className="mt-2 text-green-800">
+                      Transferí el total y después mandanos el comprobante por
+                      WhatsApp.
+                    </p>
+                  </div>
+                )}
+
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    checked={paymentMethod === "cash"}
+                    onChange={() => setPaymentMethod("cash")}
+                  />
+                  Efectivo contra entrega
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-xl bg-green-600 py-3 font-semibold text-white disabled:opacity-60"
+              >
+                {loading
+                  ? "Procesando..."
+                  : paymentMethod === "mercadopago"
+                    ? "Ir a pagar"
+                    : paymentMethod === "mp_transfer"
+                      ? "Confirmar pedido y transferir"
+                      : "Confirmar pedido"}
+              </button>
+            </form>
           </div>
 
-          <div className="mt-6 space-y-3 border-t pt-4">
-            <Row label="Subtotal" value={money(subtotal)} />
-            <Row label="Propina" value={money(propina)} />
+          <div className="rounded-2xl bg-white p-8 shadow">
+            <h2 className="mb-6 text-2xl font-bold">Tu pedido</h2>
 
-            <div className="border-t pt-4">
-              <div className="flex items-center justify-between text-xl font-bold">
-                <span>Total final</span>
-                <span>{money(finalTotal)}</span>
+            <div className="mb-5 rounded-2xl bg-green-50 p-4 text-green-900">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-green-700">
+                Entrega programada
+              </p>
+
+              <p className="mt-1 text-lg font-black">
+                {deliverySchedule.scheduledDeliveryLabel}
+              </p>
+
+              <p className="text-sm font-semibold">
+                {deliverySchedule.scheduledDeliveryDate}
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              {items.map((item, index) => (
+                <div
+                  key={`${item.id || item.name}-${index}`}
+                  className="flex items-center justify-between border-b pb-3"
+                >
+                  <div>
+                    <p className="font-medium">
+                      {item.name || item.product_name}
+                    </p>
+                    <p className="text-sm text-gray-500">x{item.quantity}</p>
+                  </div>
+
+                  <p className="font-semibold">
+                    {money(Number(item.price || 0) * Number(item.quantity || 1))}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 rounded-2xl border border-green-200 bg-green-50 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-bold text-green-800">Tus puntos</p>
+
+                  <p className="mt-1 text-sm text-green-900">
+                    {pointsLoading
+                      ? "Consultando puntos..."
+                      : points
+                        ? points.available_points > 0
+                          ? `Tenés ${points.available_points} puntos disponibles.`
+                          : "Todavía no tenés puntos disponibles."
+                        : "Ingresá tu email o WhatsApp para consultar tus puntos."}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={refreshPoints}
+                  disabled={pointsLoading}
+                  className="shrink-0 rounded-xl border border-green-700 px-3 py-2 text-xs font-bold text-green-700 disabled:opacity-50"
+                >
+                  {pointsLoading ? "..." : "Consultar"}
+                </button>
+              </div>
+
+              {pointsError && (
+                <p className="mt-3 text-sm font-semibold text-red-700">
+                  {pointsError}
+                </p>
+              )}
+
+              {points && points.available_points > 0 && (
+                <>
+                  <p className="mt-3 text-sm text-green-900">
+                    Podés usarlos como descuento en este pedido.
+                  </p>
+
+                  {appliedDiscount > 0 ? (
+                    <div className="mt-4 rounded-xl bg-white p-3">
+                      <p className="text-sm font-semibold text-green-800">
+                        Aplicaste {pointsNeeded} puntos.
+                      </p>
+
+                      <p className="text-sm text-green-900">
+                        Ahorrás {money(appliedDiscount)} en este pedido.
+                      </p>
+
+                      <button
+                        type="button"
+                        onClick={removePoints}
+                        className="mt-3 w-full rounded-xl border border-green-700 px-4 py-3 font-semibold text-green-700"
+                      >
+                        Quitar puntos
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={applyMaxPoints}
+                      className="mt-4 w-full rounded-xl bg-green-700 px-4 py-3 font-semibold text-white"
+                    >
+                      Usar mis puntos disponibles
+                    </button>
+                  )}
+                </>
+              )}
+
+              {points && points.available_points <= 0 && (
+                <p className="mt-2 text-sm text-green-900">
+                  Comprá y empezá a sumar puntos para descontar en próximas compras.
+                </p>
+              )}
+            </div>
+
+            <div className="mt-6 space-y-3 border-t pt-4">
+              <Row label="Subtotal" value={money(subtotal)} />
+              <Row label="Propina" value={money(propina)} />
+
+              {appliedDiscount > 0 && (
+                <Row label="Puntos" value={`-${money(appliedDiscount)}`} />
+              )}
+
+              <div className="border-t pt-4">
+                <div className="flex items-center justify-between text-xl font-bold">
+                  <span>Total final</span>
+                  <span>{money(finalTotal)}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-         </div>
     </main>
   )
 }
@@ -608,6 +857,3 @@ export default function CheckoutPage() {
     </Suspense>
   )
 }
-
-
-
