@@ -54,58 +54,62 @@ const CATEGORY_ORDER = [
 
 const BOX_CONTENTS: Record<string, string[]> = {
   "Caja Veggie": [
-    
     "2 kg papa blanca",
-    "1 1/2 kg cebolla",
-    "1/2 kg tomate",
-    "1/2 kg zanahoria",
-    "1/2 kg mandarina",
-    "1/2 kg pera",
-    "1/2 kg manzana",
+    "1,5 kg cebolla",
+    "500 g tomate",
+    "500 g zanahoria",
+    "500 g zapallito",
+    "500 g naranja de jugo",
+    "500 g limón",
     "1 kg banana",
-    "1 kg cítricos: limón y naranja de jugo",
+    "500 g mandarina",
     "2 paltas",
-    "1 lechuga",
-    "2 espinacas"
+    "250 g frutilla",
+    "2 unidades espinaca",
+    "1 unidad lechuga",
+    "1 atado rúcula"
   ],
+
   "Caja Campo": [
-   
     "2 kg papa blanca",
-    "1 1/2 kg cebolla",
-    "1/2 kg tomate",
-    "1/2 kg zanahoria",
-    "1/2 kg mandarina",
-    "1/2 kg pera",
-    "1/2 kg manzana",
+    "1,5 kg cebolla",
+    "500 g tomate",
+    "500 g zanahoria",
+    "500 g zapallito",
+    "500 g naranja de jugo",
+    "500 g limón",
     "1 kg banana",
-    "1 kg cítricos: limón y naranja de jugo",
+    "500 g mandarina",
     "2 paltas",
-    "1 lechuga",
-    "2 espinacas",
-    "1 kg suprema",
-    "30 Huevos"
+    "250 g frutilla",
+    "2 unidades espinaca",
+    "1 unidad lechuga",
+    "1 atado rúcula",
+    "30 huevos",
+    "1 kg suprema de pollo"
   ],
+
   "Caja Granja": [
-    
     "2 kg papa blanca",
-    "1 1/2 kg cebolla",
-    "1/2 kg tomate",
-    "1/2 kg zanahoria",
-    "1/2 kg mandarina",
-    "1/2 kg pera",
-    "1/2 kg manzana",
+    "1,5 kg cebolla",
+    "500 g tomate",
+    "500 g zanahoria",
+    "500 g zapallito",
+    "500 g naranja de jugo",
+    "500 g limón",
     "1 kg banana",
-    "1 kg cítricos: limón y naranja de jugo",
+    "500 g mandarina",
     "2 paltas",
-    "1 lechuga",
-    "2 espinacas",
-    "1 kg suprema",
-    "30 Huevos",
-    "Pan",
-    "Miel"
+    "250 g frutilla",
+    "2 unidades espinaca",
+    "1 unidad lechuga",
+    "1 atado rúcula",
+    "30 huevos",
+    "1 kg suprema de pollo",
+    "500 g miel",
+    "1 unidad pan"
   ]
 }
-
 function getBoxContents(product: Product) {
   return BOX_CONTENTS[product.name] || []
 }
