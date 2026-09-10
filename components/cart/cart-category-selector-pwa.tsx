@@ -113,7 +113,6 @@ const BOX_CONTENTS: Record<string, string[]> = {
     "1 unidad pan"
   ]
 }
-
 function getBoxContents(product: Product) {
   return BOX_CONTENTS[product.name] || []
 }
