@@ -1,12 +1,11 @@
 export type DeliverySchedule = {
   scheduledDeliveryDate: string
   scheduledDeliveryLabel: string
-  scheduledDeliveryWindow: "post_mediodia"
+  scheduledDeliveryWindow: "lunes" | "viernes"
   orderCutoffBucket:
     | "miercoles_22_a_sabado_22"
     | "sabado_22_a_miercoles_22"
 }
-
 const ARGENTINA_TIMEZONE = "America/Argentina/Buenos_Aires"
 
 function getArgentinaParts(date: Date) {
@@ -78,22 +77,22 @@ export function getScheduledDelivery(createdAt: Date = new Date()): DeliverySche
   if (goesToMonday) {
     const daysUntilMonday = getDaysUntilTarget(weekday, "Mon") || 7
     const deliveryDate = addDays(createdAt, daysUntilMonday)
+    
+return {
+  scheduledDeliveryDate: formatArgentinaDate(deliveryDate),
+  scheduledDeliveryLabel: "Lunes",
+  scheduledDeliveryWindow: "lunes",
+  orderCutoffBucket: "miercoles_22_a_sabado_22"
+}
+}
 
-    return {
-      scheduledDeliveryDate: formatArgentinaDate(deliveryDate),
-      scheduledDeliveryLabel: "Lunes post mediodía",
-      scheduledDeliveryWindow: "post_mediodia",
-      orderCutoffBucket: "miercoles_22_a_sabado_22"
-    }
-  }
+const daysUntilFriday = getDaysUntilTarget(weekday, "Fri") || 7
+const deliveryDate = addDays(createdAt, daysUntilFriday)
 
-  const daysUntilFriday = getDaysUntilTarget(weekday, "Fri") || 7
-  const deliveryDate = addDays(createdAt, daysUntilFriday)
-
-  return {
-    scheduledDeliveryDate: formatArgentinaDate(deliveryDate),
-    scheduledDeliveryLabel: "Viernes post mediodía",
-    scheduledDeliveryWindow: "post_mediodia",
-    orderCutoffBucket: "sabado_22_a_miercoles_22"
-  }
+return {
+  scheduledDeliveryDate: formatArgentinaDate(deliveryDate),
+  scheduledDeliveryLabel: "Viernes",
+  scheduledDeliveryWindow: "viernes",
+  orderCutoffBucket: "sabado_22_a_miercoles_22"
+}
 }
