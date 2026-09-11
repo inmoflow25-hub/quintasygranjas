@@ -102,7 +102,7 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
           </div>
 
           <p className="mt-3 text-sm font-semibold text-white/75 md:text-base">
-            Entregamos todos los lunes y viernes post mediodía · Envío gratis en CABA Norte y GBA Norte
+            Entregamos todos los lunes y viernes · Envío gratis en CABA Norte y GBA Norte
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
