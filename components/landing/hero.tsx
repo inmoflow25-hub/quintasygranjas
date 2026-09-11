@@ -85,9 +85,9 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
           </h1>
          
 
-<p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
+          {/*<p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
  Vegetales, huevos, miel, pollo, frutos secos, comidas congeladas listas para el horno y +
-</p>
+</p>*/}
 
           <p className="mt-6 text-lg md:text-xl text-white/90 leading-relaxed max-w-xl">
             Armá tu caja con los productos que quieras o elegí una ya lista.
