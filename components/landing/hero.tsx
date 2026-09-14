@@ -57,28 +57,43 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
       {/* CONTENIDO */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl">
-          {/* OFERTA */}
-          <div className="mb-5 inline-flex max-w-full flex-col rounded-2xl bg-green-700/95 px-6 py-4 text-white shadow-2xl sm:flex-row sm:items-center sm:gap-5">
-            <div className="flex items-end gap-2">
-              <span className="text-5xl font-black leading-none md:text-6xl">
-                10%
-              </span>
+          
+        {/* OFERTA */}
+<div className="mb-5 inline-flex max-w-full flex-col rounded-2xl bg-green-700/95 px-6 py-4 text-white shadow-2xl">
+  <div className="flex items-center gap-5">
+    <div className="flex items-end gap-2">
+      <span className="text-5xl font-black leading-none md:text-6xl">
+        10%
+      </span>
 
-              <span className="pb-1 text-2xl font-black uppercase leading-none">
-                OFF
-              </span>
-            </div>
+      <span className="pb-1 text-2xl font-black uppercase leading-none">
+        OFF
+      </span>
+    </div>
 
-            <div className="mt-3 sm:mt-0">
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-white/80">
-                Primera compra
-              </p>
+    <div>
+      <p className="text-sm font-bold uppercase tracking-[0.18em] text-white/80">
+        Primera compra
+      </p>
 
-              <p className="text-lg font-semibold leading-tight">
-                Se aplica automático al armar tu pedido
-              </p>
-            </div>
-          </div>
+      <p className="text-lg font-semibold leading-tight">
+        Se aplica automáticamente
+      </p>
+    </div>
+  </div>
+
+  <div className="my-3 h-px bg-white/25" />
+
+  <div>
+    <p className="text-lg font-black">
+      💰 Cashback en todas tus compras
+    </p>
+
+    <p className="mt-1 text-sm leading-relaxed text-white/85">
+      Cada pedido suma puntos que podés usar como descuento en tus próximas compras.
+    </p>
+  </div>
+</div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
             Tu súper de zona norte
