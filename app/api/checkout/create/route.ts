@@ -29,7 +29,7 @@ type PreviousOrderRow = {
   is_test: boolean | null
 }
 
-type AppContext = "web" | "pwa"
+type AppContext = "web" | "pwa" | "webwhapp"
 
 type Attribution = {
   affiliate_slug: string | null
@@ -68,9 +68,11 @@ function normalizePoints(value: unknown) {
 }
 
 function normalizeAppContext(value: unknown): AppContext {
-  return value === "pwa" ? "pwa" : "web"
-}
+  if (value === "pwa") return "pwa"
+  if (value === "webwhapp") return "webwhapp"
 
+  return "web"
+}
 function normalizeText(value: unknown) {
   return String(value || "").trim()
 }
@@ -242,13 +244,16 @@ function getIndividualDiscount({
     }
   }
 
-  if (appContext === "web" && isFourthPurchaseCycle) {
-    return {
-      discountPercent: 5,
-      benefitStatus: "loyalty_4_cycle",
-      loyaltyDiscountPercent: 5
-    }
+if (
+  (appContext === "web" || appContext === "webwhapp") &&
+  isFourthPurchaseCycle
+) {
+  return {
+    discountPercent: 5,
+    benefitStatus: "loyalty_4_cycle",
+    loyaltyDiscountPercent: 5
   }
+}
 
   return {
     discountPercent: 0,
