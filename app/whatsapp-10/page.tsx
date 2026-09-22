@@ -143,7 +143,7 @@ export default function WhatsApp10Page() {
       </section>
 
       <div id="cart" className="scroll-mt-32">
-        <CartCategorySelectorWeb />
+        <CartCategorySelectorWeb checkoutAppContext="webwhapp" />
       </div>
 
       <DeliveryZones />
