@@ -47,6 +47,17 @@ const appContext =
       : "web"
 
   const [loading, setLoading] = useState(false)
+  useEffect(() => {
+  function resetLoading() {
+    setLoading(false)
+  }
+
+  window.addEventListener("pageshow", resetLoading)
+
+  return () => {
+    window.removeEventListener("pageshow", resetLoading)
+  }
+}, [])
   const [items, setItems] = useState<CheckoutItem[]>([])
   const [paymentMethod, setPaymentMethod] = useState<
     "mercadopago" | "cash" | "mp_transfer"
