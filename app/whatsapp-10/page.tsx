@@ -25,18 +25,29 @@ export default function WhatsApp10Page() {
   const [deliverySchedule, setDeliverySchedule] =
     useState<DeliverySchedule | null>(null)
 
-  useEffect(() => {
-    localStorage.removeItem("qyg_affiliate_slug")
-    localStorage.setItem(
-      "qyg_campaign_source",
-      "meta_interaccion_whatsapp"
-    )
-    localStorage.setItem("qyg_landing_path", "/whatsapp-10")
-    localStorage.setItem(
-      "qyg_attribution_label",
-      "WhatsApp 10% 24hs"
-    )
-  }, [])
+useEffect(() => {
+  localStorage.removeItem("qyg_affiliate_slug")
+
+  localStorage.setItem(
+    "qyg_campaign_source",
+    "meta_interaccion_whatsapp"
+  )
+
+  localStorage.setItem(
+    "qyg_landing_path",
+    "/whatsapp-10"
+  )
+
+  localStorage.setItem(
+    "qyg_attribution_label",
+    "WhatsApp 10% 24hs"
+  )
+
+  localStorage.setItem(
+    "qyg_app_context",
+    "webwhapp"
+  )
+}, [])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -143,7 +154,7 @@ export default function WhatsApp10Page() {
       </section>
 
       <div id="cart" className="scroll-mt-32">
-        <CartCategorySelectorWeb checkoutAppContext="webwhapp" />
+       <CartCategorySelectorWeb />
       </div>
 
       <DeliveryZones />
