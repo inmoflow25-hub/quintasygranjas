@@ -37,6 +37,15 @@ function CheckoutContent() {
   const source = searchParams.get("source")
   const boxId = searchParams.get("box_id")
 
+  const requestedAppContext = searchParams.get("app_context")
+
+const appContext =
+  requestedAppContext === "webwhapp"
+    ? "webwhapp"
+    : requestedAppContext === "pwa"
+      ? "pwa"
+      : "web"
+
   const [loading, setLoading] = useState(false)
   const [items, setItems] = useState<CheckoutItem[]>([])
   const [paymentMethod, setPaymentMethod] = useState<
@@ -461,7 +470,7 @@ function CheckoutContent() {
         },
         body: JSON.stringify({
           source,
-          app_context: "web",
+          app_context: appContext,
           box_id: boxId,
           items,
           payment_method: paymentMethod,
