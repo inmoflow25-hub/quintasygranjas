@@ -380,7 +380,14 @@ export default function CartCategorySelectorWeb() {
         JSON.stringify(cart)
       )
 
-      window.location.assign("/checkout?source=cart")
+const isWhatsAppPromo =
+  window.location.pathname === "/whatsapp-10"
+
+window.location.assign(
+  isWhatsAppPromo
+    ? "/checkout?source=cart&app_context=webwhapp"
+    : "/checkout?source=cart"
+)
     } catch (error) {
       console.error("Error iniciando checkout web:", error)
       alert("No pudimos iniciar el checkout")
