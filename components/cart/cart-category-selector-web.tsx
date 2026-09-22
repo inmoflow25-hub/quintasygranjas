@@ -381,7 +381,7 @@ export default function CartCategorySelectorWeb() {
       )
 
 const isWhatsAppPromo =
-  window.location.pathname === "/whatsapp-10"
+  window.location.pathname.startsWith("/whatsapp-10")
 
 window.location.assign(
   isWhatsAppPromo
