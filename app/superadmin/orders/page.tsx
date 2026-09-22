@@ -279,9 +279,13 @@ order_cutoff_bucket,
                     </td>
 
     <td className="px-4 py-4">
-  <div className="font-medium">
-    {order.app_context === "pwa" ? "App" : "Web"}
-  </div>
+<div className="font-medium">
+  {order.app_context === "pwa"
+    ? "App"
+    : order.app_context === "webwhapp"
+      ? "Web WhatsApp"
+      : "Web"}
+</div>
 
   <div className="text-xs text-gray-500">
     {order.source || "-"}
