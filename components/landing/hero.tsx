@@ -86,11 +86,11 @@ export function Hero({ onWhatsAppClick }: HeroProps) {
 
   <div>
     <p className="text-lg font-black">
-      💰 Cashback en todas tus compras
+      💰 Cashback en todas tus compras sin crear usuario!
     </p>
 
     <p className="mt-1 text-sm leading-relaxed text-white/85">
-      Cada pedido suma puntos que podés usar como descuento en tus próximas compras.
+      Cada pedido suma puntos que podés usar como dinero en tus próximas compras.
     </p>
   </div>
 </div>
