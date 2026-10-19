@@ -3,6 +3,10 @@
     {
       "path": "/api/renew-subscriptions",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/ghl/sync-buyers",
+      "schedule": "15 3 * * *"
     }
   ]
 }
