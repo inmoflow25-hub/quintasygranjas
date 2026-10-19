@@ -10,6 +10,9 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
+const GHL_POINTS_FIELD_ID = "B5hHlTvZSSosc2ox3C7y"
+const GHL_CASHBACK_FIELD_ID = "yATTTV6mHgo9VGt7hKVx"
+
 type CheckoutItem = {
   id?: string
   name?: string
@@ -331,6 +334,124 @@ async function processConfirmedOrderPoints(orderId: string) {
   }
 
   return data
+}
+
+async function syncCustomerPointsToGhl({
+  userId,
+  customerName,
+  customerEmail,
+  customerPhone
+}: {
+  userId: string
+  customerName: string
+  customerEmail: string
+  customerPhone: string
+}) {
+  const token = process.env.GHL_API_TOKEN
+  const locationId = process.env.GHL_LOCATION_ID
+
+  if (!token || !locationId) {
+    console.warn(
+      "GHL points sync skipped: faltan GHL_API_TOKEN o GHL_LOCATION_ID"
+    )
+    return
+  }
+
+  const pointsAvailable = await getAvailablePoints(userId)
+
+  const { data: pointsConfigRows, error: pointsConfigError } = await supabase
+    .from("app_points_config")
+    .select("point_value_ars")
+    .limit(1)
+
+  if (pointsConfigError) {
+    console.error(
+      "GHL points sync: app_points_config error",
+      pointsConfigError
+    )
+    return
+  }
+
+  const pointValueArs = Number(
+    pointsConfigRows?.[0]?.point_value_ars
+  )
+
+  if (!Number.isFinite(pointValueArs) || pointValueArs <= 0) {
+    console.error(
+      "GHL points sync: point_value_ars invalido",
+      pointsConfigRows?.[0]?.point_value_ars
+    )
+    return
+  }
+
+  const normalizedPoints = Math.max(
+    0,
+    Math.floor(Number(pointsAvailable || 0))
+  )
+
+  const cashbackAvailableArs = Math.round(
+    normalizedPoints * pointValueArs
+  )
+
+  const body: any = {
+    locationId,
+    firstName: customerName,
+    customFields: [
+      {
+        id: GHL_POINTS_FIELD_ID,
+        fieldValue: String(normalizedPoints)
+      },
+      {
+        id: GHL_CASHBACK_FIELD_ID,
+        fieldValue: String(cashbackAvailableArs)
+      }
+    ]
+  }
+
+  if (customerEmail) {
+    body.email = normalizeEmail(customerEmail)
+  }
+
+  if (customerPhone) {
+    body.phone = normalizeArgentinaPhone(customerPhone)
+  }
+
+  try {
+    const response = await fetch(
+      "https://services.leadconnectorhq.com/contacts/upsert",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Version: "2021-07-28",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      }
+    )
+
+    const result = await response.json().catch(() => null)
+
+    if (!response.ok) {
+      console.error(
+        "GHL points sync error",
+        response.status,
+        result
+      )
+      return
+    }
+
+    console.log("GHL points sync ok", {
+      userId,
+      pointsAvailable: normalizedPoints,
+      cashbackAvailableArs
+    })
+  } catch (error) {
+    console.error(
+      "GHL points sync fetch error",
+      error
+    )
+  }
 }
 
 function buildItemsSummary(
@@ -1078,6 +1199,15 @@ export async function POST(req: Request) {
           { status: 500 }
         )
       }
+    }
+
+    if (initialStatus === "confirmed" && userId) {
+      await syncCustomerPointsToGhl({
+        userId,
+        customerName: customer_name,
+        customerEmail: normalizedCustomerEmail,
+        customerPhone: normalizedCustomerPhone
+      })
     }
 
     const { cyclePosition, cycleBenefitMessage } = buildCycleProgress({
